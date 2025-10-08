@@ -43,8 +43,11 @@ public static class DependencyInjection
 
         services.AddSingleton<IApplicationBuilder, ApplicationBuilder>();
         services.AddScoped<ICandleUpdaterService, CandleUpdaterService>();
+        services.AddScoped<ICandleAggregatorService, CandleAggregatorService>();
+
         // اجرای سرویس پس‌زمینه در همه محیط‌ها
         services.AddHostedService<CandleUpdaterHostedService>();
+        services.AddHostedService<CandleAggregatorHostedService>();
 
         services.AddHttpContextAccessor();
         services.MediatRDependency();
