@@ -1,7 +1,9 @@
-﻿using ApplicationLayer.Common.Behaviors;
+using ApplicationLayer.Common.Behaviors;
 using ApplicationLayer.Features.Validations;
 using ApplicationLayer.Interfaces;
+using ApplicationLayer.Interfaces.Binance;
 using ApplicationLayer.Mapping.UserAccounts;
+using ApplicationLayer.Services;
 using AspNetCoreRateLimit;
 using DomainLayer.Common.Attributes;
 using FluentValidation;
@@ -30,7 +32,6 @@ public static class DependencyInjection
     {
         services.RegisterService(configuration);
 
-
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
         services.AddDbContext<ApplicationDbContext>(options =>
@@ -41,6 +42,9 @@ public static class DependencyInjection
         services.AddScoped<IUserContextService, UserContextService>();
 
         services.AddSingleton<IApplicationBuilder, ApplicationBuilder>();
+        services.AddScoped<ICandleUpdaterService, CandleUpdaterService>();
+        // اجرای سرویس پس‌زمینه در همه محیط‌ها
+        services.AddHostedService<CandleUpdaterHostedService>();
 
         services.AddHttpContextAccessor();
         services.MediatRDependency();
@@ -110,33 +114,66 @@ public static class DependencyInjection
     {
         services.AddSwaggerGen(options =>
         {
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            // داک تجمیعی پیش‌فرض برای سازگاری با مسیر /swagger/v1/swagger.json
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "All APIs",
+                Version = "v1"
+            });
+            // Security JWT
+            var securityScheme = new OpenApiSecurityScheme
             {
                 Description = "JWT Authorization header using the Bearer scheme",
                 Type = SecuritySchemeType.Http,
-                Scheme = "bearer"
-            });
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            };
 
+            options.AddSecurityDefinition("Bearer", securityScheme);
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    Array.Empty<string>()
-                }
+                { securityScheme, Array.Empty<string>() }
             });
 
-            options.SwaggerDoc("Identity", new OpenApiInfo { Title = "API Identity", Version = "v1" });
-            options.SwaggerDoc("Administrator", new OpenApiInfo { Title = "API Administrator", Version = "v1" });
-            options.SwaggerDoc("Managers", new OpenApiInfo { Title = "API Managers", Version = "v1" });
-            options.SwaggerDoc("Users", new OpenApiInfo { Title = "API Users", Version = "v1" });
-            options.SwaggerDoc("MiniApp", new OpenApiInfo { Title = "API MiniApp", Version = "v1" });
+            // Swagger docs برای هر API group
+            var apiGroups = new[]
+            {
+                "Identity",
+                "Administrator",
+                "Managers",
+                "Users",
+                "MiniApp"
+            };
+
+            foreach (var group in apiGroups)
+            {
+                options.SwaggerDoc(group, new OpenApiInfo
+                {
+                    Title = $"API {group}",
+                    Version = "v1"
+                });
+            }
+
+            // گروه‌بندی بر اساس ApiExplorerSettings(GroupName)
+            options.DocInclusionPredicate((docName, apiDesc) =>
+            {
+                // اگر داک v1 باشد، همه endpointها را نمایش بده
+                if (string.Equals(docName, "v1", StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+                var groupName = apiDesc.GroupName;
+                if (!string.IsNullOrEmpty(groupName))
+                    return string.Equals(groupName, docName, StringComparison.OrdinalIgnoreCase);
+
+                // کنترلرهایی که GroupName ندارند را در گروه "Users" نمایش بده
+                return string.Equals(docName, "Users", StringComparison.OrdinalIgnoreCase);
+            });
         });
     }
 
