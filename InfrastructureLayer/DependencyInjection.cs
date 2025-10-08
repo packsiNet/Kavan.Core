@@ -45,11 +45,12 @@ public static class DependencyInjection
         services.AddScoped<ICandleUpdaterService, CandleUpdaterService>();
         services.AddScoped<ICandleAggregatorService, CandleAggregatorService>();
         services.AddScoped<ApplicationLayer.Interfaces.Indicators.IIndicatorService, ApplicationLayer.Features.Indicators.IndicatorService>();
-        services.AddScoped<ApplicationLayer.Interfaces.Signals.ISignalService, ApplicationLayer.Features.Signals.SignalService>();
+        services.AddScoped<ApplicationLayer.Interfaces.Signals.ISignalService, ApplicationLayer.Futures.Signals.SignalService>();
 
-        // اجرای سرویس پس‌زمینه در همه محیط‌ها
+        // اجرای سرویس‌های پس‌زمینه در همه محیط‌ها
         services.AddHostedService<CandleUpdaterHostedService>();
         services.AddHostedService<CandleAggregatorHostedService>();
+        services.AddHostedService<InfrastructureLayer.HostedServices.SignalUpdaterHostedService>();
 
         services.AddHttpContextAccessor();
         services.MediatRDependency();
