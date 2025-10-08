@@ -271,6 +271,9 @@ public static class DependencyInjection
         services.AddMediatR(m =>
         {
             m.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            // Register handlers from ApplicationLayer where CQRS handlers live
+            var applicationAssembly = typeof(ApplicationLayer.Features.Signals.Handler.GetSignalsHandler).Assembly;
+            m.RegisterServicesFromAssembly(applicationAssembly);
             // Register handlers from PresentationApp assembly for domain events
             var presentationAssembly = AppDomain.CurrentDomain.GetAssemblies()
                 .FirstOrDefault(a => a.GetName().Name == "PresentationApp");
