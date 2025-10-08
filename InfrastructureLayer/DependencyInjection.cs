@@ -44,6 +44,7 @@ public static class DependencyInjection
         services.AddSingleton<IApplicationBuilder, ApplicationBuilder>();
         services.AddScoped<ICandleUpdaterService, CandleUpdaterService>();
         services.AddScoped<ICandleAggregatorService, CandleAggregatorService>();
+        services.AddScoped<ApplicationLayer.Interfaces.Indicators.IIndicatorService, ApplicationLayer.Features.Indicators.IndicatorService>();
 
         // اجرای سرویس پس‌زمینه در همه محیط‌ها
         services.AddHostedService<CandleUpdaterHostedService>();
