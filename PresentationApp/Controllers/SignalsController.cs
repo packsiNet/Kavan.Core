@@ -8,9 +8,10 @@ namespace PresentationApp.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [ApiExplorerSettings(GroupName = "Signals")]
-    public class SignalsController(IMediator mediator) : ControllerBase
+    public class SignalsController(IMediator mediator, ApplicationLayer.Interfaces.Signals.ISignalService signalService) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;
+        private readonly ApplicationLayer.Interfaces.Signals.ISignalService _signalService = signalService;
 
         /// <summary>
         /// دریافت تمام سیگنال‌ها
@@ -20,6 +21,33 @@ namespace PresentationApp.Controllers
         {
             var query = new GetSignalsQuery(Symbol: null, TimeFrame: null, Limit: null);
             return await ResultHelper.GetResultAsync(_mediator, query);
+        }
+
+        /// <summary>
+        /// دریافت سیگنال‌ها با فیلترهای اختیاری
+        /// </summary>
+        /// <param name="symbol">نماد (مثلاً BTCUSDT)</param>
+        /// <param name="timeFrame">تایم‌فریم (1m, 5m, 1h, 4h, 1d)</param>
+        /// <param name="strategy">استراتژی (Breakout, TrendLine, RSI, EMA, MACD)</param>
+        /// <param name="limit">تعداد نتایج</param>
+        [HttpGet]
+        public async Task<IActionResult> GetAsync([FromQuery] string? symbol, [FromQuery] string? timeFrame, [FromQuery] string? strategy, [FromQuery] int? limit)
+        {
+            var rows = await _signalService.GetSignalsAsync(symbol, timeFrame, strategy, limit);
+            return Ok(rows);
+        }
+
+        /// <summary>
+        /// تولید سیگنال برای یک نماد خاص
+        /// </summary>
+        [HttpPost("generate/{symbol}")]
+        public async Task<IActionResult> GenerateAsync([FromRoute] string symbol, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(symbol))
+                return BadRequest("symbol نمی‌تواند خالی باشد.");
+
+            var rows = await _signalService.GenerateSignalsAsync(symbol, cancellationToken);
+            return Ok(rows);
         }
 
         /// <summary>

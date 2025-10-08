@@ -12,6 +12,8 @@ public class Signal : BaseEntityModel, IAuditableEntity
 
     public string SignalType { get; set; } = string.Empty; // BUY or SELL
 
+    public string Strategy { get; set; } = string.Empty; // Breakout, TrendLine, RSI, EMA, MACD
+
     public decimal? Rsi { get; set; }
 
     public decimal? Ema { get; set; }

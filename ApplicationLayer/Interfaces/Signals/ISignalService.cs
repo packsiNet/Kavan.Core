@@ -7,4 +7,6 @@ public interface ISignalService
     Task<List<SignalDto>> GenerateSignalsAsync(string symbol, CancellationToken cancellationToken = default);
 
     Task<List<SignalDto>> GetSignalsAsync(string? symbol, string? timeFrame, int? limit, CancellationToken cancellationToken = default);
+
+    Task<List<SignalDto>> GetSignalsAsync(string? symbol, string? timeFrame, string? strategy, int? limit, CancellationToken cancellationToken = default);
 }

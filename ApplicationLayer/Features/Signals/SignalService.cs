@@ -60,6 +60,7 @@ public class SignalService(
                 Symbol = symbol,
                 TimeFrame = tf,
                 SignalType = signalType,
+                Strategy = "RSI",
                 Timestamp = lastTs,
                 Rsi = rsi.Value,
                 Ema = ema.Value,
@@ -72,6 +73,7 @@ public class SignalService(
                 Symbol = symbol,
                 TimeFrame = tf,
                 SignalType = signalType,
+                Strategy = "RSI",
                 Timestamp = lastTs,
                 Rsi = rsi.Value,
                 Ema = ema.Value,
@@ -105,6 +107,40 @@ public class SignalService(
             Symbol = s.Symbol,
             TimeFrame = s.TimeFrame,
             SignalType = s.SignalType,
+            Strategy = s.Strategy,
+            Timestamp = s.Timestamp,
+            Rsi = s.Rsi,
+            Ema = s.Ema,
+            Macd = s.Macd
+        }).ToListAsync(cancellationToken);
+
+        return rows;
+    }
+
+    public async Task<List<SignalDto>> GetSignalsAsync(string? symbol, string? timeFrame, string? strategy, int? limit, CancellationToken cancellationToken = default)
+    {
+        var query = _signals.Query();
+
+        if (!string.IsNullOrWhiteSpace(symbol))
+            query = query.Where(s => s.Symbol == symbol);
+
+        if (!string.IsNullOrWhiteSpace(timeFrame))
+            query = query.Where(s => s.TimeFrame == timeFrame);
+
+        if (!string.IsNullOrWhiteSpace(strategy))
+            query = query.Where(s => s.Strategy == strategy);
+
+        query = query.OrderByDescending(s => s.Timestamp);
+
+        if (limit.HasValue)
+            query = query.Take(limit.Value);
+
+        var rows = await query.Select(s => new SignalDto
+        {
+            Symbol = s.Symbol,
+            TimeFrame = s.TimeFrame,
+            SignalType = s.SignalType,
+            Strategy = s.Strategy,
             Timestamp = s.Timestamp,
             Rsi = s.Rsi,
             Ema = s.Ema,
