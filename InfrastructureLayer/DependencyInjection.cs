@@ -268,8 +268,14 @@ public static class DependencyInjection
     {
         services.AddMediatR(m =>
         {
+            // Register Infrastructure layer (current assembly)
             m.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            // Register handlers from Kavan.Api assembly for domain events
+
+            // Register handlers from ApplicationLayer (CQRS handlers live here)
+            var applicationAssembly = typeof(ApplicationLayer.Features.Plans.Handler.GetPlansHandler).Assembly;
+            m.RegisterServicesFromAssembly(applicationAssembly);
+
+            // Optionally register handlers from Kavan.Api if any exist
             var presentationAssembly = AppDomain.CurrentDomain.GetAssemblies()
                 .FirstOrDefault(a => a.GetName().Name == "Kavan.Api");
             if (presentationAssembly != null)
