@@ -4,6 +4,7 @@ using InfrastructureLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251101105913_AddTechnicalSignalAndCandleTables")]
+    partial class AddTechnicalSignalAndCandleTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -924,9 +927,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<DateTime>("CreatedDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DetailedSignalType")
-                        .HasColumnType("int");
-
                     b.Property<string>("IndicatorCategory")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -982,8 +982,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("CreatedAt");
 
-                    b.HasIndex("DetailedSignalType");
-
                     b.HasIndex("IndicatorCategory");
 
                     b.HasIndex("IndicatorName");
@@ -994,7 +992,7 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasIndex("TimeFrame");
 
-                    b.HasIndex("Symbol", "IndicatorCategory", "SignalType", "DetailedSignalType", "TimeFrame");
+                    b.HasIndex("Symbol", "IndicatorCategory", "SignalType", "TimeFrame");
 
                     b.ToTable("TechnicalSignal", "dbo");
                 });

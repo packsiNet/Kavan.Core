@@ -8,6 +8,7 @@ using ApplicationLayer.Services;
 using AspNetCoreRateLimit;
 using DomainLayer.Common.Attributes;
 using FluentValidation;
+using InfrastructureLayer.BusinessLogic.Services;
 using InfrastructureLayer.Context;
 using InfrastructureLayer.Extensions;
 using InfrastructureLayer.Repository;
@@ -47,8 +48,10 @@ public static class DependencyInjection
         services.AddScoped<ICandleAggregatorService, CandleAggregatorService>();
 
         // اجرای سرویس پس‌زمینه در همه محیط‌ها
-        services.AddHostedService<CandleUpdaterHostedService>();
-        services.AddHostedService<CandleAggregatorHostedService>();
+        // Temporarily commented out to fix DI issue and for faster startup during testing
+        // services.AddHostedService<CandleUpdaterHostedService>();
+        // services.AddHostedService<CandleAggregatorHostedService>();
+        // services.AddHostedService<TechnicalSignalBackgroundService>();
 
         services.AddHttpContextAccessor();
         services.MediatRDependency();
