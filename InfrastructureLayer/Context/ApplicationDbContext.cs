@@ -1,4 +1,4 @@
-﻿#region Usings
+#region Usings
 
 using DomainLayer;
 using DomainLayer.Common.BaseEntities;
@@ -22,6 +22,12 @@ namespace InfrastructureLayer.Context
         }
 
         #endregion Constructors
+
+        #region DbSets
+
+        public DbSet<MarketAnalysisResult> MarketAnalysisResults { get; set; }
+
+        #endregion DbSets
 
         #region ModelCreating & OnConfiguring
 

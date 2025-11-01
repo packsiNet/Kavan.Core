@@ -1,5 +1,6 @@
 using AspNetCoreRateLimit;
 using InfrastructureLayer;
+using ApplicationLayer.Interfaces.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,21 @@ builder.WebHost.ConfigureKestrel((context, options) =>
 });
 
 var app = builder.Build();
+
+// Seed database on startup
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var seedingService = scope.ServiceProvider.GetRequiredService<IDatabaseSeedingService>();
+        await seedingService.SeedCryptocurrenciesAsync();
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {

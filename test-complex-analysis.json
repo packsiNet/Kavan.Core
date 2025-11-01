@@ -1,0 +1,126 @@
+{
+    "request": {
+        "market": "crypto",
+        "symbols": [],
+        "timeframes": [
+            "1h",
+            "4h"
+        ],
+        "conditions": [
+            {
+                "type": "breakout",
+                "indicator": "structure_break",
+                "description": "Initial ceiling break with FVG formation",
+                "parameters": {
+                    "break_direction": "up",
+                    "structure_level": "major",
+                    "break_strength": "strong",
+                    "fvg_zone": true,
+                    "zone_type": "fvg"
+                },
+                "timeframe": "1h",
+                "logical_operator": "AND",
+                "confirmation": [
+                    {
+                        "type": "structure_break",
+                        "condition": "ceiling_break_with_fvg",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "type": "pattern",
+                "indicator": "fvg_entry",
+                "description": "Price enters FVG zone",
+                "parameters": {
+                    "zone_type": "fvg",
+                    "fvg_zone": true,
+                    "price_position": "between"
+                },
+                "timeframe": "1h",
+                "logical_operator": "AND"
+            },
+            {
+                "type": "pattern",
+                "indicator": "support_level",
+                "description": "Formation of lowest floor/support",
+                "parameters": {
+                    "zone_type": "support",
+                    "structure_level": "key",
+                    "touches_required": 1,
+                    "confirmation": true
+                },
+                "timeframe": "1h",
+                "logical_operator": "AND"
+            },
+            {
+                "type": "pattern",
+                "indicator": "resistance_level",
+                "description": "Formation of new ceiling/resistance",
+                "parameters": {
+                    "zone_type": "resistance",
+                    "structure_level": "major",
+                    "touches_required": 1
+                },
+                "timeframe": "1h",
+                "logical_operator": "AND"
+            },
+            {
+                "type": "breakout",
+                "indicator": "mss_break",
+                "description": "MSS: Ceiling break with FVG (Market Structure Shift)",
+                "parameters": {
+                    "break_direction": "up",
+                    "structure_level": "major",
+                    "break_strength": "strong",
+                    "fvg_zone": true,
+                    "zone_type": "fvg"
+                },
+                "timeframe": "1h",
+                "logical_operator": "AND",
+                "confirmation": [
+                    {
+                        "type": "structure_break",
+                        "condition": "mss_confirmed",
+                        "required": true
+                    },
+                    {
+                        "type": "volume",
+                        "condition": "above_average",
+                        "required": false
+                    }
+                ]
+            },
+            {
+                "type": "pattern",
+                "indicator": "fvg_retest",
+                "description": "Price returns to FVG for entry signal",
+                "parameters": {
+                    "zone_type": "fvg",
+                    "fvg_zone": true,
+                    "price_position": "between",
+                    "confirmation": true
+                },
+                "timeframe": "1h",
+                "logical_operator": "AND",
+                "confirmation": [
+                    {
+                        "type": "price_action",
+                        "condition": "fvg_retest_entry",
+                        "required": true
+                    }
+                ]
+            }
+        ],
+        "filters": {
+            "volume_min": "medium",
+            "volatility": "medium",
+            "liquidity": "high"
+        },
+        "preferences": {
+            "risk_level": "medium",
+            "strategy_type": "price_action",
+            "signal_strength": "strong"
+        }
+    }
+}

@@ -3,6 +3,7 @@ using ApplicationLayer.Features.Validations;
 using ApplicationLayer.Interfaces;
 using ApplicationLayer.Interfaces.Binance;
 using ApplicationLayer.Mapping.UserAccounts;
+using ApplicationLayer.Mapping.MarketAnalysis;
 using ApplicationLayer.Services;
 using AspNetCoreRateLimit;
 using DomainLayer.Common.Attributes;
@@ -79,7 +80,7 @@ public static class DependencyInjection
         services.SwaggerConfiguration(configuration);
         services.JwtAuthorizeConfiguration(configuration);
         services.SeriLogConfiguration(configuration);
-        services.AddAutoMapper(typeof(UserAccountProfile).GetTypeInfo().Assembly);
+        services.AddAutoMapper(typeof(UserAccountProfile).Assembly);
     }
 
     private static void SeriLogConfiguration(this IServiceCollection services, IConfiguration configuration)
