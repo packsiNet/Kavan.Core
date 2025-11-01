@@ -1,3 +1,4 @@
+using ApplicationLayer.Common.Extensions;
 using ApplicationLayer.Dto.MarketAnalysis;
 using ApplicationLayer.Features.MarketAnalysis.Commands;
 using ApplicationLayer.Features.MarketAnalysis.Query;
@@ -10,56 +11,10 @@ namespace Kavan.Api.Controllers;
 [ApiController]
 public class MarketAnalysisController(IMediator mediator) : ControllerBase
 {
-    /// <summary>
-    /// Analyzes cryptocurrency market based on provided conditions and filters
-    /// </summary>
-    /// <param name="command">Market analysis request with conditions, filters, and preferences</param>
-    /// <returns>Market analysis results with trading signals</returns>
     [HttpPost("analyze")]
-    public async Task<IActionResult> AnalyzeMarketAsync(AnalyzeMarketCommand command)
-    {
-        try
-        {
-            var result = await mediator.Send(command);
-            return Ok(new
-            {
-                success = true,
-                data = result,
-                timestamp = DateTime.UtcNow,
-                message = "Market analysis completed successfully"
-            });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new
-            {
-                success = false,
-                error = "Invalid request parameters",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow
-            });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new
-            {
-                success = false,
-                error = "Internal server error during market analysis",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow
-            });
-        }
-    }
+    public async Task<IActionResult> AnalyzeMarketAsync(AnalyzeMarketCommand model)
+        => await ResultHelper.GetResultAsync(mediator, model);
 
-    /// <summary>
-    /// Gets active trading signals with optional filtering
-    /// </summary>
-    /// <param name="symbol">Optional symbol filter</param>
-    /// <param name="timeframe">Optional timeframe filter</param>
-    /// <param name="signalType">Optional signal type filter (BUY/SELL/HOLD)</param>
-    /// <param name="pageNumber">Page number for pagination (default: 1)</param>
-    /// <param name="pageSize">Page size for pagination (default: 20)</param>
-    /// <returns>List of active trading signals</returns>
     [HttpGet("signals")]
     public async Task<IActionResult> GetActiveSignalsAsync(
         [FromQuery] string symbol = null,
@@ -67,110 +22,33 @@ public class MarketAnalysisController(IMediator mediator) : ControllerBase
         [FromQuery] string signalType = null,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 20)
-    {
-        try
-        {
-            var query = new GetActiveSignalsQuery(symbol, timeframe, signalType, pageNumber, pageSize);
-            var result = await mediator.Send(query);
-            
-            return Ok(new
-            {
-                success = true,
-                data = result,
-                pagination = new
-                {
-                    pageNumber,
-                    pageSize,
-                    totalCount = result?.Count ?? 0
-                },
-                timestamp = DateTime.UtcNow,
-                message = "Active signals retrieved successfully"
-            });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new
-            {
-                success = false,
-                error = "Internal server error while retrieving signals",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow
-            });
-        }
-    }
+        => await ResultHelper.GetResultAsync(mediator, new GetActiveSignalsQuery(symbol, timeframe, signalType, pageNumber, pageSize));
 
-    /// <summary>
-    /// Gets market analysis for a specific symbol and timeframe
-    /// </summary>
-    /// <param name="symbol">Cryptocurrency symbol (e.g., BTCUSDT)</param>
-    /// <param name="timeframe">Timeframe for analysis (1m, 5m, 1h, 4h, 1d)</param>
-    /// <returns>Detailed market analysis for the specified symbol</returns>
     [HttpGet("analyze/{symbol}")]
-    public async Task<IActionResult> GetSymbolAnalysisAsync(
-        [FromRoute] string symbol,
-        [FromQuery] string timeframe = "1h")
+    public async Task<IActionResult> GetSymbolAnalysisAsync([FromRoute] string symbol, [FromQuery] string timeframe = "1h")
     {
-        try
+        var request = new MarketAnalysisRequestDto
         {
-            // Create a basic analysis command for single symbol
-            var request = new MarketAnalysisRequestDto
+            Market = "crypto",
+            Symbols = [symbol.ToUpper()],
+            Timeframes = [timeframe],
+            Conditions = [],
+            Filters = new AnalysisFiltersDto
             {
-                Market = "crypto",
-                Symbols = new List<string> { symbol.ToUpper() },
-                Timeframes = new List<string> { timeframe },
-                Conditions = new List<ApplicationLayer.Dto.MarketAnalysis.AnalysisConditionDto>(),
-                Filters = new ApplicationLayer.Dto.MarketAnalysis.AnalysisFiltersDto
-                {
-                    VolumeMin = "medium",
-                    Volatility = "medium",
-                    Liquidity = "high"
-                },
-                Preferences = new ApplicationLayer.Dto.MarketAnalysis.AnalysisPreferencesDto
-                {
-                    RiskLevel = "medium",
-                    StrategyType = "price_action",
-                    SignalStrength = "medium"
-                }
-            };
-
-            var command = new AnalyzeMarketCommand(request);
-            var result = await mediator.Send(command);
-            return Ok(new
+                VolumeMin = "medium",
+                Volatility = "medium",
+                Liquidity = "high"
+            },
+            Preferences = new AnalysisPreferencesDto
             {
-                success = true,
-                data = result,
-                symbol = symbol.ToUpper(),
-                timeframe,
-                timestamp = DateTime.UtcNow,
-                message = $"Analysis for {symbol.ToUpper()} completed successfully"
-            });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new
-            {
-                success = false,
-                error = "Invalid symbol or timeframe",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow
-            });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new
-            {
-                success = false,
-                error = "Internal server error during symbol analysis",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow
-            });
-        }
+                RiskLevel = "medium",
+                StrategyType = "price_action",
+                SignalStrength = "medium"
+            }
+        };
+        return await ResultHelper.GetResultAsync(mediator, request);
     }
 
-    /// <summary>
-    /// Gets available cryptocurrencies for analysis
-    /// </summary>
-    /// <returns>List of available cryptocurrency symbols</returns>
     [HttpGet("symbols")]
     public async Task<IActionResult> GetAvailableSymbolsAsync()
     {
@@ -211,10 +89,6 @@ public class MarketAnalysisController(IMediator mediator) : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Gets supported timeframes for analysis
-    /// </summary>
-    /// <returns>List of supported timeframes</returns>
     [HttpGet("timeframes")]
     public IActionResult GetSupportedTimeframes()
     {
@@ -250,10 +124,6 @@ public class MarketAnalysisController(IMediator mediator) : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Gets available analysis conditions and indicators
-    /// </summary>
-    /// <returns>List of supported analysis conditions</returns>
     [HttpGet("conditions")]
     public IActionResult GetAvailableConditions()
     {
