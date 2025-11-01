@@ -2,6 +2,7 @@ using ApplicationLayer.Common.Extensions;
 using ApplicationLayer.Dto.MarketAnalysis;
 using ApplicationLayer.Features.MarketAnalysis.Commands;
 using ApplicationLayer.Features.MarketAnalysis.Query;
+using ApplicationLayer.Features.TimeFrames.Query;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -46,83 +47,19 @@ public class MarketAnalysisController(IMediator mediator) : ControllerBase
                 SignalStrength = "medium"
             }
         };
-        return await ResultHelper.GetResultAsync(mediator, request);
+        var command = new AnalyzeMarketCommand(request);
+        return await ResultHelper.GetResultAsync(mediator, command);
     }
 
     [HttpGet("symbols")]
     public async Task<IActionResult> GetAvailableSymbolsAsync()
     {
-        try
-        {
-            // This would typically get symbols from the cryptocurrency repository
-            // For now, return common crypto symbols
-            var symbols = new List<object>
-            {
-                new { symbol = "BTCUSDT", name = "Bitcoin", category = "major" },
-                new { symbol = "ETHUSDT", name = "Ethereum", category = "major" },
-                new { symbol = "BNBUSDT", name = "Binance Coin", category = "major" },
-                new { symbol = "ADAUSDT", name = "Cardano", category = "altcoin" },
-                new { symbol = "SOLUSDT", name = "Solana", category = "altcoin" },
-                new { symbol = "XRPUSDT", name = "Ripple", category = "altcoin" },
-                new { symbol = "DOTUSDT", name = "Polkadot", category = "altcoin" },
-                new { symbol = "AVAXUSDT", name = "Avalanche", category = "altcoin" }
-            };
-
-            return Ok(new
-            {
-                success = true,
-                data = symbols,
-                count = symbols.Count,
-                timestamp = DateTime.UtcNow,
-                message = "Available symbols retrieved successfully"
-            });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new
-            {
-                success = false,
-                error = "Internal server error while retrieving symbols",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow
-            });
-        }
+        return await ResultHelper.GetResultAsync(mediator, new GetAvailableSymbolsQuery());
     }
 
     [HttpGet("timeframes")]
-    public IActionResult GetSupportedTimeframes()
-    {
-        try
-        {
-            var timeframes = new List<object>
-            {
-                new { value = "1m", name = "1 Minute", category = "short_term" },
-                new { value = "5m", name = "5 Minutes", category = "short_term" },
-                new { value = "1h", name = "1 Hour", category = "medium_term" },
-                new { value = "4h", name = "4 Hours", category = "medium_term" },
-                new { value = "1d", name = "1 Day", category = "long_term" }
-            };
-
-            return Ok(new
-            {
-                success = true,
-                data = timeframes,
-                count = timeframes.Count,
-                timestamp = DateTime.UtcNow,
-                message = "Supported timeframes retrieved successfully"
-            });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new
-            {
-                success = false,
-                error = "Internal server error while retrieving timeframes",
-                details = ex.Message,
-                timestamp = DateTime.UtcNow
-            });
-        }
-    }
+    public async Task<IActionResult> GetSupportedTimeframes()
+        => await ResultHelper.GetResultAsync(mediator, new GetTimeFramesQuery());
 
     [HttpGet("conditions")]
     public IActionResult GetAvailableConditions()

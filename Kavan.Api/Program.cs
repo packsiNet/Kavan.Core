@@ -29,6 +29,7 @@ using (var scope = app.Services.CreateScope())
     {
         var seedingService = scope.ServiceProvider.GetRequiredService<IDatabaseSeedingService>();
         await seedingService.SeedCryptocurrenciesAsync();
+        await seedingService.SeedTimeFramesAsync();
     }
     catch (Exception ex)
     {

@@ -57,7 +57,11 @@ public class GetSymbolsBySignalTypeHandler : IRequestHandler<GetSymbolsBySignalT
             Symbol = signal.Symbol,
             DetailedSignalType = signal.DetailedSignalType,
             DetailedSignalTypeName = signal.DetailedSignalType.ToString(),
-            DetailedSignalTypeNamePersian = SignalCategories.GetPersianName(signal.DetailedSignalType),
+            DetailedSignalTypeNameLocalized = new DetailedSignalTypeNameDto
+            {
+                English = signal.DetailedSignalType.ToString(),
+                Persian = SignalCategories.GetPersianName(signal.DetailedSignalType)
+            },
             SignalType = signal.SignalType,
             SignalTypeText = GetSignalTypeText(signal.SignalType),
             TimeFrame = signal.TimeFrame,

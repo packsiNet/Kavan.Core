@@ -1,4 +1,6 @@
+using ApplicationLayer.Dto.BaseDtos;
 using ApplicationLayer.Dto.MarketAnalysis;
+using ApplicationLayer.Extensions;
 using ApplicationLayer.Features.MarketAnalysis.Commands;
 using ApplicationLayer.Interfaces;
 using ApplicationLayer.Interfaces.Services;
@@ -8,7 +10,7 @@ using System.Diagnostics;
 
 namespace ApplicationLayer.Features.MarketAnalysis.Handler;
 
-public class AnalyzeMarketHandler : IRequestHandler<AnalyzeMarketCommand, MarketAnalysisResponseDto>
+public class AnalyzeMarketHandler : IRequestHandler<AnalyzeMarketCommand, HandlerResult>
 {
     private readonly IMarketAnalysisService _marketAnalysisService;
     private readonly IMapper _mapper;
@@ -24,7 +26,7 @@ public class AnalyzeMarketHandler : IRequestHandler<AnalyzeMarketCommand, Market
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<MarketAnalysisResponseDto> Handle(AnalyzeMarketCommand request, CancellationToken cancellationToken)
+    public async Task<HandlerResult> Handle(AnalyzeMarketCommand request, CancellationToken cancellationToken)
     {
         var stopwatch = Stopwatch.StartNew();
         var requestId = Guid.NewGuid().ToString();
@@ -41,24 +43,13 @@ public class AnalyzeMarketHandler : IRequestHandler<AnalyzeMarketCommand, Market
             response.RequestId = requestId;
             response.ProcessingTimeMs = stopwatch.Elapsed.TotalMilliseconds;
 
-            return response;
+            return Result<MarketAnalysisResponseDto>.Success(response).ToHandlerResult();
         }
         catch (Exception ex)
         {
             stopwatch.Stop();
             
-            return new MarketAnalysisResponseDto
-            {
-                RequestId = requestId,
-                Success = false,
-                ProcessingTimeMs = stopwatch.Elapsed.TotalMilliseconds,
-                Errors = new List<string> { ex.Message },
-                Signals = new List<TradingSignalDto>(),
-                Metadata = new AnalysisMetadataDto
-                {
-                    Errors = new List<string> { ex.Message }
-                }
-            };
+            return Result<MarketAnalysisResponseDto>.GeneralFailure(ex.Message).ToHandlerResult();
         }
     }
 }

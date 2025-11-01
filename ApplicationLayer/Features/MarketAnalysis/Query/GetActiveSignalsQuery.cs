@@ -1,3 +1,4 @@
+using ApplicationLayer.Dto.BaseDtos;
 using ApplicationLayer.Dto.MarketAnalysis;
 using MediatR;
 
@@ -9,4 +10,4 @@ public record GetActiveSignalsQuery(
     string SignalType = null,
     int PageNumber = 1,
     int PageSize = 50
-) : IRequest<List<TradingSignalDto>>;
+) : IRequest<HandlerResult>;

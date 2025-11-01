@@ -8,7 +8,7 @@ namespace ApplicationLayer.Dto.TechnicalSignals;
 public class SignalCategoryDto
 {
     public string CategoryName { get; set; } = string.Empty;
-    public string CategoryNamePersian { get; set; } = string.Empty;
+    public CategoryNameDto CategoryNameLocalized { get; set; } = new();
     public List<SignalTypeDetailDto> SignalTypes { get; set; } = new();
 }
 
@@ -20,7 +20,7 @@ public class SignalTypeDetailDto
     public DetailedSignalType SignalType { get; set; }
     public int SignalTypeId { get; set; }
     public string SignalTypeName { get; set; } = string.Empty;
-    public string SignalTypeNamePersian { get; set; } = string.Empty;
+    public SignalTypeNameDto SignalTypeNameLocalized { get; set; } = new();
     public int CurrentCount { get; set; } // تعداد فعلی این سیگنال
 }
 
@@ -32,7 +32,7 @@ public class SignalSymbolDto
     public string Symbol { get; set; } = string.Empty;
     public DetailedSignalType DetailedSignalType { get; set; }
     public string DetailedSignalTypeName { get; set; } = string.Empty;
-    public string DetailedSignalTypeNamePersian { get; set; } = string.Empty;
+    public DetailedSignalTypeNameDto DetailedSignalTypeNameLocalized { get; set; } = new();
     public SignalType SignalType { get; set; }
     public string SignalTypeText { get; set; } = string.Empty;
     public string TimeFrame { get; set; } = string.Empty;
@@ -61,13 +61,40 @@ public class GetSymbolsBySignalTypeDto
 public class DetailedSignalSummaryDto
 {
     public string CategoryName { get; set; } = string.Empty;
-    public string CategoryNamePersian { get; set; } = string.Empty;
+    public CategoryNameDto CategoryNameLocalized { get; set; } = new();
     public DetailedSignalType DetailedSignalType { get; set; }
     public string DetailedSignalTypeName { get; set; } = string.Empty;
-    public string DetailedSignalTypeNamePersian { get; set; } = string.Empty;
+    public DetailedSignalTypeNameDto DetailedSignalTypeNameLocalized { get; set; } = new();
     public int BuySignals { get; set; }
     public int SellSignals { get; set; }
     public int NeutralSignals { get; set; }
     public int TotalSignals { get; set; }
     public List<string> ActiveSymbols { get; set; } = new(); // لیست ارزهایی که این سیگنال را دارند
+}
+
+/// <summary>
+/// DTO برای نام‌های دوزبانه دسته‌بندی
+/// </summary>
+public class CategoryNameDto
+{
+    public string English { get; set; } = string.Empty;
+    public string Persian { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// DTO برای نام‌های دوزبانه نوع سیگنال
+/// </summary>
+public class SignalTypeNameDto
+{
+    public string English { get; set; } = string.Empty;
+    public string Persian { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// DTO برای نام‌های دوزبانه نوع سیگنال تفصیلی
+/// </summary>
+public class DetailedSignalTypeNameDto
+{
+    public string English { get; set; } = string.Empty;
+    public string Persian { get; set; } = string.Empty;
 }

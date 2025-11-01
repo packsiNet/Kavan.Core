@@ -35,7 +35,11 @@ public class GetSignalCategoriesHandler : IRequestHandler<GetSignalCategoriesQue
             var categoryDto = new SignalCategoryDto
             {
                 CategoryName = category.Key,
-                CategoryNamePersian = GetCategoryPersianName(category.Key),
+                CategoryNameLocalized = new CategoryNameDto
+                {
+                    English = category.Key,
+                    Persian = GetCategoryPersianName(category.Key)
+                },
                 SignalTypes = new List<SignalTypeDetailDto>()
             };
 
@@ -48,7 +52,11 @@ public class GetSignalCategoriesHandler : IRequestHandler<GetSignalCategoriesQue
                     SignalType = signalType,
                     SignalTypeId = (int)signalType,
                     SignalTypeName = signalType.ToString(),
-                    SignalTypeNamePersian = DomainLayer.Entities.SignalCategories.GetPersianName(signalType),
+                    SignalTypeNameLocalized = new SignalTypeNameDto
+                    {
+                        English = signalType.ToString(),
+                        Persian = DomainLayer.Entities.SignalCategories.GetPersianName(signalType)
+                    },
                     CurrentCount = count
                 });
             }

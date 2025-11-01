@@ -26,6 +26,7 @@ namespace InfrastructureLayer.Context
         #region DbSets
 
         public DbSet<MarketAnalysisResult> MarketAnalysisResults { get; set; }
+        public DbSet<TimeFrame> TimeFrames { get; set; }
 
         #endregion DbSets
 
