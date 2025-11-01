@@ -1,20 +1,25 @@
+using ApplicationLayer.Common.Enums;
 using ApplicationLayer.Common.Extensions;
 using ApplicationLayer.DTOs.Plans;
 using ApplicationLayer.Features.Plans.Commands;
 using ApplicationLayer.Features.Plans.Query;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kavan.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[ApiExplorerSettings(GroupName = nameof(ApiDefinitions.Admin))]
+[Authorize(Policy = nameof(ApiDefinitions.Admin), Roles = "Admin")]
 public class PlansController(IMediator mediator) : ControllerBase
 {
     /// <summary>
     /// دریافت لیست همه پلن‌ها
     /// </summary>
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllAsync()
         => await ResultHelper.GetResultAsync(mediator, new GetPlansQuery());
 
@@ -22,6 +27,7 @@ public class PlansController(IMediator mediator) : ControllerBase
     /// دریافت جزئیات پلن بر اساس شناسه
     /// </summary>
     [HttpGet("{id:int}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetByIdAsync(int id)
         => await ResultHelper.GetResultAsync(mediator, new GetPlanByIdQuery(id));
 

@@ -20,7 +20,6 @@ namespace InfrastructureLayer.BusinessLogic.Services;
 
 [InjectAsScoped]
 public class IdentityService(IConfiguration _iConfiguration,
-                             ILogger<IdentityService> _logger,
                              IHttpContextAccessor _httpContextAccessor,
                              IRepository<Role> _roleRepository,
                              IRepository<UserRole> _userRoleRepository) : IIdentityService

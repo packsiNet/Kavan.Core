@@ -13,7 +13,8 @@ public class UserPlanConfiguration : BaseEntityConfiguration<UserPlan>
         builder.Property(x => x.StartDate)
             .IsRequired();
 
-        builder.HasCheckConstraint("CK_UserPlan_EndDate", "[EndDate] IS NULL OR [EndDate] >= [StartDate]");
+        builder.ToTable("UserPlans", t
+            => { t.HasCheckConstraint("CK_UserPlan_EndDate", "[EndDate] IS NULL OR [EndDate] >= [StartDate]"); });
 
         builder.HasOne(x => x.UserAccount)
                .WithMany(x => x.UserPlans)
