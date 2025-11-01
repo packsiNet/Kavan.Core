@@ -26,7 +26,7 @@ public class BinanceExchangeInfoService : IBinanceExchangeInfoService
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
 
-            return exchangeInfo?.Symbols ?? new List<BinanceSymbolDto>();
+            return exchangeInfo?.Symbols ?? [];
         }
         catch (Exception ex)
         {

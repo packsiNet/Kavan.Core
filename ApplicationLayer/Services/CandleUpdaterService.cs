@@ -25,8 +25,14 @@ public class CandleUpdaterService : ICandleUpdaterService
         if (crypto == null)
             throw new InvalidOperationException($"Cryptocurrency with symbol '{symbol}' not found.");
 
-        // 2️⃣ گرفتن داده‌ها از provider
-        var candles = await _dataProvider.GetKlinesAsync(symbol, interval, limit: 1000);
+        // 2️⃣ گرفتن فقط یک رکورد (آخرین کندل) از provider
+        var candles = await _dataProvider.GetKlinesAsync(symbol, interval, limit: 1);
+
+        // اطمینان از ذخیره فقط یک رکورد در هر بار اجرا
+        candles = candles
+            .OrderByDescending(c => c.OpenTime)
+            .Take(1)
+            .ToList();
 
         // 3️⃣ ذخیره در دیتابیس با cryptocurrencyId
         await _storage.SaveCandlesAsync(crypto.Id, interval, candles, cancellationToken);

@@ -49,9 +49,9 @@ public static class DependencyInjection
 
         // اجرای سرویس پس‌زمینه در همه محیط‌ها
         // Temporarily commented out to fix DI issue and for faster startup during testing
-        // services.AddHostedService<CandleUpdaterHostedService>();
-        // services.AddHostedService<CandleAggregatorHostedService>();
-        // services.AddHostedService<TechnicalSignalBackgroundService>();
+        services.AddHostedService<CandleUpdaterHostedService>();
+        services.AddHostedService<CandleAggregatorHostedService>();
+        services.AddHostedService<TechnicalSignalBackgroundService>();
 
         services.AddHttpContextAccessor();
         services.MediatRDependency();
