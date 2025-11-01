@@ -1,3 +1,17 @@
+Context: This project is a trading assistant called "Hamyar Trade". 
+
+Always consider that all cryptocurrency data and candlestick data are stored in the following tables:
+- Cryptocurrency.cs
+- Candle_1m
+- Candle_5m
+- Candle_1h
+- Candle_4h
+- Candle_1d
+
+All services, analyses, and computations should be performed using these tables. 
+
+Whenever you generate code, queries, services, or analytics logic, assume that these tables exist and are the source of truth for market data.
+
 The solution contains these main layers:
 Kavan.Core/
 │
