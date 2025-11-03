@@ -1,0 +1,26 @@
+توسعه یک متد آنالیز سیگنال جامع با مشخصات زیر:
+
+1. ورودی:
+- دریافت یک آبجکت JSON با ساختار مشخص
+- قابلیت پردازش چندین نماد و تایم فریم به صورت همزمان
+- قابلیت جستجو سیگنال های پیچیده و ساده 
+
+2. پردازش:
+- تجزیه و تحلیل شرایط (conditions) به صورت بازگشتی
+- اعمال فیلترهای حجم، نوسان و نقدشوندگی
+- در نظر گرفتن اولویت‌های کاربر (سطح ریسک، نوع استراتژی)
+- بررسی تاییدیه‌های لازم برای هر سیگنال
+
+3. خروجی:
+- شناسایی سیگنال‌های معاملاتی بر اساس پارامترهای ورودی
+- تعیین قدرت سیگنال (ضعیف، متوسط، قوی)
+- محاسبه سطح اطمینان برای هر سیگنال
+- ارائه خلاصه‌ای از منطق تحلیلی اعمال شده
+
+4. الزامات فنی:
+- پیاده‌سازی به صورت تابعی با قابلیت استفاده مجدد
+- مستندسازی کامل کد و منطق تحلیلی
+- پشتیبانی از افزودن شرایط جدید بدون نیاز به تغییر ساختار اصلی
+
+5. نمونه ورودی پیچیده :
+{"market":"crypto","symbols":[],"exclude":[],"timeframes":["1h","4h"],"conditions":[],"groups":[{"operator":"AND","timeframe":null,"description":"Main strategy workflow","conditions":[{"type":"structure","indicator":"resistance_break","description":"Ceiling broken with FVG formation","parameters":{"break_direction":"up","fvg_required":true,"structure_type":"resistance"},"timeframe":null,"logical_operator":"AND","confirmation":[{"type":"fvg_entry","condition":"fvg_identified_and_marked","required":true}],"confirmation_required":true},{"type":"fvg_retest","indicator":"fvg","description":"Price enters marked FVG zone","parameters":{"zone_type":"fvg","entry_type":"retest","price_action":"enters_zone"},"timeframe":null,"logical_operator":"AND","confirmation":[{"type":"support_level","condition":"floor_formation_after_fvg_entry","required":true}],"confirmation_required":true},{"type":"support_level","indicator":"floor_formation","description":"Floor forms inside FVG - marked as lowest floor","parameters":{"floor_type":"lowest","location":"inside_fvg","structure_significance":"key_level"},"timeframe":null,"logical_operator":"AND","confirmation":[{"type":"resistance_level","condition":"ceiling_formation_after_floor","required":true}],"confirmation_required":true},{"type":"resistance_level","indicator":"ceiling_formation","description":"Ceiling forms after lowest floor","parameters":{"ceiling_type":"new_high","after_floor":true},"timeframe":null,"logical_operator":"AND","confirmation_required":false}],"groups":[{"operator":"OR","timeframe":null,"description":"Two possible scenarios after ceiling formation","conditions":[],"groups":[{"operator":"AND","timeframe":null,"description":"Scenario 1: MSS confirmed - ceiling breaks with FVG","conditions":[{"type":"mss_break","indicator":"mss","description":"Ceiling broken with FVG - MSS confirmed","parameters":{"break_type":"mss","break_direction":"up","fvg_required":true,"structure_broken":"ceiling"},"timeframe":null,"logical_operator":"AND","confirmation":[{"type":"fvg_retest","condition":"price_returns_to_fvg","required":true}],"confirmation_required":true},{"type":"fvg_entry","indicator":"fvg","description":"Entry signal - price returns to FVG after MSS","parameters":{"zone_type":"fvg","entry_type":"pullback_entry","entry_trigger":"price_retest","mss_confirmed":true},"timeframe":null,"logical_operator":"AND","confirmation_required":false}],"groups":[]},{"operator":"AND","timeframe":null,"description":"Scenario 2: Ceiling NOT broken - price makes lower floor","conditions":[{"type":"structure","indicator":"ceiling_hold","description":"Ceiling NOT broken with FVG - price rejects","parameters":{"break_type":"failed","break_direction":"down","fvg_break":false,"structure_type":"ceiling_rejection"},"timeframe":null,"logical_operator":"AND","confirmation":[{"type":"support_level","condition":"new_lower_floor_formation","required":true}],"confirmation_required":true},{"type":"support_level","indicator":"floor_formation","description":"New lower floor forms - update lowest floor","parameters":{"floor_type":"new_lowest","update_reference":true,"lower_than_previous":true},"timeframe":null,"logical_operator":"AND","confirmation":[{"type":"structure","condition":"repeat_workflow_from_new_floor","required":true}],"confirmation_required":true},{"type":"structure","indicator":"workflow_loop","description":"Continue workflow from new lowest floor","parameters":{"action":"repeat_from_ceiling_formation","reference_floor":"new_lowest","loop_logic":true},"timeframe":null,"logical_operator":"AND","confirmation_required":false}],"groups":[]}]}]}],"filters":{"volume_min":null,"volatility":"medium","liquidity":null,"price_min":null,"price_max":null},"preferences":{"risk_level":"medium","strategy_type":"price_action","signal_strength":"strong"}}
