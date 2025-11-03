@@ -1,5 +1,9 @@
 using AspNetCoreRateLimit;
 using InfrastructureLayer;
+using ApplicationLayer.Interfaces;
+using InfrastructureLayer.Context;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +41,27 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/Trader/swagger.json", "API Trader v1");
         options.SwaggerEndpoint("/swagger/Public/swagger.json", "API Public v1");
     });
+}
+
+// Startup automatic seeding
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var db = services.GetRequiredService<ApplicationDbContext>();
+        // Apply migrations before seeding
+        db.Database.Migrate();
+
+        var seedService = services.GetRequiredService<ICandleSeedService>();
+        // Seed 100 candles for BTCUSDT 1m with defined pattern
+        seedService.SeedBTCUSDT_1m_DoubleTopBreakoutAsync(100).GetAwaiter().GetResult();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetService<ILoggerFactory>()?.CreateLogger("Startup");
+        logger?.LogError(ex, "Startup seeding failed");
+    }
 }
 
 app.UseHttpsRedirection();

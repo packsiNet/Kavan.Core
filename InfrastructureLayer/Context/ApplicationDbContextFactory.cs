@@ -8,7 +8,7 @@ namespace InfrastructureLayer.Context
     {
         public ApplicationDbContext CreateDbContext(string[] args)
         {
-            var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "PresentationApp");
+            var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Kavan.Api");
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(basePath)

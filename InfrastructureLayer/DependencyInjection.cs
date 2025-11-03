@@ -234,9 +234,9 @@ public static class DependencyInjection
         services.AddMediatR(m =>
         {
             m.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            // Register handlers from PresentationApp assembly for domain events
+            // Register handlers from Presentation Kavan.Api assembly for domain events
             var presentationAssembly = AppDomain.CurrentDomain.GetAssemblies()
-                .FirstOrDefault(a => a.GetName().Name == "PresentationApp");
+                .FirstOrDefault(a => a.GetName().Name == "Kavan.Api");
             if (presentationAssembly != null)
             {
                 m.RegisterServicesFromAssembly(presentationAssembly);

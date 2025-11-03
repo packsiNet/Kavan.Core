@@ -267,7 +267,7 @@ Add DTOs under ApplicationLayer/Dto/[FeatureName]/
 
 Add Entity (if needed) in DomainLayer/Entities
 
-Add Service Interface in ApplicationLayer/Interfaces/Services/
+Add Service Interface in ApplicationLayer/Interfaces/[FeatureName]/
 
 Implement Service in InfrastructureLayer/BusinessLogic/Services/[FeatureName]/
 
