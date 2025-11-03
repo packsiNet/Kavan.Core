@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using ApplicationLayer.Common.Enums;
 using ApplicationLayer.Common.Utilities;
 using ApplicationLayer.Dto.Signals;
@@ -15,32 +10,24 @@ using Microsoft.EntityFrameworkCore;
 namespace InfrastructureLayer.BusinessLogic.Services.Signals
 {
     [InjectAsScoped]
-    public class SignalAnalysisService : ISignalAnalysisService
+    public class SignalAnalysisService(
+        IRepository<Cryptocurrency> cryptoRepo,
+        IRepository<Candle_1m> c1m,
+        IRepository<Candle_5m> c5m,
+        IRepository<Candle_1h> c1h,
+        IRepository<Candle_4h> c4h,
+        IRepository<Candle_1d> c1d,
+        IConditionEvaluatorFactory factory,
+        SignalThresholds thresholds = null) : ISignalAnalysisService
     {
-        private readonly IRepository<Cryptocurrency> _cryptoRepo;
-        private readonly IRepository<Candle_1m> _c1m;
-        private readonly IRepository<Candle_5m> _c5m;
-        private readonly IRepository<Candle_1h> _c1h;
-        private readonly IRepository<Candle_4h> _c4h;
-        private readonly IRepository<Candle_1d> _c1d;
-        private readonly IConditionEvaluatorFactory _factory;
-        private readonly SignalThresholds _thresholds;
-
-        public SignalAnalysisService(
-            IRepository<Cryptocurrency> cryptoRepo,
-            IRepository<Candle_1m> c1m,
-            IRepository<Candle_5m> c5m,
-            IRepository<Candle_1h> c1h,
-            IRepository<Candle_4h> c4h,
-            IRepository<Candle_1d> c1d,
-            IConditionEvaluatorFactory factory,
-            SignalThresholds? thresholds = null)
-        {
-            _cryptoRepo = cryptoRepo;
-            _c1m = c1m; _c5m = c5m; _c1h = c1h; _c4h = c4h; _c1d = c1d;
-            _factory = factory;
-            _thresholds = thresholds ?? new SignalThresholds();
-        }
+        private readonly IRepository<Cryptocurrency> _cryptoRepo = cryptoRepo;
+        private readonly IRepository<Candle_1m> _c1m = c1m;
+        private readonly IRepository<Candle_5m> _c5m = c5m;
+        private readonly IRepository<Candle_1h> _c1h = c1h;
+        private readonly IRepository<Candle_4h> _c4h = c4h;
+        private readonly IRepository<Candle_1d> _c1d = c1d;
+        private readonly IConditionEvaluatorFactory _factory = factory;
+        private readonly SignalThresholds _thresholds = thresholds ?? new SignalThresholds();
 
         public async Task<IReadOnlyList<SignalResultDto>> AnalyzeAsync(SignalRequestDto request, CancellationToken cancellationToken)
         {

@@ -1,21 +1,14 @@
-using System.Collections.Generic;
-using System.Linq;
 using ApplicationLayer.Interfaces.Services.Signals;
 using DomainLayer.Common.Attributes;
 
 namespace InfrastructureLayer.BusinessLogic.Services.Signals
 {
     [InjectAsScoped]
-    public class EvaluatorFactory : IConditionEvaluatorFactory
+    public class EvaluatorFactory(IEnumerable<IConditionEvaluator> evaluators) : IConditionEvaluatorFactory
     {
-        private readonly Dictionary<string, IConditionEvaluator> _map;
+        private readonly Dictionary<string, IConditionEvaluator> _map = evaluators.ToDictionary(e => e.Type.ToLowerInvariant());
 
-        public EvaluatorFactory(IEnumerable<IConditionEvaluator> evaluators)
-        {
-            _map = evaluators.ToDictionary(e => e.Type.ToLowerInvariant());
-        }
-
-        public IConditionEvaluator? Resolve(string type)
+        public IConditionEvaluator Resolve(string type)
         {
             if (string.IsNullOrWhiteSpace(type)) return null;
             var key = type.ToLowerInvariant();

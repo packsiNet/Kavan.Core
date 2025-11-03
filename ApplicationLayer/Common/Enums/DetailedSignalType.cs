@@ -533,13 +533,13 @@ namespace ApplicationLayer.Common.Enums
             { CandlestickBearishHarami.Value, CandlestickBearishHarami },
         };
 
-        public static bool TryFromName(string name, out DetailedSignalType? type)
+        public static bool TryFromName(string name, out DetailedSignalType type)
         {
             if (_byName.TryGetValue(name, out var t)) { type = t; return true; }
             type = null; return false;
         }
 
-        public static bool TryFromValue(int value, out DetailedSignalType? type)
+        public static bool TryFromValue(int value, out DetailedSignalType type)
         {
             if (_byValue.TryGetValue(value, out var t)) { type = t; return true; }
             type = null; return false;
@@ -547,10 +547,10 @@ namespace ApplicationLayer.Common.Enums
 
         public override string ToString() => Name;
 
-        public bool Equals(DetailedSignalType? other)
+        public bool Equals(DetailedSignalType other)
             => other is not null && other.Value == Value;
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
             => obj is DetailedSignalType other && Equals(other);
 
         public override int GetHashCode() => Value.GetHashCode();

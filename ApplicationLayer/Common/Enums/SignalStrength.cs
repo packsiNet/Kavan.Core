@@ -27,10 +27,10 @@ namespace ApplicationLayer.Common.Enums
 
         public override string ToString() => Name;
 
-        public bool Equals(SignalStrength? other)
+        public bool Equals(SignalStrength other)
             => other is not null && other.Value == Value;
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
             => obj is SignalStrength other && Equals(other);
 
         public override int GetHashCode() => Value.GetHashCode();

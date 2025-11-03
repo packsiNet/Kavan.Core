@@ -1,5 +1,3 @@
-using ApplicationLayer.Dto.BaseDtos;
-using ApplicationLayer.Dto.Candles;
 using ApplicationLayer.Extensions;
 using ApplicationLayer.Interfaces;
 using MediatR;
@@ -10,7 +8,7 @@ public class SeedBTCUSDT1mHandler(ICandleSeedService seedService) : IRequestHand
 {
     private readonly ICandleSeedService _seedService = seedService;
 
-    public async Task<HandlerResult> Handle(ApplicationLayer.Features.Candles.Commands.SeedBTCUSDT1mCommand request, CancellationToken cancellationToken)
+    public async Task<HandlerResult> Handle(Commands.SeedBTCUSDT1mCommand request, CancellationToken cancellationToken)
     {
         var count = request.Model?.Count ?? 100;
         var startTime = request.Model?.StartTime;
