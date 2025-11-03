@@ -1,26 +1,97 @@
-توسعه یک متد آنالیز سیگنال جامع با مشخصات زیر:
+توسعه‌ی یک متد آنالیز سیگنال معاملاتی در #C با مشخصات دقیق زیر.
 
-1. ورودی:
-- دریافت یک آبجکت JSON با ساختار مشخص
-- قابلیت پردازش چندین نماد و تایم فریم به صورت همزمان
-- قابلیت جستجو سیگنال های پیچیده و ساده 
+1) خروجی مطلوب از مدل: فقط کد C# قابل کامپایل
+ - تابع/کلاس باید async، بدون حالت (stateless) و قابل استفاده مجدد باشد.
 
-2. پردازش:
-- تجزیه و تحلیل شرایط (conditions) به صورت بازگشتی
-- اعمال فیلترهای حجم، نوسان و نقدشوندگی
-- در نظر گرفتن اولویت‌های کاربر (سطح ریسک، نوع استراتژی)
-- بررسی تاییدیه‌های لازم برای هر سیگنال
+2) ورودی: یک آبجکت JSON با ساختار زیر (مثال دقیق پایین آورده شده). تابع باید ورودی را از نوع مدل C# (DTO) بپذیرد:
+   - `symbols`: لیست نمادها
+   - `timeFrames`: لیست تایم‌فریم‌ها (مثلاً "1m","5m","1h")
+   - `conditions`: درخت بازگشتی شرایط با عملگرهای منطقی (`AND`,`OR`,`NOT`) و گره‌های شرطی (مثلاً مقایسهٔ اندیکاتورها، شکست قیمت، کراس‌ها)
+   - `filters`: فیلترهای حجمی، نوسان، نقدشوندگی (هر کدام با threshold و operator)
+   - `userPreferences`: سطح ریسک، نوع استراتژی، وزن‌دهی معیارها
 
-3. خروجی:
-- شناسایی سیگنال‌های معاملاتی بر اساس پارامترهای ورودی
-- تعیین قدرت سیگنال (ضعیف، متوسط، قوی)
-- محاسبه سطح اطمینان برای هر سیگنال
-- ارائه خلاصه‌ای از منطق تحلیلی اعمال شده
+3) پردازش:
+   - پیاده‌سازی ارزیاب بازگشتی (recursive evaluator) برای `conditions`.
+   - اعمال فیلترهای `filters` قبل یا بعد از ارزیابی شرایط بر اساس پرچم `applyBefore`.
+   - پشتیبانی از پردازش هم‌زمان چند نماد/تایم‌فریم با رعایت CancellationToken.
+   - مکانیزم امتیازدهی (scoring): هر شرط/تأییدیه وزن دارد؛ از وزن‌ها برای محاسبهٔ `confidenceScore` (0-100) استفاده شود.
+   - تعیین سه سطح قدرت سیگنال بر اساس score: `Weak` (<40), `Medium` (40-70), `Strong` (>70). (این thresholds قابل کانفیگ باشند.)
+   - ثبت خلاصهٔ منطق اعمال شده (human-readable) در خروجی.
 
-4. الزامات فنی:
-- پیاده‌سازی به صورت تابعی با قابلیت استفاده مجدد
-- مستندسازی کامل کد و منطق تحلیلی
-- پشتیبانی از افزودن شرایط جدید بدون نیاز به تغییر ساختار اصلی
+4) خروجی از متد:
+   - برای هر (symbol, timeFrame) لیستی از سیگنال‌ها با فیلدها: `signalId`, `symbol`, `timeFrame`, `timestamp`, `signalType` (Buy/Sell), `strength` (Weak/Medium/Strong), `confidence` (0-100), `explanation` (خلاصهٔ منطق)، `matchedConditions` (فهرست شروطی که منجر به سیگنال شدند).
+
+5) الزامات فنی:
+   - کد باید طبق ساختار اصلی پروژه باشد.
+   - امکان افزودن شرط جدید بدون تغییر ساختار اصلی (مثلاً ثبت `IConditionEvaluator` و استفاده از Factory/Registry).
+   - پوشش تست واحد برای 2 حالت: سیگنال مثبت قوی، و فیلتر رد شده به دلیل حجم.
+
+6) محدودیت‌ها:
+   - کد باید نمونه‌ای عملی و قابل گسترش باشد، نه فقط pseudocode.
 
 5. نمونه ورودی پیچیده :
 {"market":"crypto","symbols":[],"exclude":[],"timeframes":["1h","4h"],"conditions":[],"groups":[{"operator":"AND","timeframe":null,"description":"Main strategy workflow","conditions":[{"type":"structure","indicator":"resistance_break","description":"Ceiling broken with FVG formation","parameters":{"break_direction":"up","fvg_required":true,"structure_type":"resistance"},"timeframe":null,"logical_operator":"AND","confirmation":[{"type":"fvg_entry","condition":"fvg_identified_and_marked","required":true}],"confirmation_required":true},{"type":"fvg_retest","indicator":"fvg","description":"Price enters marked FVG zone","parameters":{"zone_type":"fvg","entry_type":"retest","price_action":"enters_zone"},"timeframe":null,"logical_operator":"AND","confirmation":[{"type":"support_level","condition":"floor_formation_after_fvg_entry","required":true}],"confirmation_required":true},{"type":"support_level","indicator":"floor_formation","description":"Floor forms inside FVG - marked as lowest floor","parameters":{"floor_type":"lowest","location":"inside_fvg","structure_significance":"key_level"},"timeframe":null,"logical_operator":"AND","confirmation":[{"type":"resistance_level","condition":"ceiling_formation_after_floor","required":true}],"confirmation_required":true},{"type":"resistance_level","indicator":"ceiling_formation","description":"Ceiling forms after lowest floor","parameters":{"ceiling_type":"new_high","after_floor":true},"timeframe":null,"logical_operator":"AND","confirmation_required":false}],"groups":[{"operator":"OR","timeframe":null,"description":"Two possible scenarios after ceiling formation","conditions":[],"groups":[{"operator":"AND","timeframe":null,"description":"Scenario 1: MSS confirmed - ceiling breaks with FVG","conditions":[{"type":"mss_break","indicator":"mss","description":"Ceiling broken with FVG - MSS confirmed","parameters":{"break_type":"mss","break_direction":"up","fvg_required":true,"structure_broken":"ceiling"},"timeframe":null,"logical_operator":"AND","confirmation":[{"type":"fvg_retest","condition":"price_returns_to_fvg","required":true}],"confirmation_required":true},{"type":"fvg_entry","indicator":"fvg","description":"Entry signal - price returns to FVG after MSS","parameters":{"zone_type":"fvg","entry_type":"pullback_entry","entry_trigger":"price_retest","mss_confirmed":true},"timeframe":null,"logical_operator":"AND","confirmation_required":false}],"groups":[]},{"operator":"AND","timeframe":null,"description":"Scenario 2: Ceiling NOT broken - price makes lower floor","conditions":[{"type":"structure","indicator":"ceiling_hold","description":"Ceiling NOT broken with FVG - price rejects","parameters":{"break_type":"failed","break_direction":"down","fvg_break":false,"structure_type":"ceiling_rejection"},"timeframe":null,"logical_operator":"AND","confirmation":[{"type":"support_level","condition":"new_lower_floor_formation","required":true}],"confirmation_required":true},{"type":"support_level","indicator":"floor_formation","description":"New lower floor forms - update lowest floor","parameters":{"floor_type":"new_lowest","update_reference":true,"lower_than_previous":true},"timeframe":null,"logical_operator":"AND","confirmation":[{"type":"structure","condition":"repeat_workflow_from_new_floor","required":true}],"confirmation_required":true},{"type":"structure","indicator":"workflow_loop","description":"Continue workflow from new lowest floor","parameters":{"action":"repeat_from_ceiling_formation","reference_floor":"new_lowest","loop_logic":true},"timeframe":null,"logical_operator":"AND","confirmation_required":false}],"groups":[]}]}]}],"filters":{"volume_min":null,"volatility":"medium","liquidity":null,"price_min":null,"price_max":null},"preferences":{"risk_level":"medium","strategy_type":"price_action","signal_strength":"strong"}}
+
+
+
+
+-----------------
+-----------------
+
+توسعه‌ی یک متد آنالیز سیگنال معاملاتی در #C با مشخصات فنی دقیق به شرح زیر:
+
+1) الزامات کد نهایی:
+- پیاده‌سازی به صورت یک کلاس C# با نام `SignalAnalyzerService` در فضای نام `TradingAnalysis.Core.Services`
+- کلاس باید از اینترفیس `ISignalAnalyzer` ارث‌بری کند
+- تمام کد باید کامپایل‌پذیر و مطابق با استانداردهای کدنویسی پروژه باشد
+- تابع اصلی باید به صورت `async` و با امضای زیر پیاده‌سازی شود:
+  ```csharp
+  Task<SignalAnalysisResult> AnalyzeAsync(SignalAnalysisRequest request, CancellationToken ct)
+  ```
+
+2) جزئیات مدل ورودی (DTO):
+- کلاس `SignalAnalysisRequest` باید شامل خصوصیات زیر باشد:
+  - `Symbols`: لیست<string> نمادهای مورد تحلیل
+  - `TimeFrames`: لیست<string> تایم‌فریم‌ها (مثلاً ["1m","5m","1h"])
+  - `ConditionTree`: شیء `ConditionNode` که درخت شرایط را نمایش می‌دهد
+  - `Filters`: لیست<SignalFilter> شامل فیلترهای حجمی، نوسان و نقدشوندگی
+  - `UserPreferences`: شیء `UserPreference` شامل تنظیمات کاربر
+
+3) پیاده‌سازی پردازش:
+- ایجاد یک `RecursiveConditionEvaluator` برای پردازش درخت شرایط
+- پیاده‌سازی الگوی طراحی Strategy برای فیلترها با اینترفیس `ISignalFilterStrategy`
+- استفاده از `Parallel.ForEachAsync` برای پردازش همزمان نمادها و تایم‌فریم‌ها با رعایت `CancellationToken`
+- سیستم امتیازدهی با کلاس `ConfidenceScorer` که وزن‌های هر شرط را محاسبه می‌کند
+- طبقه‌بندی قدرت سیگنال بر اساس مقادیر قابل تنظیم در `appsettings.json`
+
+4) ساختار خروجی:
+- کلاس `SignalAnalysisResult` باید شامل:
+  - `Signals`: لیست<Signal> شامل تمام سیگنال‌های شناسایی شده
+  - `AnalysisSummary`: متن قابل خواندن توسط انسان که منطق تحلیل را توضیح می‌دهد
+- هر شیء `Signal` باید شامل فیلدهای زیر باشد:
+  - `SignalId`: GUID شناسه منحصر به فرد
+  - `Symbol`: نماد معاملاتی
+  - `TimeFrame`: تایم‌فریم تحلیل
+  - `Timestamp`: زمان تشخیص سیگنال
+  - `SignalType`: نوع سیگنال (Buy/Sell)
+  - `Strength`: قدرت سیگنال (Weak/Medium/Strong)
+  - `Confidence`: امتیاز اطمینان (0-100)
+  - `Explanation`: توضیح منطق سیگنال
+  - `MatchedConditions`: لیست شرایط تأیید شده
+
+5) الزامات معماری:
+- استفاده از الگوی طراحی Factory برای ایجاد `IConditionEvaluator`
+- ثبت تمام کامپوننت‌ها در DI Container با عمر شیء Scoped
+- پیاده‌سازی `SignalAnalyzerRegistry` برای مدیریت پویای ارزیاب‌های شرط
+- پشتیبانی از افزودن شرط‌های جدید از طریق Attribute و Reflection
+
+6) تست‌های واحد:
+- تست `StrongBuySignalScenario` برای حالت سیگنال قوی
+- تست `VolumeFilterRejectionScenario` برای حالت رد شدن توسط فیلتر حجم
+- تست `ParallelProcessingStressTest` برای بررسی عملکرد پردازش موازی
+- پوشش تستی حداقل 80% برای کلاس‌های اصلی
+
+7) مستندات:
+- توضیحات XML برای تمام متدهای عمومی
+- مستندات Swagger برای endpointهای مربوطه
+- نمودار sequence diagram برای فرآیند تحلیل
