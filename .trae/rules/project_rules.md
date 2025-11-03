@@ -93,6 +93,8 @@ DTOs inside ApplicationLayer/Dto/[FeatureName]
 
 Handlers use IUnitOfWork and repositories from InfrastructureLayer
 
+For Enum, you should use SmartEnum.
+
 Example:
 ApplicationLayer/Features/User/Commands/CreateUserCommand.cs
 ApplicationLayer/Features/User/Handler/CreateUserHandler.cs
