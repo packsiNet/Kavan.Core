@@ -1,161 +1,233 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ApplicationLayer.Interfaces;
 using DomainLayer.Common.Attributes;
 using DomainLayer.Entities;
 
-namespace InfrastructureLayer.BusinessLogic.Services.Candles;
-
-[InjectAsScoped]
-public class CandleSeedService(
-    IUnitOfWork unitOfWork,
-    IRepository<Cryptocurrency> cryptoRepository,
-    IRepository<Candle_1m> candle1mRepository
-) : ICandleSeedService
+namespace InfrastructureLayer.BusinessLogic.Services.Candles
 {
-    private readonly IUnitOfWork _uow = unitOfWork;
-    private readonly IRepository<Cryptocurrency> _cryptoRepo = cryptoRepository;
-    private readonly IRepository<Candle_1m> _candle1mRepo = candle1mRepository;
-
-    public async Task<int> SeedBTCUSDT_1m_DoubleTopBreakoutAsync(int count = 100, DateTime? startTime = null, CancellationToken cancellationToken = default)
+    [InjectAsScoped]
+    public class CandleSeedService : ICandleSeedService
     {
-        // Ensure cryptocurrency exists
-        var crypto = _cryptoRepo.Query().FirstOrDefault(x => x.Symbol == "BTCUSDT");
-        if (crypto is null)
+        private readonly IRepository<Cryptocurrency> _cryptos;
+        private readonly IRepository<Candle_1d> _c1d;
+        private readonly IRepository<Candle_5m> _c5m;
+        private readonly IRepository<Candle_1m> _c1m;
+        private readonly IUnitOfWork _uow;
+
+        public CandleSeedService(
+            IRepository<Cryptocurrency> cryptos,
+            IRepository<Candle_1d> c1d,
+            IRepository<Candle_5m> c5m,
+            IRepository<Candle_1m> c1m,
+            IUnitOfWork uow)
         {
-            crypto = new Cryptocurrency
+            _cryptos = cryptos;
+            _c1d = c1d;
+            _c5m = c5m;
+            _c1m = c1m;
+            _uow = uow;
+        }
+
+        public async Task<int> SeedBTCUSDT_1m_DoubleTopBreakoutAsync(int count = 100, DateTime? startTime = null, CancellationToken cancellationToken = default)
+        {
+            // Minimal placeholder to keep interface consistent; not used in current task
+            return await Task.FromResult(0);
+        }
+
+        public async Task<int> SeedETHUSDT_MTF_FVG_StructureAsync(int days = 12, int m5Bars = 60, int m1Bars = 120, DateTime? startTime = null, CancellationToken cancellationToken = default)
+        {
+            if (days < 3) days = 3;
+            if (m5Bars < 10) m5Bars = 10;
+            if (m1Bars < 10) m1Bars = 10;
+
+            var now = startTime?.ToUniversalTime() ?? DateTime.UtcNow;
+
+            // Ensure ETHUSDT exists
+            var eth = _cryptos.Query().FirstOrDefault(c => c.Symbol == "ETHUSDT");
+            if (eth == null)
             {
-                Symbol = "BTCUSDT",
-                BaseAsset = "BTC",
-                QuoteAsset = "USDT"
+                eth = new Cryptocurrency
+                {
+                    Symbol = "ETHUSDT",
+                    BaseAsset = "ETH",
+                    QuoteAsset = "USDT"
+                };
+                await _cryptos.AddAsync(eth);
+                await _uow.SaveChangesAsync();
+            }
+            var cryptoId = eth.Id;
+
+            // Seed 1d: create a down-move into support then bullish bounce
+            var dStart = now.Date.AddDays(-days);
+            var daily = new List<Candle_1d>();
+            decimal basePrice = 1800m;
+            var rnd = new Random(42);
+            for (int i = 0; i < days; i++)
+            {
+                var openTime = dStart.AddDays(i);
+                var closeTime = openTime.AddDays(1);
+                var drift = i < days - 3 ? -rnd.Next(1, 10) : rnd.Next(5, 25); // drop then bounce
+                basePrice = Math.Max(1400m, basePrice + drift);
+                var open = basePrice + rnd.Next(-5, 5);
+                var close = basePrice + rnd.Next(-5, 5);
+                var high = Math.Max(open, close) + rnd.Next(3, 12);
+                var low = Math.Min(open, close) - rnd.Next(3, 12);
+                daily.Add(new Candle_1d
+                {
+                    CryptocurrencyId = cryptoId,
+                    OpenTime = openTime,
+                    CloseTime = closeTime,
+                    Open = open,
+                    High = high,
+                    Low = low,
+                    Close = close,
+                    Volume = rnd.Next(1000, 5000)
+                });
+            }
+
+            // Seed 5m: craft FVG and structure breakout with wick while latest close re-enters gap
+            var m5Start = now.AddMinutes(-m5Bars * 5);
+            var m5 = new List<Candle_5m>();
+            decimal p5 = 1500m;
+            for (int i = 0; i < m5Bars; i++)
+            {
+                var openTime = m5Start.AddMinutes(i * 5);
+                var closeTime = openTime.AddMinutes(5);
+                var open = p5 + rnd.Next(-2, 2);
+                var close = p5 + rnd.Next(-2, 2);
+                var high = Math.Max(open, close) + rnd.Next(1, 4);
+                var low = Math.Min(open, close) - rnd.Next(1, 4);
+                p5 = close;
+                m5.Add(new Candle_5m
+                {
+                    CryptocurrencyId = cryptoId,
+                    OpenTime = openTime,
+                    CloseTime = closeTime,
+                    Open = open,
+                    High = high,
+                    Low = low,
+                    Close = close,
+                    Volume = rnd.Next(500, 1500)
+                });
+            }
+            // Overwrite last 3 bars to enforce bullish FVG and breakout-on-wick + entry
+            // c2: older bar
+            var idx2 = m5Bars - 3; var idx1 = m5Bars - 2; var idx0 = m5Bars - 1;
+            var c2High = 1500m; var c2Low = 1494m; var c2Open = 1497m; var c2Close = 1498m;
+            m5[idx2] = new Candle_5m
+            {
+                CryptocurrencyId = cryptoId,
+                OpenTime = m5[idx2].OpenTime,
+                CloseTime = m5[idx2].CloseTime,
+                Open = c2Open,
+                High = c2High,
+                Low = c2Low,
+                Close = c2Close,
+                Volume = 900
             };
-            await _cryptoRepo.AddAsync(crypto);
-            await _uow.SaveChangesAsync(cancellationToken);
+            // c1: breakout candle creating FVG, low > c2.High; moderate high so prevHigh isn’t too large
+            var c1Low = 1505m; var c1High = 1514m; var c1Open = 1506m; var c1Close = 1510m;
+            m5[idx1] = new Candle_5m
+            {
+                CryptocurrencyId = cryptoId,
+                OpenTime = m5[idx1].OpenTime,
+                CloseTime = m5[idx1].CloseTime,
+                Open = c1Open,
+                High = c1High,
+                Low = c1Low,
+                Close = c1Close,
+                Volume = 1800
+            };
+            // c0: retest/entry candle closing inside gap [c2.High, c1.Low] and wicking above prevHigh
+            var c0Close = 1502m; var c0High = 1516m; var c0Low = 1499m; var c0Open = 1501m;
+            m5[idx0] = new Candle_5m
+            {
+                CryptocurrencyId = cryptoId,
+                OpenTime = m5[idx0].OpenTime,
+                CloseTime = m5[idx0].CloseTime,
+                Open = c0Open,
+                High = c0High,
+                Low = c0Low,
+                Close = c0Close,
+                Volume = 1600
+            };
+
+            // Seed 1m: similar micro FVG and breakout-on-wick + entry
+            var m1Start = now.AddMinutes(-m1Bars);
+            var m1 = new List<Candle_1m>();
+            decimal p1 = 1510m;
+            for (int i = 0; i < m1Bars; i++)
+            {
+                var openTime = m1Start.AddMinutes(i);
+                var closeTime = openTime.AddMinutes(1);
+                var open = p1 + rnd.Next(-1, 1);
+                var close = p1 + rnd.Next(-1, 1);
+                var high = Math.Max(open, close) + rnd.Next(1, 3);
+                var low = Math.Min(open, close) - rnd.Next(1, 3);
+                p1 = close;
+                m1.Add(new Candle_1m
+                {
+                    CryptocurrencyId = cryptoId,
+                    OpenTime = openTime,
+                    CloseTime = closeTime,
+                    Open = open,
+                    High = high,
+                    Low = low,
+                    Close = close,
+                    Volume = rnd.Next(200, 800)
+                });
+            }
+            // Enforce last 3 bars: c2, c1 create micro FVG, c0 enters and wicks above prevHigh
+            var i2 = m1Bars - 3; var i1 = m1Bars - 2; var i0 = m1Bars - 1;
+            var m1c2High = 1512m; var m1c2Low = 1508m; var m1c2Open = 1509m; var m1c2Close = 1511m;
+            m1[i2] = new Candle_1m
+            {
+                CryptocurrencyId = cryptoId,
+                OpenTime = m1[i2].OpenTime,
+                CloseTime = m1[i2].CloseTime,
+                Open = m1c2Open,
+                High = m1c2High,
+                Low = m1c2Low,
+                Close = m1c2Close,
+                Volume = 500
+            };
+            var m1c1Low = 1515m; var m1c1High = 1522m; var m1c1Open = 1516m; var m1c1Close = 1519m;
+            m1[i1] = new Candle_1m
+            {
+                CryptocurrencyId = cryptoId,
+                OpenTime = m1[i1].OpenTime,
+                CloseTime = m1[i1].CloseTime,
+                Open = m1c1Open,
+                High = m1c1High,
+                Low = m1c1Low,
+                Close = m1c1Close,
+                Volume = 900
+            };
+            var m1c0Close = 1517m; var m1c0High = 1524m; var m1c0Low = 1513m; var m1c0Open = 1516m;
+            m1[i0] = new Candle_1m
+            {
+                CryptocurrencyId = cryptoId,
+                OpenTime = m1[i0].OpenTime,
+                CloseTime = m1[i0].CloseTime,
+                Open = m1c0Open,
+                High = m1c0High,
+                Low = m1c0Low,
+                Close = m1c0Close,
+                Volume = 800
+            };
+
+            await _uow.BeginTransactionAsync();
+            await _c1d.AddRangeAsync(daily);
+            await _c5m.AddRangeAsync(m5);
+            await _c1m.AddRangeAsync(m1);
+            await _uow.SaveChangesAsync();
+            await _uow.CommitAsync();
+
+            return daily.Count + m5.Count + m1.Count;
         }
-
-        // Clear existing 1m candles for this symbol for determinism
-        var toRemove = _candle1mRepo.GetDbSet().Where(c => c.CryptocurrencyId == crypto.Id).ToList();
-        if (toRemove.Count > 0)
-        {
-            _candle1mRepo.RemoveRange(toRemove);
-            await _uow.SaveChangesAsync(cancellationToken);
-        }
-
-        var start = startTime ?? DateTime.UtcNow.AddMinutes(-count);
-
-        var candles = new List<Candle_1m>(count);
-
-        // Pattern parameters
-        decimal basePrice = 48000m; // starting close
-        decimal resistance = 50000m; // equal highs (resistance)
-
-        decimal close = basePrice;
-
-        for (int i = 0; i < count; i++)
-        {
-            var openTime = start.AddMinutes(i);
-            var closeTime = openTime.AddMinutes(1);
-
-            decimal open;
-            decimal high;
-            decimal low;
-            decimal volume;
-
-            if (i < 30)
-            {
-                // Gradual uptrend towards resistance
-                var step = 65m; // ~1.95k over 30 minutes
-                open = close;
-                close = Math.Round(basePrice + (i + 1) * step, 2);
-                high = Math.Max(open, close) + 30m;
-                low = Math.Min(open, close) - 30m;
-                volume = 250m + i * 5m;
-            }
-            else if (i == 30)
-            {
-                // First equal peak, rejection below resistance
-                open = close;
-                high = resistance;
-                close = resistance - 150m;
-                low = close - 120m;
-                volume = 900m;
-            }
-            else if (i > 30 && i < 46)
-            {
-                // Pullback
-                open = close;
-                close = Math.Round(close - 20m, 2);
-                high = open + 20m;
-                low = close - 35m;
-                volume = 350m;
-            }
-            else if (i >= 46 && i < 60)
-            {
-                // Climb back up to resistance
-                open = close;
-                close = Math.Round(close + 50m, 2);
-                high = close + 25m;
-                low = open - 20m;
-                volume = 400m + (i - 46) * 10m;
-            }
-            else if (i == 60)
-            {
-                // Second equal peak, rejection again
-                open = close;
-                high = resistance; // nearly equal high
-                close = resistance - 120m;
-                low = close - 100m;
-                volume = 1000m;
-            }
-            else if (i > 60 && i < 89)
-            {
-                // Tight consolidation under resistance with higher lows
-                open = close;
-                var bias = 8m; // slow grind up
-                close = Math.Round(close + bias, 2);
-                high = close + 20m;
-                low = open - 20m;
-                volume = 500m + (i - 60) * 6m;
-            }
-            else if (i == 89)
-            {
-                // Breakout candle: strong bullish candle through resistance
-                open = Math.Round(resistance - 80m, 2);
-                high = Math.Round(50500m, 2);
-                close = Math.Round(50350m, 2);
-                low = Math.Round(open - 30m, 2);
-                volume = 2500m; // spike volume
-            }
-            else
-            {
-                // Post-breakout follow-through
-                open = close;
-                close = Math.Round(close + 22m, 2);
-                high = close + 30m;
-                low = open - 25m;
-                volume = 900m + (i - 89) * 20m;
-            }
-
-            // Ensure bounds are consistent
-            var hi = Math.Max(Math.Max(open, close), high);
-            var lo = Math.Min(Math.Min(open, close), low);
-            high = Math.Round(hi, 2);
-            low = Math.Round(lo, 2);
-
-            candles.Add(new Candle_1m
-            {
-                CryptocurrencyId = crypto.Id,
-                OpenTime = openTime,
-                CloseTime = closeTime,
-                Open = Math.Round(open, 2),
-                High = high,
-                Low = low,
-                Close = Math.Round(close, 2),
-                Volume = Math.Round(volume, 2)
-            });
-        }
-
-        await _candle1mRepo.AddRangeAsync(candles);
-        await _uow.SaveChangesAsync(cancellationToken);
-
-        return candles.Count;
     }
 }

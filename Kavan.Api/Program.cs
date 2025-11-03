@@ -56,6 +56,7 @@ using (var scope = app.Services.CreateScope())
         var seedService = services.GetRequiredService<ICandleSeedService>();
         // Seed 100 candles for BTCUSDT 1m with defined pattern
         seedService.SeedBTCUSDT_1m_DoubleTopBreakoutAsync(100).GetAwaiter().GetResult();
+        seedService.SeedETHUSDT_MTF_FVG_StructureAsync(100).GetAwaiter().GetResult();
     }
     catch (Exception ex)
     {

@@ -1,4 +1,4 @@
-﻿using ApplicationLayer.Common.Behaviors;
+using ApplicationLayer.Common.Behaviors;
 using ApplicationLayer.Features.Validations;
 using ApplicationLayer.Interfaces;
 using ApplicationLayer.Mapping.UserAccounts;
@@ -234,6 +234,13 @@ public static class DependencyInjection
         services.AddMediatR(m =>
         {
             m.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            // Register handlers from ApplicationLayer assembly (CQRS Handlers, Commands, Queries)
+            var applicationAssembly = AppDomain.CurrentDomain.GetAssemblies()
+                .FirstOrDefault(a => a.GetName().Name == "ApplicationLayer");
+            if (applicationAssembly != null)
+            {
+                m.RegisterServicesFromAssembly(applicationAssembly);
+            }
             // Register handlers from Presentation Kavan.Api assembly for domain events
             var presentationAssembly = AppDomain.CurrentDomain.GetAssemblies()
                 .FirstOrDefault(a => a.GetName().Name == "Kavan.Api");
