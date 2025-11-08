@@ -8,7 +8,16 @@ namespace ApplicationLayer.Interfaces.Services.Signals
         Task<List<BreakoutResult>> DetectBreakoutsAsync(
             List<string> symbols,
             List<string> timeframes,
-            int lookbackPeriod,
-            DbContext db);
+            int lookbackPeriod);
+
+        Task<List<BreakoutResult>> DetectResistanceBreakoutsAsync(
+            List<string> symbols,
+            List<string> timeframes,
+            int lookbackPeriod);
+
+        Task<List<BreakoutResult>> DetectSupportBreakdownsAsync(
+            List<string> symbols,
+            List<string> timeframes,
+            int lookbackPeriod);
     }
 }
