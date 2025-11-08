@@ -4,6 +4,7 @@ using ApplicationLayer.Interfaces;
 using InfrastructureLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using InfrastructureLayer.BusinessLogic.Services.Signals;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,9 @@ builder.WebHost.ConfigureKestrel((context, options) =>
 {
     options.Configure(context.Configuration.GetSection("Kestrel"));
 });
+
+// Background hosted service for signals
+builder.Services.AddHostedService<SignalsBackgroundService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

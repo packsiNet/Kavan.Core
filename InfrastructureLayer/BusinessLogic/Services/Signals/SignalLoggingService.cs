@@ -14,6 +14,107 @@ namespace InfrastructureLayer.BusinessLogic.Services.Signals
     {
         private readonly ApplicationDbContext _db = db;
 
+        private async Task<bool> IsDuplicateAsync(
+            string symbol,
+            string timeframe,
+            string signalName,
+            int direction,
+            decimal breakoutLevel,
+            decimal tolerance,
+            DateTime candidateCloseTime)
+        {
+            var last = await _db.Set<Signal>()
+                .Where(x => x.Symbol == symbol
+                            && x.Timeframe == timeframe
+                            && x.SignalCategory == "Technical"
+                            && x.SignalName == signalName
+                            && x.Direction == direction)
+                .OrderByDescending(x => x.SignalTime)
+                .FirstOrDefaultAsync();
+
+            if (last == null)
+                return false;
+
+            var nearSameLevel = Math.Abs(last.BreakoutLevel - breakoutLevel) <= tolerance;
+            if (!nearSameLevel)
+                return false;
+
+            // Check invalidation after last signal: if price moved back across level, then a new breakout can be recorded
+            // For Up breakout: invalidated if any candle closes <= level - tolerance
+            // For Down breakout: invalidated if any candle closes >= level + tolerance
+
+            var candles = await FetchCandlesRangeAsync(timeframe, last.CryptocurrencyId, last.SignalTime, candidateCloseTime);
+            if (candles.Count == 0)
+                return true; // no new candles, treat as duplicate
+
+            if (direction > 0)
+            {
+                var invalidated = candles.Any(c => c.Close <= breakoutLevel - tolerance);
+                return !invalidated;
+            }
+            else if (direction < 0)
+            {
+                var invalidated = candles.Any(c => c.Close >= breakoutLevel + tolerance);
+                return !invalidated;
+            }
+            return true;
+        }
+
+        private async Task<List<CandleBase>> FetchCandlesRangeAsync(string timeframe, int cryptoId, DateTime from, DateTime to)
+        {
+            switch (timeframe)
+            {
+                case "1m":
+                {
+                    var list = await _db.Set<Candle_1m>()
+                        .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
+                        .OrderBy(c => c.OpenTime)
+                        .ToListAsync();
+                    return list.Cast<CandleBase>().ToList();
+                }
+                case "5m":
+                {
+                    var list = await _db.Set<Candle_5m>()
+                        .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
+                        .OrderBy(c => c.OpenTime)
+                        .ToListAsync();
+                    return list.Cast<CandleBase>().ToList();
+                }
+                case "1h":
+                {
+                    var list = await _db.Set<Candle_1h>()
+                        .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
+                        .OrderBy(c => c.OpenTime)
+                        .ToListAsync();
+                    return list.Cast<CandleBase>().ToList();
+                }
+                case "4h":
+                {
+                    var list = await _db.Set<Candle_4h>()
+                        .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
+                        .OrderBy(c => c.OpenTime)
+                        .ToListAsync();
+                    return list.Cast<CandleBase>().ToList();
+                }
+                case "1d":
+                {
+                    var list = await _db.Set<Candle_1d>()
+                        .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
+                        .OrderBy(c => c.OpenTime)
+                        .ToListAsync();
+                    return list.Cast<CandleBase>().ToList();
+                }
+                default:
+                {
+                    var list = await _db.Set<Candle_1h>()
+                        .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
+                        .OrderBy(c => c.OpenTime)
+                        .ToListAsync();
+                    return list.Cast<CandleBase>().ToList();
+                }
+            }
+        }
+
         public async Task<int> LogBreakoutAsync(
             string symbol,
             int cryptocurrencyId,
@@ -36,6 +137,11 @@ namespace InfrastructureLayer.BusinessLogic.Services.Signals
             CandleBase lastCandle,
             List<CandleBase> snapshotCandles)
         {
+            // Deduplication gate: avoid recording the same breakout continuation
+            var isDup = await IsDuplicateAsync(symbol, timeframe, signalName, direction, breakoutLevel, tolerance, lastCandle.CloseTime);
+            if (isDup)
+                return 0; // skip duplicate
+
             var log = new Signal
             {
                 CryptocurrencyId = cryptocurrencyId,
