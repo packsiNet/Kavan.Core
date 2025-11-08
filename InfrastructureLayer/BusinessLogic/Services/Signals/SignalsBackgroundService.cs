@@ -41,10 +41,19 @@ namespace InfrastructureLayer.BusinessLogic.Services.Signals
                     try
                     {
                         using var scope = _scopeFactory.CreateScope();
-                        var signalService = scope.ServiceProvider.GetRequiredService<ISignalService>();
+                        var breakouts = scope.ServiceProvider.GetRequiredService<ISignalService>();
+                        var ichimokuUp = scope.ServiceProvider.GetRequiredService<IIchimokuAboveCloudService>();
+                        var ichimokuDown = scope.ServiceProvider.GetRequiredService<IIchimokuBelowCloudService>();
 
-                        _logger.LogInformation("Running signal detection across all markets/timeframes...");
-                        await signalService.DetectBreakoutsAsync(symbols: null, timeframes: null, lookbackPeriod: 0);
+                        _logger.LogInformation("Running breakout detection across all markets/timeframes...");
+                        await breakouts.DetectBreakoutsAsync(symbols: null, timeframes: null, lookbackPeriod: 0);
+
+                        _logger.LogInformation("Running Ichimoku above-cloud detection...");
+                        await ichimokuUp.DetectPriceAboveCloudAsync(symbols: null, timeframes: null, lookbackPeriod: 0);
+
+                        _logger.LogInformation("Running Ichimoku below-cloud detection...");
+                        await ichimokuDown.DetectPriceBelowCloudAsync(symbols: null, timeframes: null, lookbackPeriod: 0);
+
                         _logger.LogInformation("Signal detection cycle completed.");
                     }
                     catch (Exception ex)
