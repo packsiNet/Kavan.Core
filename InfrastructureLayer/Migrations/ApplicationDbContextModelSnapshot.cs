@@ -79,6 +79,9 @@ namespace InfrastructureLayer.Migrations
                     b.Property<DateTimeOffset?>("ModifiedDateTime")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int>("NumberOfTrades")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Open")
                         .HasPrecision(18, 8)
                         .HasColumnType("decimal(18, 2)");
@@ -167,6 +170,9 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<DateTimeOffset?>("ModifiedDateTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("NumberOfTrades")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Open")
                         .HasPrecision(18, 8)
@@ -257,6 +263,9 @@ namespace InfrastructureLayer.Migrations
                     b.Property<DateTimeOffset?>("ModifiedDateTime")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int>("NumberOfTrades")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Open")
                         .HasPrecision(18, 8)
                         .HasColumnType("decimal(18, 2)");
@@ -346,6 +355,9 @@ namespace InfrastructureLayer.Migrations
                     b.Property<DateTimeOffset?>("ModifiedDateTime")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int>("NumberOfTrades")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Open")
                         .HasPrecision(18, 8)
                         .HasColumnType("decimal(18, 2)");
@@ -434,6 +446,9 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<DateTimeOffset?>("ModifiedDateTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("NumberOfTrades")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Open")
                         .HasPrecision(18, 8)

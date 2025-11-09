@@ -5,6 +5,8 @@ using ApplicationLayer.Mapping.UserAccounts;
 using AspNetCoreRateLimit;
 using DomainLayer.Common.Attributes;
 using FluentValidation;
+using InfrastructureLayer.BusinessLogic.Services.Binance;
+using InfrastructureLayer.BusinessLogic.Services.Signals;
 using InfrastructureLayer.Context;
 using InfrastructureLayer.Extensions;
 using InfrastructureLayer.Repository;
@@ -40,7 +42,9 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserContextService, UserContextService>();
 
-        services.AddSingleton<IApplicationBuilder, ApplicationBuilder>();
+        // Register BackgroundService for Binance Candle Fetcher
+        services.AddHostedService<CandleFetcherBackgroundService>();
+        services.AddHostedService<SignalsBackgroundService>();
 
         services.AddHttpContextAccessor();
         services.MediatRDependency();
@@ -73,6 +77,15 @@ public static class DependencyInjection
         services.JwtAuthorizeConfiguration(configuration);
         services.SeriLogConfiguration(configuration);
         services.AddAutoMapper(typeof(UserAccountProfile).GetTypeInfo().Assembly);
+
+        // HttpClient for Binance API
+        services.AddHttpClient("BinanceClient", client =>
+        {
+            client.BaseAddress = new Uri(configuration["BinanceApi:BaseUrl"] ?? "https://api.binance.com");
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
+
+        // Background Service registration is handled in Register() to avoid duplication
     }
 
     private static void SeriLogConfiguration(this IServiceCollection services, IConfiguration configuration)

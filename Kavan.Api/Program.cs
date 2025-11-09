@@ -1,10 +1,8 @@
+using ApplicationLayer.Interfaces;
 using AspNetCoreRateLimit;
 using InfrastructureLayer;
-using ApplicationLayer.Interfaces;
 using InfrastructureLayer.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using InfrastructureLayer.BusinessLogic.Services.Signals;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +25,6 @@ builder.WebHost.ConfigureKestrel((context, options) =>
 });
 
 // Background hosted service for signals
-builder.Services.AddHostedService<SignalsBackgroundService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -59,8 +56,7 @@ using (var scope = app.Services.CreateScope())
 
         var seedService = services.GetRequiredService<ICandleSeedService>();
         // Seed 100 candles for BTCUSDT 1m with defined pattern
-        seedService.SeedBTCUSDT_1m_DoubleTopBreakoutAsync(100).GetAwaiter().GetResult();
-        seedService.SeedETHUSDT_MTF_FVG_StructureAsync(100).GetAwaiter().GetResult();
+        seedService.SeedSymbolAsync().GetAwaiter().GetResult();
     }
     catch (Exception ex)
     {

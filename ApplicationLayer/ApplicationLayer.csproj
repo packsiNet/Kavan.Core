@@ -28,4 +28,10 @@
     <ProjectReference Include="..\DomainLayer\DomainLayer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Candles\Commands\" />
+    <Folder Include="Features\Candles\Handler\" />
+    <Folder Include="Features\Candles\Validations\" />
+  </ItemGroup>
+
 </Project>

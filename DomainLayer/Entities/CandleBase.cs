@@ -20,5 +20,7 @@ public class CandleBase : BaseEntityModel, IAuditableEntity
 
     public decimal Volume { get; set; }
 
+    public int NumberOfTrades { get; set; }
+
     public Cryptocurrency Cryptocurrency { get; set; } = null!;
 }

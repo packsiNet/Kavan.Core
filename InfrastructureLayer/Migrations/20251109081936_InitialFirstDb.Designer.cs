@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251103094138_InitialFirstDb")]
+    [Migration("20251109081936_InitialFirstDb")]
     partial class InitialFirstDb
     {
         /// <inheritdoc />
@@ -81,6 +81,9 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<DateTimeOffset?>("ModifiedDateTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("NumberOfTrades")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Open")
                         .HasPrecision(18, 8)
@@ -171,6 +174,9 @@ namespace InfrastructureLayer.Migrations
                     b.Property<DateTimeOffset?>("ModifiedDateTime")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int>("NumberOfTrades")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Open")
                         .HasPrecision(18, 8)
                         .HasColumnType("decimal(18, 2)");
@@ -259,6 +265,9 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<DateTimeOffset?>("ModifiedDateTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("NumberOfTrades")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Open")
                         .HasPrecision(18, 8)
@@ -349,6 +358,9 @@ namespace InfrastructureLayer.Migrations
                     b.Property<DateTimeOffset?>("ModifiedDateTime")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int>("NumberOfTrades")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Open")
                         .HasPrecision(18, 8)
                         .HasColumnType("decimal(18, 2)");
@@ -437,6 +449,9 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<DateTimeOffset?>("ModifiedDateTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("NumberOfTrades")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Open")
                         .HasPrecision(18, 8)
@@ -864,6 +879,231 @@ namespace InfrastructureLayer.Migrations
                     b.ToTable("Role", "dbo");
                 });
 
+            modelBuilder.Entity("DomainLayer.Entities.Signal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("SignalId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Atr")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("BodySize")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("BreakoutLevel")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("CandleClose")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("CandleCloseTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("CandleHigh")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("CandleLow")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("CandleOpen")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("CandleOpenTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("CandleVolume")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasColumnType("char(15)");
+
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("CryptocurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Direction")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedByIp")
+                        .HasColumnType("char(15)");
+
+                    b.Property<int?>("ModifiedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("ModifiedDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("NearestResistance")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("NearestSupport")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("PivotR1")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("PivotR2")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("PivotR3")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("PivotS1")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("PivotS2")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("PivotS3")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("SignalCategory")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("SignalName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("SignalTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Timeframe")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<decimal>("Tolerance")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("VolumeRatio")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CryptocurrencyId");
+
+                    b.ToTable("Signal", "dbo");
+                });
+
+            modelBuilder.Entity("DomainLayer.Entities.SignalCandle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("SignalCandleId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Close")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("CloseTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasColumnType("char(15)");
+
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("High")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Low")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<string>("ModifiedByIp")
+                        .HasColumnType("char(15)");
+
+                    b.Property<int?>("ModifiedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("ModifiedDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("Open")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("OpenTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("SignalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Timeframe")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Volume")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SignalId");
+
+                    b.ToTable("SignalCandle", "dbo");
+                });
+
             modelBuilder.Entity("DomainLayer.Entities.UserAccount", b =>
                 {
                     b.Property<int>("Id")
@@ -1286,6 +1526,28 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("UserAccount");
                 });
 
+            modelBuilder.Entity("DomainLayer.Entities.Signal", b =>
+                {
+                    b.HasOne("DomainLayer.Entities.Cryptocurrency", "Cryptocurrency")
+                        .WithMany()
+                        .HasForeignKey("CryptocurrencyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cryptocurrency");
+                });
+
+            modelBuilder.Entity("DomainLayer.Entities.SignalCandle", b =>
+                {
+                    b.HasOne("DomainLayer.Entities.Signal", "Signal")
+                        .WithMany("Candles")
+                        .HasForeignKey("SignalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Signal");
+                });
+
             modelBuilder.Entity("DomainLayer.Entities.UserAccount", b =>
                 {
                     b.HasOne("DomainLayer.Entities.UserAccount", "InvitedByUser")
@@ -1367,6 +1629,11 @@ namespace InfrastructureLayer.Migrations
             modelBuilder.Entity("DomainLayer.Entities.Role", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("DomainLayer.Entities.Signal", b =>
+                {
+                    b.Navigation("Candles");
                 });
 
             modelBuilder.Entity("DomainLayer.Entities.UserAccount", b =>
