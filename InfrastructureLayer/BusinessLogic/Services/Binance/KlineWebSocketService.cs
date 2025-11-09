@@ -13,47 +13,26 @@ using System.Text.Json.Serialization;
 namespace InfrastructureLayer.BusinessLogic.Services.Binance;
 
 [InjectAsScoped]
-public class KlineWebSocketService : IKlineWebSocketService
+public class KlineWebSocketService(
+    IUnitOfWork uow,
+    IRepository<Candle_1m> c1m,
+    IRepository<Candle_5m> c5m,
+    IRepository<Candle_1h> c1h,
+    IRepository<Candle_4h> c4h,
+    IRepository<Candle_1d> c1d,
+    ILogger<KlineWebSocketService> logger,
+    IConfiguration configuration) : IKlineWebSocketService
 {
-    private readonly IUnitOfWork _uow;
-    private readonly IRepository<Candle_1m> _c1m;
-    private readonly IRepository<Candle_5m> _c5m;
-    private readonly IRepository<Candle_1h> _c1h;
-    private readonly IRepository<Candle_4h> _c4h;
-    private readonly IRepository<Candle_1d> _c1d;
-    private readonly ILogger<KlineWebSocketService> _logger;
-    private readonly IConfiguration _configuration;
-
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = false
     };
 
-    public KlineWebSocketService(
-        IUnitOfWork uow,
-        IRepository<Candle_1m> c1m,
-        IRepository<Candle_5m> c5m,
-        IRepository<Candle_1h> c1h,
-        IRepository<Candle_4h> c4h,
-        IRepository<Candle_1d> c1d,
-        ILogger<KlineWebSocketService> logger,
-        IConfiguration configuration)
-    {
-        _uow = uow;
-        _c1m = c1m;
-        _c5m = c5m;
-        _c1h = c1h;
-        _c4h = c4h;
-        _c1d = c1d;
-        _logger = logger;
-        _configuration = configuration;
-    }
-
     public async Task RunStreamsForSymbolAsync(Cryptocurrency cryptocurrency, CancellationToken cancellationToken)
     {
         var symbol = cryptocurrency.Symbol.ToLowerInvariant();
-        var baseUrl = _configuration["BinanceWebSocket:BaseUrl"] ?? "wss://stream.binance.com:9443/stream?streams=";
-        var reconnectDelaySeconds = int.TryParse(_configuration["BinanceWebSocket:ReconnectDelaySeconds"], out var rds) ? rds : 5;
+        var baseUrl = configuration["BinanceWebSocket:BaseUrl"] ?? "wss://stream.binance.com:9443/stream?streams=";
+        var reconnectDelaySeconds = int.TryParse(configuration["BinanceWebSocket:ReconnectDelaySeconds"], out var rds) ? rds : 5;
 
         var intervals = new[] { "1m", "5m", "1h", "4h", "1d" };
         var streamsPath = string.Join('/', intervals.Select(i => $"{symbol}@kline_{i}"));
@@ -65,9 +44,9 @@ public class KlineWebSocketService : IKlineWebSocketService
             ws.Options.KeepAliveInterval = TimeSpan.FromSeconds(30);
             try
             {
-                _logger.LogInformation("Connecting Binance WS for {Symbol} -> {Streams}", cryptocurrency.Symbol, streamsPath);
+                logger.LogInformation("Connecting Binance WS for {Symbol} -> {Streams}", cryptocurrency.Symbol, streamsPath);
                 await ws.ConnectAsync(uri, cancellationToken);
-                _logger.LogInformation("Connected WS for {Symbol}", cryptocurrency.Symbol);
+                logger.LogInformation("Connected WS for {Symbol}", cryptocurrency.Symbol);
 
                 await ReceiveLoopAsync(ws, cryptocurrency, cancellationToken);
             }
@@ -78,11 +57,11 @@ public class KlineWebSocketService : IKlineWebSocketService
             }
             catch (WebSocketException ex)
             {
-                _logger.LogWarning(ex, "WebSocket error for {Symbol}, will reconnect in {Delay}s", cryptocurrency.Symbol, reconnectDelaySeconds);
+                logger.LogWarning(ex, "WebSocket error for {Symbol}, will reconnect in {Delay}s", cryptocurrency.Symbol, reconnectDelaySeconds);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error in WS for {Symbol}, will reconnect in {Delay}s", cryptocurrency.Symbol, reconnectDelaySeconds);
+                logger.LogError(ex, "Unexpected error in WS for {Symbol}, will reconnect in {Delay}s", cryptocurrency.Symbol, reconnectDelaySeconds);
             }
             finally
             {
@@ -115,7 +94,7 @@ public class KlineWebSocketService : IKlineWebSocketService
                 result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    _logger.LogInformation("WS closed by server for {Symbol}", crypto.Symbol);
+                    logger.LogInformation("WS closed by server for {Symbol}", crypto.Symbol);
                     return;
                 }
                 ms.Write(buffer, 0, result.Count);
@@ -138,11 +117,11 @@ public class KlineWebSocketService : IKlineWebSocketService
             }
             catch (JsonException jex)
             {
-                _logger.LogWarning(jex, "Failed to parse WS message for {Symbol}: {Snippet}", crypto.Symbol, json.Length > 200 ? json[..200] + "..." : json);
+                logger.LogWarning(jex, "Failed to parse WS message for {Symbol}: {Snippet}", crypto.Symbol, json.Length > 200 ? json[..200] + "..." : json);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error handling WS message for {Symbol}", crypto.Symbol);
+                logger.LogError(ex, "Error handling WS message for {Symbol}", crypto.Symbol);
             }
         }
     }
@@ -156,22 +135,22 @@ public class KlineWebSocketService : IKlineWebSocketService
         switch (interval)
         {
             case "1m":
-                await UpsertAsync(_c1m, cryptocurrencyId, k, ct);
+                await UpsertAsync(c1m, cryptocurrencyId, k, ct);
                 break;
             case "5m":
-                await UpsertAsync(_c5m, cryptocurrencyId, k, ct);
+                await UpsertAsync(c5m, cryptocurrencyId, k, ct);
                 break;
             case "1h":
-                await UpsertAsync(_c1h, cryptocurrencyId, k, ct);
+                await UpsertAsync(c1h, cryptocurrencyId, k, ct);
                 break;
             case "4h":
-                await UpsertAsync(_c4h, cryptocurrencyId, k, ct);
+                await UpsertAsync(c4h, cryptocurrencyId, k, ct);
                 break;
             case "1d":
-                await UpsertAsync(_c1d, cryptocurrencyId, k, ct);
+                await UpsertAsync(c1d, cryptocurrencyId, k, ct);
                 break;
             default:
-                _logger.LogWarning("Unknown interval {Interval} for cryptoId={Id}", interval, cryptocurrencyId);
+                logger.LogWarning("Unknown interval {Interval} for cryptoId={Id}", interval, cryptocurrencyId);
                 break;
         }
     }
@@ -205,8 +184,8 @@ public class KlineWebSocketService : IKlineWebSocketService
         };
 
         await repo.AddAsync(entity);
-        await _uow.SaveChangesAsync(ct);
-        _logger.LogInformation("Inserted {Interval} candle for cryptoId={Id} at {OpenTime}", k.Interval, cryptoId, openTimeUtc);
+        await uow.SaveChangesAsync(ct);
+        logger.LogInformation("Inserted {Interval} candle for cryptoId={Id} at {OpenTime}", k.Interval, cryptoId, openTimeUtc);
     }
 
     private record BinanceCombinedStream
