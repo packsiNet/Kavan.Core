@@ -46,72 +46,29 @@ public class CandleManagementService : ICandleManagementService
                 return;
             }
 
-            // حذف کندل در حال تشکیل (ایندکس 4)
-            var completedKlines = klines.Take(4).ToList();
-
-            // دریافت آخرین کندل ذخیره شده
-            var lastCandle = await _repository.Query()
-                .Where(c => c.CryptocurrencyId == cryptocurrency.Id)
-                .OrderByDescending(c => c.CloseTime)
-                .FirstOrDefaultAsync();
-
-            if (lastCandle == null)
+            // فقط کندل کامل با ایندکس 3 را درج می‌کنیم (ایندکس 4 در حال تشکیل است)
+            if (klines.Count < 4)
             {
-                // اگر هیچ کندلی ذخیره نشده، به‌صورت تنظیم‌پذیر فقط بخشی از کندل‌ها را ذخیره می‌کنیم
-                var initialInsertCount = Math.Max(1, _configuration.GetValue<int>("CandleFetcher:InitialInsertCount", 1));
-                var toInsert = completedKlines.TakeLast(Math.Min(initialInsertCount, completedKlines.Count)).ToList();
-                _logger.LogInformation("No existing candles found. Inserting {Count} candles for symbol: {Symbol}",
-                    toInsert.Count, cryptocurrency.Symbol);
-                await InsertCandlesAsync(cryptocurrency.Id, toInsert);
+                _logger.LogWarning("Insufficient klines received for symbol: {Symbol}", cryptocurrency.Symbol);
                 return;
             }
 
-            // بررسی پیوستگی از ایندکس 2 شروع می‌شود
-            var candlesToInsert = new List<BinanceKlineDto>();
-            var gapDetected = false;
-            long closeTimeTs = new DateTimeOffset(lastCandle.CloseTime).ToUnixTimeMilliseconds();
+            var targetKline = klines[3];
+            var targetOpenTimeUtc = DateTimeOffset.FromUnixTimeMilliseconds(targetKline.OpenTime).UtcDateTime;
 
-            for (int i = 2; i < completedKlines.Count; i++)
+            var exists = await _repository.Query()
+                .Where(c => c.CryptocurrencyId == cryptocurrency.Id && c.OpenTime == targetOpenTimeUtc)
+                .AsNoTracking()
+                .AnyAsync();
+
+            if (exists)
             {
-                var currentKline = completedKlines[i];
-                // بررسی پیوستگی: آیا این کندل بلافاصله بعد از آخرین کندل ذخیره شده است؟
-                if (currentKline.OpenTime == closeTimeTs + 60_000)
-                {
-                    // پیوستگی برقرار است - تمام کندل‌های از این ایندکس به بعد را ذخیره می‌کنیم
-                    candlesToInsert = [.. completedKlines.Skip(i)];
-                    _logger.LogInformation("Continuity found at index {Index}. Inserting {Count} candles for symbol: {Symbol}",
-                        i, candlesToInsert.Count, cryptocurrency.Symbol);
-                    break;
-                }
-                else if (i == completedKlines.Count - 1)
-                {
-                    // اگر تا آخر هیچ پیوستگی نیافتیم، گپ وجود دارد
-                    gapDetected = true;
-                    _logger.LogWarning("Gap detected for symbol: {Symbol}. Last candle close time: {LastCloseTime}, First new candle open time: {NewOpenTime}",
-                        cryptocurrency.Symbol, lastCandle.CloseTime, completedKlines[0].OpenTime);
-                }
+                _logger.LogInformation("1m candle already exists for {Symbol} at {OpenTime}", cryptocurrency.Symbol, targetOpenTimeUtc);
+                return;
             }
 
-            if (candlesToInsert.Count > 0)
-            {
-                await InsertCandlesAsync(cryptocurrency.Id, candlesToInsert);
-            }
-            else if (gapDetected)
-            {
-                // دریافت کندل‌های از دست رفته
-                await FetchMissingCandlesAsync(
-                    cryptocurrency.Id,
-                    cryptocurrency.Symbol,
-                    closeTimeTs,
-                    completedKlines[0].OpenTime);
-
-                // بعد از پر کردن گپ، کندل‌های جدید را هم ذخیره می‌کنیم
-                await InsertCandlesAsync(cryptocurrency.Id, completedKlines);
-            }
-            else
-            {
-                _logger.LogInformation("No new candles to insert for symbol: {Symbol}", cryptocurrency.Symbol);
-            }
+            await InsertCandlesAsync(cryptocurrency.Id, new List<BinanceKlineDto> { targetKline });
+            _logger.LogInformation("Inserted 1m candle (index=3) for {Symbol} at {OpenTime}", cryptocurrency.Symbol, targetOpenTimeUtc);
         }
         catch (Exception ex)
         {
