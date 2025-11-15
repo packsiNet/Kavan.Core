@@ -1,5 +1,4 @@
 using ApplicationLayer.Dto.Signals;
-using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationLayer.Interfaces.Services.Signals
 {

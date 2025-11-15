@@ -13,4 +13,3 @@ public class ScheduleLessonHandler(ILessonService _service) : IRequestHandler<Sc
         return result.ToHandlerResult();
     }
 }
-

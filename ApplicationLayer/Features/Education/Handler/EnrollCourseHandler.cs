@@ -13,4 +13,3 @@ public class EnrollCourseHandler(ICourseEnrollmentService _service) : IRequestHa
         return result.ToHandlerResult();
     }
 }
-

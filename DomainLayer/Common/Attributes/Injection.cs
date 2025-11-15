@@ -1,5 +1,4 @@
-﻿
-namespace DomainLayer.Common.Attributes
+﻿namespace DomainLayer.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     public class InjectAsScopedAttribute : Attribute

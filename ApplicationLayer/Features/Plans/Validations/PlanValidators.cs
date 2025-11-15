@@ -1,5 +1,4 @@
 using ApplicationLayer.Common;
-using ApplicationLayer.Dto.BaseDtos;
 using ApplicationLayer.DTOs.Plans;
 using ApplicationLayer.Features.Plans.Commands;
 using FluentValidation;

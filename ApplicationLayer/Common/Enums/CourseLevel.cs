@@ -13,4 +13,3 @@ public class CourseLevel : SmartEnum<CourseLevel, byte>
     {
     }
 }
-

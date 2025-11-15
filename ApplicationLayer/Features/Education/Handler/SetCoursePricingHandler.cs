@@ -13,4 +13,3 @@ public class SetCoursePricingHandler(ICourseService _service) : IRequestHandler<
         return result.ToHandlerResult();
     }
 }
-

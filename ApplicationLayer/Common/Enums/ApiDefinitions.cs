@@ -12,14 +12,15 @@ public sealed class ApiDefinitions : SmartEnum<ApiDefinitions, byte>
     public static readonly ApiDefinitions Trader = new(4, "پنل تریدرها", nameof(Trader));
     public static readonly ApiDefinitions External = new(5, "سرویس‌های خارجی", nameof(External));
 
-    #endregion
+    #endregion Fields
 
     #region Properties
 
     public string PersianName { get; }
+
     public string EnglishName { get; }
 
-    #endregion
+    #endregion Properties
 
     #region Constructors
 
@@ -30,5 +31,5 @@ public sealed class ApiDefinitions : SmartEnum<ApiDefinitions, byte>
         EnglishName = englishName;
     }
 
-    #endregion
+    #endregion Constructors
 }

@@ -12,4 +12,3 @@ public class MediaFileType : SmartEnum<MediaFileType, byte>
     {
     }
 }
-

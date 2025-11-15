@@ -1,6 +1,5 @@
-using ApplicationLayer.Common.Enums;
-using ApplicationLayer.DTOs.Education;
 using ApplicationLayer.Dto.BaseDtos;
+using ApplicationLayer.DTOs.Education;
 using ApplicationLayer.Interfaces;
 using ApplicationLayer.Interfaces.Services;
 using DomainLayer.Common.Attributes;

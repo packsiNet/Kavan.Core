@@ -19,4 +19,3 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
         builder.HasOne(x => x.Course).WithMany(x => x.Lessons).HasForeignKey(x => x.CourseId).OnDelete(DeleteBehavior.Restrict);
     }
 }
-

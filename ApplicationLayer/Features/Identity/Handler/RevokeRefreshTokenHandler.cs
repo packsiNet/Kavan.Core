@@ -13,7 +13,6 @@ public class RevokeRefreshTokenHandler(IRefreshTokenService _refreshTokenService
                                               IUnitOfWork _unitOfWork,
                                               ILogger<RevokeRefreshTokenDto> _logger) : IRequestHandler<RevokeRefreshTokenCommand, HandlerResult>
 {
-
     public async Task<HandlerResult> Handle(RevokeRefreshTokenCommand request, CancellationToken cancellationToken)
     {
         try

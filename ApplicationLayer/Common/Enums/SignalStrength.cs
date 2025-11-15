@@ -1,11 +1,10 @@
-using System;
-
 namespace ApplicationLayer.Common.Enums
 {
     // Lightweight SmartEnum-style implementation without external packages
     public sealed class SignalStrength : IEquatable<SignalStrength>
     {
         public string Name { get; }
+
         public int Value { get; }
 
         private SignalStrength(string name, int value)

@@ -1,13 +1,8 @@
 ﻿#region Usings
 
-using DomainLayer;
-using DomainLayer.Common.BaseEntities;
-using DomainLayer.Entities;
 using InfrastructureLayer.Configuration;
 using InfrastructureLayer.Convention;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using System.Reflection;
 
 #endregion
 

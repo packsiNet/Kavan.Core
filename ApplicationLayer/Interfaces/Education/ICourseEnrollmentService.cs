@@ -7,4 +7,3 @@ public interface ICourseEnrollmentService
 {
     Task<Result<EnrollmentDto>> EnrollAsync(EnrollCourseDto dto);
 }
-

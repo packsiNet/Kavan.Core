@@ -32,7 +32,6 @@ public static class DependencyInjection
     {
         services.RegisterService(configuration);
 
-
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
         services.AddDbContext<ApplicationDbContext>(options =>

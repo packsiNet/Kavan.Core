@@ -1,4 +1,3 @@
-using ApplicationLayer;
 using MediatR;
 
 namespace ApplicationLayer.Features.Signals.Query

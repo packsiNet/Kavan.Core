@@ -1,13 +1,8 @@
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using ApplicationLayer;
 using ApplicationLayer.Dto.BaseDtos;
 using ApplicationLayer.Dto.Signals;
 using ApplicationLayer.Extensions;
 using ApplicationLayer.Features.Signals.Query;
 using ApplicationLayer.Interfaces;
-using ApplicationLayer.Interfaces.Services.Signals;
 using DomainLayer.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

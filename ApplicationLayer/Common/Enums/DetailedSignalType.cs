@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-
 namespace ApplicationLayer.Common.Enums
 {
     // SmartEnum-style representation for detailed signal types
     public sealed class DetailedSignalType : IEquatable<DetailedSignalType>
     {
         public string Name { get; }
+
         public int Value { get; }
 
         private DetailedSignalType(string name, int value)
@@ -17,6 +15,7 @@ namespace ApplicationLayer.Common.Enums
 
         // Ichimoku Cloud Signals
         public static readonly DetailedSignalType IchimokuCloudBreakoutUp = new(nameof(IchimokuCloudBreakoutUp), 1001);
+
         public static readonly DetailedSignalType IchimokuCloudBreakoutDown = new(nameof(IchimokuCloudBreakoutDown), 1002);
         public static readonly DetailedSignalType IchimokuTenkanKijunCrossUp = new(nameof(IchimokuTenkanKijunCrossUp), 1003);
         public static readonly DetailedSignalType IchimokuTenkanKijunCrossDown = new(nameof(IchimokuTenkanKijunCrossDown), 1004);
@@ -26,6 +25,7 @@ namespace ApplicationLayer.Common.Enums
 
         // Bollinger Bands Signals
         public static readonly DetailedSignalType BollingerBandsSqueeze = new(nameof(BollingerBandsSqueeze), 2001);
+
         public static readonly DetailedSignalType BollingerBandsExpansion = new(nameof(BollingerBandsExpansion), 2002);
         public static readonly DetailedSignalType BollingerUpperBandTouch = new(nameof(BollingerUpperBandTouch), 2003);
         public static readonly DetailedSignalType BollingerLowerBandTouch = new(nameof(BollingerLowerBandTouch), 2004);
@@ -36,6 +36,7 @@ namespace ApplicationLayer.Common.Enums
 
         // RSI Signals
         public static readonly DetailedSignalType RSIOverBought = new(nameof(RSIOverBought), 3001);
+
         public static readonly DetailedSignalType RSIOverSold = new(nameof(RSIOverSold), 3002);
         public static readonly DetailedSignalType RSIDivergenceBullish = new(nameof(RSIDivergenceBullish), 3003);
         public static readonly DetailedSignalType RSIDivergenceBearish = new(nameof(RSIDivergenceBearish), 3004);
@@ -44,6 +45,7 @@ namespace ApplicationLayer.Common.Enums
 
         // MACD Signals
         public static readonly DetailedSignalType MACDSignalLineCrossUp = new(nameof(MACDSignalLineCrossUp), 4001);
+
         public static readonly DetailedSignalType MACDSignalLineCrossDown = new(nameof(MACDSignalLineCrossDown), 4002);
         public static readonly DetailedSignalType MACDZeroLineCrossUp = new(nameof(MACDZeroLineCrossUp), 4003);
         public static readonly DetailedSignalType MACDZeroLineCrossDown = new(nameof(MACDZeroLineCrossDown), 4004);
@@ -54,6 +56,7 @@ namespace ApplicationLayer.Common.Enums
 
         // Moving Average Signals
         public static readonly DetailedSignalType SMAGoldenCross = new(nameof(SMAGoldenCross), 5001);
+
         public static readonly DetailedSignalType SMADeathCross = new(nameof(SMADeathCross), 5002);
         public static readonly DetailedSignalType EMACrossUp = new(nameof(EMACrossUp), 5003);
         public static readonly DetailedSignalType EMACrossDown = new(nameof(EMACrossDown), 5004);
@@ -63,6 +66,7 @@ namespace ApplicationLayer.Common.Enums
 
         // Stochastic Signals
         public static readonly DetailedSignalType StochasticOverBought = new(nameof(StochasticOverBought), 6001);
+
         public static readonly DetailedSignalType StochasticOverSold = new(nameof(StochasticOverSold), 6002);
         public static readonly DetailedSignalType StochasticKDCrossUp = new(nameof(StochasticKDCrossUp), 6003);
         public static readonly DetailedSignalType StochasticKDCrossDown = new(nameof(StochasticKDCrossDown), 6004);
@@ -71,6 +75,7 @@ namespace ApplicationLayer.Common.Enums
 
         // ADX Signals
         public static readonly DetailedSignalType ADXTrendStrengthHigh = new(nameof(ADXTrendStrengthHigh), 7001);
+
         public static readonly DetailedSignalType ADXTrendStrengthLow = new(nameof(ADXTrendStrengthLow), 7002);
         public static readonly DetailedSignalType ADXRising = new(nameof(ADXRising), 7003);
         public static readonly DetailedSignalType ADXFalling = new(nameof(ADXFalling), 7004);
@@ -79,6 +84,7 @@ namespace ApplicationLayer.Common.Enums
 
         // CCI Signals
         public static readonly DetailedSignalType CCIOverBought = new(nameof(CCIOverBought), 8001);
+
         public static readonly DetailedSignalType CCIOverSold = new(nameof(CCIOverSold), 8002);
         public static readonly DetailedSignalType CCIZeroCrossUp = new(nameof(CCIZeroCrossUp), 8003);
         public static readonly DetailedSignalType CCIZeroCrossDown = new(nameof(CCIZeroCrossDown), 8004);
@@ -87,24 +93,28 @@ namespace ApplicationLayer.Common.Enums
 
         // Williams %R Signals
         public static readonly DetailedSignalType WilliamsROverBought = new(nameof(WilliamsROverBought), 9001);
+
         public static readonly DetailedSignalType WilliamsROverSold = new(nameof(WilliamsROverSold), 9002);
         public static readonly DetailedSignalType WilliamsRCrossUp = new(nameof(WilliamsRCrossUp), 9003);
         public static readonly DetailedSignalType WilliamsRCrossDown = new(nameof(WilliamsRCrossDown), 9004);
 
         // Volume Signals
         public static readonly DetailedSignalType VolumeSpike = new(nameof(VolumeSpike), 10001);
+
         public static readonly DetailedSignalType VolumeBreakout = new(nameof(VolumeBreakout), 10002);
         public static readonly DetailedSignalType VolumeConfirmation = new(nameof(VolumeConfirmation), 10003);
         public static readonly DetailedSignalType VolumeDivergence = new(nameof(VolumeDivergence), 10004);
 
         // Support/Resistance Signals
         public static readonly DetailedSignalType SupportBreakdown = new(nameof(SupportBreakdown), 11001);
+
         public static readonly DetailedSignalType ResistanceBreakout = new(nameof(ResistanceBreakout), 11002);
         public static readonly DetailedSignalType SupportBounce = new(nameof(SupportBounce), 11003);
         public static readonly DetailedSignalType ResistanceRejection = new(nameof(ResistanceRejection), 11004);
 
         // Pattern Signals
         public static readonly DetailedSignalType DoubleTop = new(nameof(DoubleTop), 12001);
+
         public static readonly DetailedSignalType DoubleBottom = new(nameof(DoubleBottom), 12002);
         public static readonly DetailedSignalType HeadAndShoulders = new(nameof(HeadAndShoulders), 12003);
         public static readonly DetailedSignalType InverseHeadAndShoulders = new(nameof(InverseHeadAndShoulders), 12004);
@@ -115,6 +125,7 @@ namespace ApplicationLayer.Common.Enums
 
         // Fibonacci Signals
         public static readonly DetailedSignalType FibonacciRetracement382 = new(nameof(FibonacciRetracement382), 13001);
+
         public static readonly DetailedSignalType FibonacciRetracement500 = new(nameof(FibonacciRetracement500), 13002);
         public static readonly DetailedSignalType FibonacciRetracement618 = new(nameof(FibonacciRetracement618), 13003);
         public static readonly DetailedSignalType FibonacciExtension161 = new(nameof(FibonacciExtension161), 13004);
@@ -122,11 +133,13 @@ namespace ApplicationLayer.Common.Enums
 
         // Pivot Point Signals
         public static readonly DetailedSignalType PivotPointBreakout = new(nameof(PivotPointBreakout), 14001);
+
         public static readonly DetailedSignalType PivotPointSupport = new(nameof(PivotPointSupport), 14002);
         public static readonly DetailedSignalType PivotPointResistance = new(nameof(PivotPointResistance), 14003);
 
         // Additional Ichimoku Signals
         public static readonly DetailedSignalType IchimokuTenkanSenBullishCross = new(nameof(IchimokuTenkanSenBullishCross), 1008);
+
         public static readonly DetailedSignalType IchimokuTenkanSenBearishCross = new(nameof(IchimokuTenkanSenBearishCross), 1009);
         public static readonly DetailedSignalType IchimokuKijunSenBullishCross = new(nameof(IchimokuKijunSenBullishCross), 1010);
         public static readonly DetailedSignalType IchimokuKijunSenBearishCross = new(nameof(IchimokuKijunSenBearishCross), 1011);
@@ -142,6 +155,7 @@ namespace ApplicationLayer.Common.Enums
 
         // Additional Moving Average Signals
         public static readonly DetailedSignalType MovingAverageGoldenCross = new(nameof(MovingAverageGoldenCross), 5008);
+
         public static readonly DetailedSignalType MovingAverageDeathCross = new(nameof(MovingAverageDeathCross), 5009);
         public static readonly DetailedSignalType MovingAverageSupportBounce = new(nameof(MovingAverageSupportBounce), 5010);
         public static readonly DetailedSignalType MovingAverageResistanceRejection = new(nameof(MovingAverageResistanceRejection), 5011);
@@ -150,6 +164,7 @@ namespace ApplicationLayer.Common.Enums
 
         // EMA Signals
         public static readonly DetailedSignalType EMABullishCross = new(nameof(EMABullishCross), 5014);
+
         public static readonly DetailedSignalType EMABearishCross = new(nameof(EMABearishCross), 5015);
         public static readonly DetailedSignalType EMAGoldenCross = new(nameof(EMAGoldenCross), 5016);
         public static readonly DetailedSignalType EMADeathCross = new(nameof(EMADeathCross), 5017);
@@ -169,11 +184,14 @@ namespace ApplicationLayer.Common.Enums
 
         // ADX Additional Signals
         public static readonly DetailedSignalType ADXTrendStrengthIncreasing = new(nameof(ADXTrendStrengthIncreasing), 7007);
+
         public static readonly DetailedSignalType ADXTrendStrengthDecreasing = new(nameof(ADXTrendStrengthDecreasing), 7008);
         public static readonly DetailedSignalType ADXBullishTrend = new(nameof(ADXBullishTrend), 7009);
         public static readonly DetailedSignalType ADXBearishTrend = new(nameof(ADXBearishTrend), 7010);
+
         // Note: Avoid name collisions with ADXFalling (case-insensitive map)
         public static readonly DetailedSignalType AdxDiPlusCrossAbove = new(nameof(AdxDiPlusCrossAbove), 7012);
+
         public static readonly DetailedSignalType AdxDiMinusCrossAbove = new(nameof(AdxDiMinusCrossAbove), 7013);
         public static readonly DetailedSignalType AdxTrendStrength = new(nameof(AdxTrendStrength), 7014);
         public static readonly DetailedSignalType AdxWeakTrend = new(nameof(AdxWeakTrend), 7015);
@@ -181,13 +199,16 @@ namespace ApplicationLayer.Common.Enums
 
         // CCI Additional Signals
         public static readonly DetailedSignalType CCIBullishDivergence = new(nameof(CCIBullishDivergence), 8007);
+
         public static readonly DetailedSignalType CCIBearishDivergence = new(nameof(CCIBearishDivergence), 8008);
         public static readonly DetailedSignalType CciZeroCrossBelow = new(nameof(CciZeroCrossBelow), 8009);
+
         // Note: Avoid name collisions with CCIOverBought/CCIOverSold (case-insensitive map)
         public static readonly DetailedSignalType CciZeroCrossAbove = new(nameof(CciZeroCrossAbove), 8012);
 
         // Candlestick Pattern Signals
         public static readonly DetailedSignalType CandlestickDoji = new(nameof(CandlestickDoji), 15001);
+
         public static readonly DetailedSignalType CandlestickHammer = new(nameof(CandlestickHammer), 15002);
         public static readonly DetailedSignalType CandlestickShootingStar = new(nameof(CandlestickShootingStar), 15003);
         public static readonly DetailedSignalType CandlestickEngulfingBullish = new(nameof(CandlestickEngulfingBullish), 15004);

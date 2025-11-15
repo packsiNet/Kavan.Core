@@ -1,5 +1,5 @@
-using ApplicationLayer.DTOs.Education;
 using ApplicationLayer.Dto.BaseDtos;
+using ApplicationLayer.DTOs.Education;
 using ApplicationLayer.Extensions;
 using ApplicationLayer.Features.Education.Query;
 using ApplicationLayer.Interfaces.Services;

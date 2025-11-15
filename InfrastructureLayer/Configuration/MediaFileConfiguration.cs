@@ -20,4 +20,3 @@ public class MediaFileConfiguration : IEntityTypeConfiguration<MediaFile>
         builder.HasOne(x => x.Lesson).WithMany(x => x.MediaFiles).HasForeignKey(x => x.LessonId).OnDelete(DeleteBehavior.Restrict);
     }
 }
-

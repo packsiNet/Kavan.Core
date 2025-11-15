@@ -13,4 +13,3 @@ public class DeleteCourseHandler(ICourseService _service) : IRequestHandler<Dele
         return result.ToHandlerResult();
     }
 }
-

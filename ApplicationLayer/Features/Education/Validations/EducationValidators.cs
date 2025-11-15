@@ -1,5 +1,4 @@
 using ApplicationLayer.Common;
-using ApplicationLayer.Dto.BaseDtos;
 using ApplicationLayer.DTOs.Education;
 using FluentValidation;
 
@@ -85,4 +84,3 @@ public class EducationValidators
         }
     }
 }
-

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using DomainLayer.Entities;
 
 namespace ApplicationLayer.Interfaces.Services.Signals

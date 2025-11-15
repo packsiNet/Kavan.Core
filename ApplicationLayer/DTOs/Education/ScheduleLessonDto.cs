@@ -4,4 +4,3 @@ public class ScheduleLessonDto
 {
     public DateTime? PublishAt { get; set; }
 }
-

@@ -13,4 +13,3 @@ public class AddMediaFileHandler(ILessonService _service) : IRequestHandler<AddM
         return result.ToHandlerResult();
     }
 }
-

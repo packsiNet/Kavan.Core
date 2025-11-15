@@ -20,4 +20,3 @@ public class CourseConfiguration : IEntityTypeConfiguration<Course>
         builder.HasOne(x => x.OwnerUser).WithMany().HasForeignKey(x => x.OwnerUserId).OnDelete(DeleteBehavior.Restrict);
     }
 }
-

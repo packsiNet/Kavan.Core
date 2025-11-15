@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using ApplicationLayer.Common;
 using ApplicationLayer.Dto.Signals;
 using FluentValidation;
@@ -11,6 +9,7 @@ namespace ApplicationLayer.Features.Signals.Validations
         public class SignalRequestValidator : AbstractValidator<SignalRequestDto>
         {
             private static readonly HashSet<string> AllowedTimeframes = new(new[] { "1m", "5m", "1h", "4h", "1d" });
+
             private static readonly HashSet<string> AllowedTypes = new(new[]
             {
                 "structure", "fvg_entry", "fvg_retest", "support_level", "resistance_level", "mss_break"

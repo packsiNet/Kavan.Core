@@ -9,7 +9,6 @@ using DomainLayer.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
@@ -24,7 +23,6 @@ public class IdentityService(IConfiguration _iConfiguration,
                              IRepository<Role> _roleRepository,
                              IRepository<UserRole> _userRoleRepository) : IIdentityService
 {
-
     public ServiceResult AuthenticateOneTimePassword(SignInDto signInViewModel, UserAccount userAccount)
     {
         if (signInViewModel.SecurityCode != userAccount.SecurityCode || DateTime.Now > userAccount.ExpireSecurityCode)

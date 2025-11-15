@@ -1,4 +1,3 @@
-using ApplicationLayer;
 using ApplicationLayer.Dto.Signals;
 using MediatR;
 

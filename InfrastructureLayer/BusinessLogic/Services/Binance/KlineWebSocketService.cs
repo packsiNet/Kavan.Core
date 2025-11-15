@@ -137,18 +137,23 @@ public class KlineWebSocketService(
             case "1m":
                 await UpsertAsync(c1m, cryptocurrencyId, k, ct);
                 break;
+
             case "5m":
                 await UpsertAsync(c5m, cryptocurrencyId, k, ct);
                 break;
+
             case "1h":
                 await UpsertAsync(c1h, cryptocurrencyId, k, ct);
                 break;
+
             case "4h":
                 await UpsertAsync(c4h, cryptocurrencyId, k, ct);
                 break;
+
             case "1d":
                 await UpsertAsync(c1d, cryptocurrencyId, k, ct);
                 break;
+
             default:
                 logger.LogWarning("Unknown interval {Interval} for cryptoId={Id}", interval, cryptocurrencyId);
                 break;

@@ -16,4 +16,3 @@ public class CourseCategoryConfiguration : IEntityTypeConfiguration<CourseCatego
         builder.Property(x => x.Description).HasMaxLength(2000);
     }
 }
-

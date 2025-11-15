@@ -1,8 +1,7 @@
 using ApplicationLayer.Interfaces.Services;
 using DomainLayer.Common.Attributes;
-
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace InfrastructureLayer.BusinessLogic.Services.Binance;
 

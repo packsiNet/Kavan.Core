@@ -13,4 +13,3 @@ public class CreateCourseHandler(ICourseService _service) : IRequestHandler<Crea
         return result.ToHandlerResult();
     }
 }
-

@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using ApplicationLayer.Dto.Signals;
 using ApplicationLayer.Interfaces.Services.Signals;
 using DomainLayer.Common.Attributes;
@@ -21,59 +18,59 @@ public class CandlestickPatternService(ApplicationDbContext db, ISignalLoggingSe
         switch (timeframe)
         {
             case "1m":
-            {
-                var list = await _db.Set<Candle_1m>()
-                    .Where(c => c.CryptocurrencyId == cryptoId)
-                    .OrderByDescending(c => c.OpenTime)
-                    .Take(lookback)
-                    .ToListAsync();
-                return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_1m>()
+                        .Where(c => c.CryptocurrencyId == cryptoId)
+                        .OrderByDescending(c => c.OpenTime)
+                        .Take(lookback)
+                        .ToListAsync();
+                    return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
+                }
             case "5m":
-            {
-                var list = await _db.Set<Candle_5m>()
-                    .Where(c => c.CryptocurrencyId == cryptoId)
-                    .OrderByDescending(c => c.OpenTime)
-                    .Take(lookback)
-                    .ToListAsync();
-                return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_5m>()
+                        .Where(c => c.CryptocurrencyId == cryptoId)
+                        .OrderByDescending(c => c.OpenTime)
+                        .Take(lookback)
+                        .ToListAsync();
+                    return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
+                }
             case "1h":
-            {
-                var list = await _db.Set<Candle_1h>()
-                    .Where(c => c.CryptocurrencyId == cryptoId)
-                    .OrderByDescending(c => c.OpenTime)
-                    .Take(lookback)
-                    .ToListAsync();
-                return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_1h>()
+                        .Where(c => c.CryptocurrencyId == cryptoId)
+                        .OrderByDescending(c => c.OpenTime)
+                        .Take(lookback)
+                        .ToListAsync();
+                    return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
+                }
             case "4h":
-            {
-                var list = await _db.Set<Candle_4h>()
-                    .Where(c => c.CryptocurrencyId == cryptoId)
-                    .OrderByDescending(c => c.OpenTime)
-                    .Take(lookback)
-                    .ToListAsync();
-                return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_4h>()
+                        .Where(c => c.CryptocurrencyId == cryptoId)
+                        .OrderByDescending(c => c.OpenTime)
+                        .Take(lookback)
+                        .ToListAsync();
+                    return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
+                }
             case "1d":
-            {
-                var list = await _db.Set<Candle_1d>()
-                    .Where(c => c.CryptocurrencyId == cryptoId)
-                    .OrderByDescending(c => c.OpenTime)
-                    .Take(lookback)
-                    .ToListAsync();
-                return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_1d>()
+                        .Where(c => c.CryptocurrencyId == cryptoId)
+                        .OrderByDescending(c => c.OpenTime)
+                        .Take(lookback)
+                        .ToListAsync();
+                    return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
+                }
             default:
-            {
-                var list = await _db.Set<Candle_1h>()
-                    .Where(c => c.CryptocurrencyId == cryptoId)
-                    .OrderByDescending(c => c.OpenTime)
-                    .Take(lookback)
-                    .ToListAsync();
-                return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_1h>()
+                        .Where(c => c.CryptocurrencyId == cryptoId)
+                        .OrderByDescending(c => c.OpenTime)
+                        .Take(lookback)
+                        .ToListAsync();
+                    return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
+                }
         }
     }
 
@@ -99,10 +96,13 @@ public class CandlestickPatternService(ApplicationDbContext db, ISignalLoggingSe
         => c[^1].Close > c[^2].Close && c[^2].Close > c[^3].Close;
 
     private static bool Bullish(CandleBase x) => x.Close > x.Open;
+
     private static bool Bearish(CandleBase x) => x.Close < x.Open;
 
     private static decimal Body(CandleBase x) => Math.Abs(x.Close - x.Open);
+
     private static decimal UpperWick(CandleBase x) => x.High - Math.Max(x.Open, x.Close);
+
     private static decimal LowerWick(CandleBase x) => Math.Min(x.Open, x.Close) - x.Low;
 
     private async Task<List<BreakoutResult>> DetectBullishHammerAsyncInternal(List<string> symbols, List<string> timeframes, int lookbackPeriod)

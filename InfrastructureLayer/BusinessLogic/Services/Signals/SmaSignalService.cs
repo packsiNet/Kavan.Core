@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using ApplicationLayer.Dto.Signals;
 using ApplicationLayer.Interfaces.Services.Signals;
 using DomainLayer.Common.Attributes;
@@ -21,59 +18,59 @@ public class SmaSignalService(ApplicationDbContext db, ISignalLoggingService log
         switch (timeframe)
         {
             case "1m":
-            {
-                var list = await _db.Set<Candle_1m>()
-                    .Where(c => c.CryptocurrencyId == cryptoId)
-                    .OrderByDescending(c => c.OpenTime)
-                    .Take(lookback)
-                    .ToListAsync();
-                return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_1m>()
+                        .Where(c => c.CryptocurrencyId == cryptoId)
+                        .OrderByDescending(c => c.OpenTime)
+                        .Take(lookback)
+                        .ToListAsync();
+                    return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
+                }
             case "5m":
-            {
-                var list = await _db.Set<Candle_5m>()
-                    .Where(c => c.CryptocurrencyId == cryptoId)
-                    .OrderByDescending(c => c.OpenTime)
-                    .Take(lookback)
-                    .ToListAsync();
-                return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_5m>()
+                        .Where(c => c.CryptocurrencyId == cryptoId)
+                        .OrderByDescending(c => c.OpenTime)
+                        .Take(lookback)
+                        .ToListAsync();
+                    return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
+                }
             case "1h":
-            {
-                var list = await _db.Set<Candle_1h>()
-                    .Where(c => c.CryptocurrencyId == cryptoId)
-                    .OrderByDescending(c => c.OpenTime)
-                    .Take(lookback)
-                    .ToListAsync();
-                return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_1h>()
+                        .Where(c => c.CryptocurrencyId == cryptoId)
+                        .OrderByDescending(c => c.OpenTime)
+                        .Take(lookback)
+                        .ToListAsync();
+                    return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
+                }
             case "4h":
-            {
-                var list = await _db.Set<Candle_4h>()
-                    .Where(c => c.CryptocurrencyId == cryptoId)
-                    .OrderByDescending(c => c.OpenTime)
-                    .Take(lookback)
-                    .ToListAsync();
-                return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_4h>()
+                        .Where(c => c.CryptocurrencyId == cryptoId)
+                        .OrderByDescending(c => c.OpenTime)
+                        .Take(lookback)
+                        .ToListAsync();
+                    return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
+                }
             case "1d":
-            {
-                var list = await _db.Set<Candle_1d>()
-                    .Where(c => c.CryptocurrencyId == cryptoId)
-                    .OrderByDescending(c => c.OpenTime)
-                    .Take(lookback)
-                    .ToListAsync();
-                return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_1d>()
+                        .Where(c => c.CryptocurrencyId == cryptoId)
+                        .OrderByDescending(c => c.OpenTime)
+                        .Take(lookback)
+                        .ToListAsync();
+                    return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
+                }
             default:
-            {
-                var list = await _db.Set<Candle_1h>()
-                    .Where(c => c.CryptocurrencyId == cryptoId)
-                    .OrderByDescending(c => c.OpenTime)
-                    .Take(lookback)
-                    .ToListAsync();
-                return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_1h>()
+                        .Where(c => c.CryptocurrencyId == cryptoId)
+                        .OrderByDescending(c => c.OpenTime)
+                        .Take(lookback)
+                        .ToListAsync();
+                    return list.OrderBy(c => c.OpenTime).Cast<CandleBase>().ToList();
+                }
         }
     }
 
@@ -192,6 +189,7 @@ public class SmaSignalService(ApplicationDbContext db, ISignalLoggingService log
 
     public Task<List<BreakoutResult>> DetectSma50_200BearishCrossAsync(List<string> symbols, List<string> timeframes, int lookbackPeriod)
         => DetectSmaCrossAsync(symbols, timeframes, lookbackPeriod, 50, 200, false);
+
     private async Task<List<BreakoutResult>> DetectBreakoutAsync(List<string> symbols, List<string> timeframes, int lookbackPeriod, int period, bool up)
     {
         var results = new List<BreakoutResult>();
@@ -292,6 +290,7 @@ public class SmaSignalService(ApplicationDbContext db, ISignalLoggingService log
 
     public Task<List<BreakoutResult>> DetectSma100BreakoutDownAsync(List<string> symbols, List<string> timeframes, int lookbackPeriod)
         => DetectBreakoutAsync(symbols, timeframes, lookbackPeriod, 100, false);
+
     private async Task<List<BreakoutResult>> DetectAsync(List<string> symbols, List<string> timeframes, int lookbackPeriod, int period, bool above)
     {
         var results = new List<BreakoutResult>();

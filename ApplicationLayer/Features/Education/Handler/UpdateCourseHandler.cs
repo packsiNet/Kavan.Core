@@ -13,4 +13,3 @@ public class UpdateCourseHandler(ICourseService _service) : IRequestHandler<Upda
         return result.ToHandlerResult();
     }
 }
-

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ApplicationLayer.Interfaces.Services.Signals;
 using DomainLayer.Common.Attributes;
 using DomainLayer.Entities;
@@ -66,53 +63,53 @@ public class SignalLoggingService(ApplicationDbContext db) : ISignalLoggingServi
         switch (timeframe)
         {
             case "1m":
-            {
-                var list = await _db.Set<Candle_1m>()
-                    .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
-                    .OrderBy(c => c.OpenTime)
-                    .ToListAsync();
-                return list.Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_1m>()
+                        .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
+                        .OrderBy(c => c.OpenTime)
+                        .ToListAsync();
+                    return list.Cast<CandleBase>().ToList();
+                }
             case "5m":
-            {
-                var list = await _db.Set<Candle_5m>()
-                    .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
-                    .OrderBy(c => c.OpenTime)
-                    .ToListAsync();
-                return list.Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_5m>()
+                        .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
+                        .OrderBy(c => c.OpenTime)
+                        .ToListAsync();
+                    return list.Cast<CandleBase>().ToList();
+                }
             case "1h":
-            {
-                var list = await _db.Set<Candle_1h>()
-                    .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
-                    .OrderBy(c => c.OpenTime)
-                    .ToListAsync();
-                return list.Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_1h>()
+                        .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
+                        .OrderBy(c => c.OpenTime)
+                        .ToListAsync();
+                    return list.Cast<CandleBase>().ToList();
+                }
             case "4h":
-            {
-                var list = await _db.Set<Candle_4h>()
-                    .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
-                    .OrderBy(c => c.OpenTime)
-                    .ToListAsync();
-                return list.Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_4h>()
+                        .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
+                        .OrderBy(c => c.OpenTime)
+                        .ToListAsync();
+                    return list.Cast<CandleBase>().ToList();
+                }
             case "1d":
-            {
-                var list = await _db.Set<Candle_1d>()
-                    .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
-                    .OrderBy(c => c.OpenTime)
-                    .ToListAsync();
-                return list.Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_1d>()
+                        .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
+                        .OrderBy(c => c.OpenTime)
+                        .ToListAsync();
+                    return list.Cast<CandleBase>().ToList();
+                }
             default:
-            {
-                var list = await _db.Set<Candle_1h>()
-                    .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
-                    .OrderBy(c => c.OpenTime)
-                    .ToListAsync();
-                return list.Cast<CandleBase>().ToList();
-            }
+                {
+                    var list = await _db.Set<Candle_1h>()
+                        .Where(c => c.CryptocurrencyId == cryptoId && c.OpenTime > from && c.CloseTime <= to)
+                        .OrderBy(c => c.OpenTime)
+                        .ToListAsync();
+                    return list.Cast<CandleBase>().ToList();
+                }
         }
     }
 

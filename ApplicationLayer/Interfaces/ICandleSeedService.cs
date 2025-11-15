@@ -1,4 +1,3 @@
-
 namespace ApplicationLayer.Interfaces;
 
 public interface ICandleSeedService
