@@ -3,6 +3,7 @@ using DomainLayer.Common.Attributes;
 using DomainLayer.Entities;
 using InfrastructureLayer.Context;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace InfrastructureLayer.BusinessLogic.Services.Signals;
 
@@ -31,11 +32,17 @@ public class SignalLoggingService(ApplicationDbContext db) : ISignalLoggingServi
             .FirstOrDefaultAsync();
 
         if (last == null)
+        {
+            Log.Debug("No previous signal for {Symbol}-{Timeframe}-{Category}-{Name}-{Dir}", symbol, timeframe, category, signalName, direction);
             return false;
+        }
 
         var nearSameLevel = Math.Abs(last.BreakoutLevel - breakoutLevel) <= tolerance;
         if (!nearSameLevel)
+        {
+            Log.Debug("Level differs beyond tolerance for {Symbol}-{Timeframe}-{Category}-{Name}: last={LastLevel} new={NewLevel} tol={Tol}", symbol, timeframe, category, signalName, last.BreakoutLevel, breakoutLevel, tolerance);
             return false;
+        }
 
         // Check invalidation after last signal: if price moved back across level, then a new breakout can be recorded
         // For Up breakout: invalidated if any candle closes <= level - tolerance
@@ -43,19 +50,35 @@ public class SignalLoggingService(ApplicationDbContext db) : ISignalLoggingServi
 
         var candles = await FetchCandlesRangeAsync(timeframe, last.CryptocurrencyId, last.SignalTime, candidateCloseTime);
         if (candles.Count == 0)
-            return true; // no new candles, treat as duplicate
+        {
+            Log.Debug("Duplicate due to no new candles since last signal for {Symbol}-{Timeframe}-{Category}-{Name}", symbol, timeframe, category, signalName);
+            return true;
+        }
 
         if (direction > 0)
         {
             var invalidated = candles.Any(c => c.Close <= breakoutLevel - tolerance);
+            if (invalidated)
+                Log.Debug("Invalidated up-breakout; new signal allowed for {Symbol}-{Timeframe}-{Category}-{Name}", symbol, timeframe, category, signalName);
+            else
+                Log.Debug("Continuation without invalidation; duplicate up-breakout for {Symbol}-{Timeframe}-{Category}-{Name}", symbol, timeframe, category, signalName);
             return !invalidated;
         }
         else if (direction < 0)
         {
             var invalidated = candles.Any(c => c.Close >= breakoutLevel + tolerance);
+            if (invalidated)
+                Log.Debug("Invalidated down-breakout; new signal allowed for {Symbol}-{Timeframe}-{Category}-{Name}", symbol, timeframe, category, signalName);
+            else
+                Log.Debug("Continuation without invalidation; duplicate down-breakout for {Symbol}-{Timeframe}-{Category}-{Name}", symbol, timeframe, category, signalName);
             return !invalidated;
         }
-        return true;
+        var invalidatedNeutral = candles.Any(c => c.Close >= breakoutLevel + tolerance || c.Close <= breakoutLevel - tolerance);
+        if (invalidatedNeutral)
+            Log.Debug("Neutral invalidated by movement beyond tolerance; new signal allowed for {Symbol}-{Timeframe}-{Category}-{Name}", symbol, timeframe, category, signalName);
+        else
+            Log.Debug("Neutral continuation within tolerance; duplicate for {Symbol}-{Timeframe}-{Category}-{Name}", symbol, timeframe, category, signalName);
+        return !invalidatedNeutral;
     }
 
     private async Task<List<CandleBase>> FetchCandlesRangeAsync(string timeframe, int cryptoId, DateTime from, DateTime to)
@@ -138,7 +161,10 @@ public class SignalLoggingService(ApplicationDbContext db) : ISignalLoggingServi
         // Deduplication gate: avoid recording the same breakout continuation
         var isDup = await IsDuplicateAsync("Technical", symbol, timeframe, signalName, direction, breakoutLevel, tolerance, lastCandle.CloseTime);
         if (isDup)
-            return 0; // skip duplicate
+        {
+            Log.Debug("Skipped duplicate signal {Symbol}-{Timeframe}-{Name}-{Dir} at {Time}", symbol, timeframe, signalName, direction, lastCandle.CloseTime);
+            return 0;
+        }
 
         var log = new Signal
         {
@@ -228,7 +254,10 @@ public class SignalLoggingService(ApplicationDbContext db) : ISignalLoggingServi
     {
         var isDup = await IsDuplicateAsync(category, symbol, timeframe, signalName, direction, breakoutLevel, tolerance, lastCandle.CloseTime);
         if (isDup)
+        {
+            Log.Debug("Skipped duplicate signal {Symbol}-{Timeframe}-{Category}-{Name}-{Dir} at {Time}", symbol, timeframe, category, signalName, direction, lastCandle.CloseTime);
             return 0;
+        }
 
         var log = new Signal
         {

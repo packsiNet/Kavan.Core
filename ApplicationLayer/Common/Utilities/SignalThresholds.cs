@@ -14,4 +14,14 @@ namespace ApplicationLayer.Common.Utilities
 
         public double FilterPenaltyWeight { get; set; } = 1.0;
     }
+
+    public static class SignalThresholdsExtensions
+    {
+        public static decimal ComputeTolerance(decimal lastClose, decimal atr, string timeframe)
+        {
+            var pct = 0.0025m;
+            var atrFactor = 0.25m;
+            return Math.Max(lastClose * pct, atr * atrFactor);
+        }
+    }
 }

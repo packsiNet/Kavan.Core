@@ -4,6 +4,7 @@ using DomainLayer.Common.Attributes;
 using DomainLayer.Entities;
 using InfrastructureLayer.Context;
 using Microsoft.EntityFrameworkCore;
+using ApplicationLayer.Common.Utilities;
 
 namespace InfrastructureLayer.BusinessLogic.Services.Signals;
 
@@ -128,7 +129,7 @@ public class CciSignalService(ApplicationDbContext db, ISignalLoggingService log
                 var cciLast = ccis[^1];
                 var avgVol = c.TakeLast(20).Average(x => x.Volume);
                 var volRatio = avgVol == 0 ? 0 : (last.Volume / avgVol);
-                var tol = Math.Max(last.Close * 0.0025m, atr * 0.25m);
+                var tol = SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf);
                 var up = above100 && cciLast >= 100m;
                 var down = !above100 && cciLast <= -100m;
                 if (up || down)
@@ -197,7 +198,7 @@ public class CciSignalService(ApplicationDbContext db, ISignalLoggingService log
                 var cciPrev = ccis[^2];
                 var avgVol = c.TakeLast(20).Average(x => x.Volume);
                 var volRatio = avgVol == 0 ? 0 : (last.Volume / avgVol);
-                var tol = Math.Max(last.Close * 0.0025m, atr * 0.25m);
+                var tol = SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf);
                 var crossedUp = cciPrev <= 0m && cciLast > 0m;
                 var crossedDown = cciPrev >= 0m && cciLast < 0m;
                 var pass = (up && crossedUp) || (!up && crossedDown);
