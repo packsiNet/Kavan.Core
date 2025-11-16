@@ -16,9 +16,9 @@ public class CourseEnrollment : BaseEntityModel, IAuditableEntity
 
     public decimal PricePaid { get; set; }
 
-    public string? CouponCode { get; set; }
+    public string CouponCode { get; set; }
 
-    public string? PaymentReference { get; set; }
+    public string PaymentReference { get; set; }
 
     public DateTime EnrolledAt { get; set; }
 }

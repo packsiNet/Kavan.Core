@@ -4,6 +4,7 @@ using DomainLayer.Common.Attributes;
 using DomainLayer.Entities;
 using InfrastructureLayer.Context;
 using Microsoft.EntityFrameworkCore;
+using ApplicationLayer.Common.Utilities;
 
 namespace InfrastructureLayer.BusinessLogic.Services.Signals;
 
@@ -162,7 +163,7 @@ public class RsiSignalService(ApplicationDbContext db, ISignalLoggingService log
                 var rsiPrev = rsis[^2];
                 var avgVol = c.TakeLast(20).Average(x => x.Volume);
                 var volRatio = avgVol == 0 ? 0 : (last.Volume / avgVol);
-                var tol = Math.Max(last.Close * 0.0025m, atr * 0.25m);
+                var tol = SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf);
                 var overUp = overbought && rsiLast >= 70m;
                 var overDown = !overbought && rsiLast <= 30m;
                 if (overUp || overDown)
@@ -231,7 +232,7 @@ public class RsiSignalService(ApplicationDbContext db, ISignalLoggingService log
                 var rsiPrev = rsis[^2];
                 var avgVol = c.TakeLast(20).Average(x => x.Volume);
                 var volRatio = avgVol == 0 ? 0 : (last.Volume / avgVol);
-                var tol = Math.Max(last.Close * 0.0025m, atr * 0.25m);
+                var tol = SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf);
                 var crossedUp = rsiPrev <= 50m && rsiLast > 50m;
                 var crossedDown = rsiPrev >= 50m && rsiLast < 50m;
                 var pass = (up && crossedUp) || (!up && crossedDown);
@@ -299,7 +300,7 @@ public class RsiSignalService(ApplicationDbContext db, ISignalLoggingService log
                 var prev = c[^2];
                 var avgVol = c.TakeLast(20).Average(x => x.Volume);
                 var volRatio = avgVol == 0 ? 0 : (last.Volume / avgVol);
-                var tol = Math.Max(last.Close * 0.0025m, atr * 0.25m);
+                var tol = SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf);
 
                 var priceSeries = c.Select(x => x.Close).ToList();
                 var rsiSeries = rsis;

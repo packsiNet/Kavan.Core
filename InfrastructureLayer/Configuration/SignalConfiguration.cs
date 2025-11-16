@@ -25,6 +25,9 @@ namespace InfrastructureLayer.Configuration
                    .WithOne(c => c.Signal)
                    .HasForeignKey(c => c.SignalId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasIndex(x => new { x.Symbol, x.Timeframe, x.SignalCategory, x.SignalName, x.Direction, x.SignalTime });
+            builder.HasIndex(x => new { x.CryptocurrencyId, x.SignalTime });
         }
     }
 }

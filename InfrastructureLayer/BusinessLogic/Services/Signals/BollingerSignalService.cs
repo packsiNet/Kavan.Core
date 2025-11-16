@@ -4,6 +4,7 @@ using DomainLayer.Common.Attributes;
 using DomainLayer.Entities;
 using InfrastructureLayer.Context;
 using Microsoft.EntityFrameworkCore;
+using ApplicationLayer.Common.Utilities;
 
 namespace InfrastructureLayer.BusinessLogic.Services.Signals;
 
@@ -131,7 +132,7 @@ public class BollingerSignalService(ApplicationDbContext db, ISignalLoggingServi
                 var prev = c[^2];
                 var avgVol = c.TakeLast(20).Average(x => x.Volume);
                 var volRatio = avgVol == 0 ? 0 : (last.Volume / avgVol);
-                var tol = Math.Max(last.Close * 0.0025m, atr * 0.25m);
+                var tol = SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf);
                 var bands = ComputeBands(c, 20, 2m);
                 var up = above && last.Close >= bands.Upper + Math.Max(tol, atr * 0.1m);
                 var down = !above && last.Close <= bands.Lower - Math.Max(tol, atr * 0.1m);
@@ -197,7 +198,7 @@ public class BollingerSignalService(ApplicationDbContext db, ISignalLoggingServi
                 var prev = c[^2];
                 var avgVol = c.TakeLast(20).Average(x => x.Volume);
                 var volRatio = avgVol == 0 ? 0 : (last.Volume / avgVol);
-                var tol = Math.Max(last.Close * 0.0025m, atr * 0.25m);
+                var tol = SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf);
                 var bands = ComputeBands(c, 20, 2m);
                 var prevBands = ComputePrevBands(c, 20, 2m);
                 var body = Math.Abs(last.Close - last.Open);
@@ -307,7 +308,7 @@ public class BollingerSignalService(ApplicationDbContext db, ISignalLoggingServi
                         pivotR1: r1, pivotR2: r2, pivotR3: r3,
                         pivotS1: s1, pivotS2: s2, pivotS3: s3,
                         atr: atr,
-                        tolerance: Math.Max(last.Close * 0.0025m, atr * 0.25m),
+                        tolerance: SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf),
                         volumeRatio: avgVol == 0 ? 0 : (last.Volume / avgVol),
                         bodySize: Math.Abs(last.Close - last.Open),
                         lastCandle: last,

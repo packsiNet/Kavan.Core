@@ -30,5 +30,7 @@ namespace ApplicationLayer.Dto.Signals
 
         // Arbitrary attributes aggregated from matched evaluators
         public Dictionary<string, string> Attributes { get; set; } = new();
+
+        public List<PoiZoneDto> Zones { get; set; } = new();
     }
 }

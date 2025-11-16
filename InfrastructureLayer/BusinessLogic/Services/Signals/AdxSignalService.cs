@@ -4,6 +4,7 @@ using DomainLayer.Common.Attributes;
 using DomainLayer.Entities;
 using InfrastructureLayer.Context;
 using Microsoft.EntityFrameworkCore;
+using ApplicationLayer.Common.Utilities;
 
 namespace InfrastructureLayer.BusinessLogic.Services.Signals;
 
@@ -176,7 +177,7 @@ public class AdxSignalService(ApplicationDbContext db, ISignalLoggingService log
                 var diMinusLast = series.diMinus[^1];
                 var avgVol = c.TakeLast(20).Average(x => x.Volume);
                 var volRatio = avgVol == 0 ? 0 : (last.Volume / avgVol);
-                var tol = Math.Max(last.Close * 0.0025m, atr * 0.25m);
+                var tol = SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf);
                 var condUp = above && adxLast >= threshold;
                 var condDown = !above && adxLast <= threshold;
                 if (condUp || condDown)
@@ -246,7 +247,7 @@ public class AdxSignalService(ApplicationDbContext db, ISignalLoggingService log
                 var diMinusLast = series.diMinus[^1];
                 var avgVol = c.TakeLast(20).Average(x => x.Volume);
                 var volRatio = avgVol == 0 ? 0 : (last.Volume / avgVol);
-                var tol = Math.Max(last.Close * 0.0025m, atr * 0.25m);
+                var tol = SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf);
                 var cond = plusAbove ? diPlusLast > diMinusLast : diMinusLast > diPlusLast;
                 if (cond)
                 {

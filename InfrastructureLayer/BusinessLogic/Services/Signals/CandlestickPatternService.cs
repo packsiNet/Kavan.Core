@@ -4,6 +4,7 @@ using DomainLayer.Common.Attributes;
 using DomainLayer.Entities;
 using InfrastructureLayer.Context;
 using Microsoft.EntityFrameworkCore;
+using ApplicationLayer.Common.Utilities;
 
 namespace InfrastructureLayer.BusinessLogic.Services.Signals;
 
@@ -138,7 +139,7 @@ public class CandlestickPatternService(ApplicationDbContext db, ISignalLoggingSe
                     var s2 = p - (prev.High - prev.Low);
                     var r3 = prev.High + 2m * (p - prev.Low);
                     var s3 = prev.Low - 2m * (prev.High - p);
-                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "BullishHammer", 1, last.Close, last.High, last.Low, r1, r2, r3, s1, s2, s3, atr, Math.Max(last.Close * 0.0025m, atr * 0.25m), avgVol == 0 ? 0 : (last.Volume / avgVol), b, last, candlesAsc);
+                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "BullishHammer", 1, last.Close, last.High, last.Low, r1, r2, r3, s1, s2, s3, atr, SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf), avgVol == 0 ? 0 : (last.Volume / avgVol), b, last, candlesAsc);
                 }
             }
         }
@@ -178,7 +179,7 @@ public class CandlestickPatternService(ApplicationDbContext db, ISignalLoggingSe
                     var s2 = p - (prev.High - prev.Low);
                     var r3 = prev.High + 2m * (p - prev.Low);
                     var s3 = prev.Low - 2m * (prev.High - p);
-                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "ShootingStar", -1, last.Close, last.High, last.Low, r1, r2, r3, s1, s2, s3, atr, Math.Max(last.Close * 0.0025m, atr * 0.25m), avgVol == 0 ? 0 : (last.Volume / avgVol), b, last, candlesAsc);
+                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "ShootingStar", -1, last.Close, last.High, last.Low, r1, r2, r3, s1, s2, s3, atr, SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf), avgVol == 0 ? 0 : (last.Volume / avgVol), b, last, candlesAsc);
                 }
             }
         }
@@ -222,7 +223,7 @@ public class CandlestickPatternService(ApplicationDbContext db, ISignalLoggingSe
                     var s2 = p - (prev.High - prev.Low);
                     var r3 = prev.High + 2m * (p - prev.Low);
                     var s3 = prev.Low - 2m * (prev.High - p);
-                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "BullishEngulfing", 1, last.Close, last.High, last.Low, r1, r2, r3, s1, s2, s3, atr, Math.Max(last.Close * 0.0025m, atr * 0.25m), avgVol == 0 ? 0 : (last.Volume / avgVol), b, last, c);
+                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "BullishEngulfing", 1, last.Close, last.High, last.Low, r1, r2, r3, s1, s2, s3, atr, SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf), avgVol == 0 ? 0 : (last.Volume / avgVol), b, last, c);
                 }
             }
         }
@@ -260,7 +261,7 @@ public class CandlestickPatternService(ApplicationDbContext db, ISignalLoggingSe
                     var s2 = p - (prev.High - prev.Low);
                     var r3 = prev.High + 2m * (p - prev.Low);
                     var s3 = prev.Low - 2m * (prev.High - p);
-                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "BearishEngulfing", -1, last.Close, last.High, last.Low, r1, r2, r3, s1, s2, s3, atr, Math.Max(last.Close * 0.0025m, atr * 0.25m), avgVol == 0 ? 0 : (last.Volume / avgVol), b, last, c);
+                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "BearishEngulfing", -1, last.Close, last.High, last.Low, r1, r2, r3, s1, s2, s3, atr, SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf), avgVol == 0 ? 0 : (last.Volume / avgVol), b, last, c);
                 }
             }
         }
@@ -296,7 +297,7 @@ public class CandlestickPatternService(ApplicationDbContext db, ISignalLoggingSe
                     var s2 = p - (b.High - b.Low);
                     var r3 = b.High + 2m * (p - b.Low);
                     var s3 = b.Low - 2m * (b.High - p);
-                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "ThreeWhiteSoldiers", 1, d.Close, d.High, d.Low, r1, r2, r3, s1, s2, s3, atr, Math.Max(d.Close * 0.0025m, atr * 0.25m), avgVol == 0 ? 0 : (d.Volume / avgVol), Body(d), d, c);
+                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "ThreeWhiteSoldiers", 1, d.Close, d.High, d.Low, r1, r2, r3, s1, s2, s3, atr, SignalThresholdsExtensions.ComputeTolerance(d.Close, atr, tf), avgVol == 0 ? 0 : (d.Volume / avgVol), Body(d), d, c);
                 }
             }
         }
@@ -332,7 +333,7 @@ public class CandlestickPatternService(ApplicationDbContext db, ISignalLoggingSe
                     var s2 = p - (b.High - b.Low);
                     var r3 = b.High + 2m * (p - b.Low);
                     var s3 = b.Low - 2m * (b.High - p);
-                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "ThreeBlackCrows", -1, d.Close, d.High, d.Low, r1, r2, r3, s1, s2, s3, atr, Math.Max(d.Close * 0.0025m, atr * 0.25m), avgVol == 0 ? 0 : (d.Volume / avgVol), Body(d), d, c);
+                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "ThreeBlackCrows", -1, d.Close, d.High, d.Low, r1, r2, r3, s1, s2, s3, atr, SignalThresholdsExtensions.ComputeTolerance(d.Close, atr, tf), avgVol == 0 ? 0 : (d.Volume / avgVol), Body(d), d, c);
                 }
             }
         }
@@ -368,7 +369,7 @@ public class CandlestickPatternService(ApplicationDbContext db, ISignalLoggingSe
                     var s2 = p - (b.High - b.Low);
                     var r3 = b.High + 2m * (p - b.Low);
                     var s3 = b.Low - 2m * (b.High - p);
-                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "MorningStar", 1, d.Close, d.High, d.Low, r1, r2, r3, s1, s2, s3, atr, Math.Max(d.Close * 0.0025m, atr * 0.25m), avgVol == 0 ? 0 : (d.Volume / avgVol), Body(d), d, c);
+                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "MorningStar", 1, d.Close, d.High, d.Low, r1, r2, r3, s1, s2, s3, atr, SignalThresholdsExtensions.ComputeTolerance(d.Close, atr, tf), avgVol == 0 ? 0 : (d.Volume / avgVol), Body(d), d, c);
                 }
             }
         }
@@ -404,7 +405,7 @@ public class CandlestickPatternService(ApplicationDbContext db, ISignalLoggingSe
                     var s2 = p - (b.High - b.Low);
                     var r3 = b.High + 2m * (p - b.Low);
                     var s3 = b.Low - 2m * (b.High - p);
-                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "EveningStar", -1, d.Close, d.High, d.Low, r1, r2, r3, s1, s2, s3, atr, Math.Max(d.Close * 0.0025m, atr * 0.25m), avgVol == 0 ? 0 : (d.Volume / avgVol), Body(d), d, c);
+                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "EveningStar", -1, d.Close, d.High, d.Low, r1, r2, r3, s1, s2, s3, atr, SignalThresholdsExtensions.ComputeTolerance(d.Close, atr, tf), avgVol == 0 ? 0 : (d.Volume / avgVol), Body(d), d, c);
                 }
             }
         }
@@ -444,7 +445,7 @@ public class CandlestickPatternService(ApplicationDbContext db, ISignalLoggingSe
                     var s2 = p - (prev.High - prev.Low);
                     var r3 = prev.High + 2m * (p - prev.Low);
                     var s3 = prev.Low - 2m * (prev.High - p);
-                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "HangingMan", -1, last.Close, last.High, last.Low, r1, r2, r3, s1, s2, s3, atr, Math.Max(last.Close * 0.0025m, atr * 0.25m), avgVol == 0 ? 0 : (last.Volume / avgVol), b, last, c);
+                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "HangingMan", -1, last.Close, last.High, last.Low, r1, r2, r3, s1, s2, s3, atr, SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf), avgVol == 0 ? 0 : (last.Volume / avgVol), b, last, c);
                 }
             }
         }
@@ -473,7 +474,7 @@ public class CandlestickPatternService(ApplicationDbContext db, ISignalLoggingSe
                 var cond = b <= Math.Max(atr * 0.15m, rng * 0.1m);
                 if (cond)
                 {
-                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "Doji", 0, last.Close, last.High, last.Low, 0m, 0m, 0m, 0m, 0m, 0m, atr, Math.Max(last.Close * 0.0025m, atr * 0.25m), avgVol == 0 ? 0 : (last.Volume / avgVol), b, last, c);
+                    await _logger.LogSignalAsync("Candlestick", symbol, cryptoId, tf, "Doji", 0, last.Close, last.High, last.Low, 0m, 0m, 0m, 0m, 0m, 0m, atr, SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf), avgVol == 0 ? 0 : (last.Volume / avgVol), b, last, c);
                 }
             }
         }

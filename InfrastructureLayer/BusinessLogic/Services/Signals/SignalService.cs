@@ -5,6 +5,7 @@ using DomainLayer.Entities;
 using InfrastructureLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using ApplicationLayer.Common.Utilities;
 
 namespace InfrastructureLayer.BusinessLogic.Services.Signals;
 
@@ -169,7 +170,7 @@ public class SignalService(ApplicationDbContext db, ISignalLoggingService logger
                     }
 
                     var atr = ComputeAtr(candlesAsc, AtrPeriod);
-                    var tolerance = Math.Max(candlesAsc[^1].Close * 0.0025m, atr * 0.25m); // ~0.25 ATR or 0.25%
+                    var tolerance = SignalThresholdsExtensions.ComputeTolerance(candlesAsc[^1].Close, atr, tf);
                     var avgVol = candlesAsc.TakeLast(20).Average(c => c.Volume);
                     var last = candlesAsc[^1];
                     var prev = candlesAsc[^2];
@@ -293,7 +294,7 @@ public class SignalService(ApplicationDbContext db, ISignalLoggingService logger
                     }
 
                     var atr = ComputeAtr(candlesAsc, AtrPeriod);
-                    var tolerance = Math.Max(candlesAsc[^1].Close * 0.0025m, atr * 0.25m);
+                    var tolerance = SignalThresholdsExtensions.ComputeTolerance(candlesAsc[^1].Close, atr, tf);
                     var avgVol = candlesAsc.TakeLast(20).Average(c => c.Volume);
                     var last = candlesAsc[^1];
                     var prev = candlesAsc[^2];

@@ -4,6 +4,7 @@ using DomainLayer.Common.Attributes;
 using DomainLayer.Entities;
 using InfrastructureLayer.Context;
 using Microsoft.EntityFrameworkCore;
+using ApplicationLayer.Common.Utilities;
 
 namespace InfrastructureLayer.BusinessLogic.Services.Signals;
 
@@ -121,7 +122,7 @@ public class IchimokuGreenKumoService(ApplicationDbContext db, ISignalLoggingSer
                 var last = candlesAsc[^1];
                 var prev = candlesAsc[^2];
                 var atr = ComputeAtr(candlesAsc, 14);
-                var tol = Math.Max(last.Close * 0.0025m, atr * 0.25m);
+                var tol = SignalThresholdsExtensions.ComputeTolerance(last.Close, atr, tf);
                 var avgVol = candlesAsc.TakeLast(20).Average(c => c.Volume);
 
                 var cloud = ComputeCloud(candlesAsc);

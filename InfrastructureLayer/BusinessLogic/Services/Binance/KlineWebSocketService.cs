@@ -196,15 +196,15 @@ public class KlineWebSocketService(
     private record BinanceCombinedStream
     (
         [property: JsonPropertyName("stream")] string Stream,
-        [property: JsonPropertyName("data")] BinanceData? Data
+        [property: JsonPropertyName("data")] BinanceData Data
     );
 
     private record BinanceData
     (
-        [property: JsonPropertyName("e")] string? EventType,
+        [property: JsonPropertyName("e")] string EventType,
         [property: JsonPropertyName("E")] long? EventTime,
-        [property: JsonPropertyName("s")] string? Symbol,
-        [property: JsonPropertyName("k")] BinanceKline? Kline
+        [property: JsonPropertyName("s")] string Symbol,
+        [property: JsonPropertyName("k")] BinanceKline Kline
     );
 
     private record BinanceKline
@@ -217,12 +217,12 @@ public class KlineWebSocketService(
         [property: JsonPropertyName("h")] string High,
         [property: JsonPropertyName("l")] string Low,
         [property: JsonPropertyName("c")] string Close,
-        [property: JsonPropertyName("v")] string? Volume,
+        [property: JsonPropertyName("v")] string Volume,
         [property: JsonPropertyName("n")] long NumberOfTrades,
         [property: JsonPropertyName("x")] bool IsFinal,
-        [property: JsonPropertyName("V")] string? TakerBuyBaseVolume,
-        [property: JsonPropertyName("q")] string? QuoteVolume,
-        [property: JsonPropertyName("Q")] string? TakerBuyQuoteVolume,
-        [property: JsonPropertyName("B")] object? Ignore
+        [property: JsonPropertyName("V")] string TakerBuyBaseVolume,
+        [property: JsonPropertyName("q")] string QuoteVolume,
+        [property: JsonPropertyName("Q")] string TakerBuyQuoteVolume,
+        [property: JsonPropertyName("B")] object Ignore
     );
 }

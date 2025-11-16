@@ -17,5 +17,7 @@ namespace ApplicationLayer.Dto.Signals
         public FilterOptionsDto Filters { get; set; }
 
         public UserPreferencesDto Preferences { get; set; }
+
+        public string StrategyText { get; set; }
     }
 }

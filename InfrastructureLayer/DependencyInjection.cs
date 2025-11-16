@@ -47,6 +47,7 @@ public static class DependencyInjection
         // Enable Binance WebSocket kline service (1m,5m,1h,4h,1d)
         services.AddHostedService<BinanceKlineWebSocketHostedService>();
         services.AddHostedService<SignalsBackgroundService>();
+        services.AddHostedService<SignalsRetentionBackgroundService>();
 
         services.AddHttpContextAccessor();
         services.MediatRDependency();
@@ -74,6 +75,7 @@ public static class DependencyInjection
     private static void RegisterService(this IServiceCollection services, IConfiguration configuration)
     {
         services.ConfigurationDependency();
+        services.Configure<InfrastructureLayer.Configuration.SignalRetentionOptions>(configuration.GetSection("SignalRetention"));
         services.AddMemoryCache();
         services.SwaggerConfiguration(configuration);
         services.JwtAuthorizeConfiguration(configuration);
