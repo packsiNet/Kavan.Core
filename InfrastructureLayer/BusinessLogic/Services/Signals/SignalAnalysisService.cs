@@ -18,6 +18,7 @@ public class SignalAnalysisService(
     IRepository<Candle_4h> c4h,
     IRepository<Candle_1d> c1d,
     IConditionEvaluatorFactory factory,
+    IStrategyTextParser strategyTextParser = null,
     SignalThresholds thresholds = null) : ISignalAnalysisService
 {
     private readonly IRepository<Cryptocurrency> _cryptoRepo = cryptoRepo;
@@ -27,11 +28,166 @@ public class SignalAnalysisService(
     private readonly IRepository<Candle_4h> _c4h = c4h;
     private readonly IRepository<Candle_1d> _c1d = c1d;
     private readonly IConditionEvaluatorFactory _factory = factory;
+    private readonly IStrategyTextParser _strategyTextParser = strategyTextParser;
     private readonly SignalThresholds _thresholds = thresholds ?? new SignalThresholds();
 
     public async Task<IReadOnlyList<SignalResultDto>> AnalyzeAsync(SignalRequestDto request, CancellationToken cancellationToken)
     {
-        return Array.Empty<SignalResultDto>();
+        var results = new List<SignalResultDto>();
+        var symbols = await ResolveSymbolsAsync(request, cancellationToken);
+        var timeframes = request.Timeframes is { Count: > 0 } ? request.Timeframes : new List<string> { "1h" };
+
+        var parsed = (!string.IsNullOrWhiteSpace(request.StrategyText) && _strategyTextParser != null)
+            ? _strategyTextParser.Parse(request.StrategyText)
+            : new StrategyParseResultDto();
+
+        var conditions = (request.Conditions?.Count > 0 ? request.Conditions : parsed.Conditions) ?? new List<ConditionNodeDto>();
+        var groups = (request.Groups?.Count > 0 ? request.Groups : parsed.Groups) ?? new List<GroupNodeDto>();
+
+        timeframes = timeframes.OrderByDescending(GetTfRank).ToList();
+
+        foreach (var symbol in symbols)
+        {
+            foreach (var tf in timeframes)
+            {
+                if (request.Filters?.ApplyBefore == true)
+                {
+                    var pass = await PassesFiltersAsync(symbol, tf, request.Filters, cancellationToken);
+                    if (!pass) continue;
+                }
+
+                var evals = new List<ConditionEvaluationResult>();
+
+                if (conditions is { Count: > 0 })
+                {
+                    foreach (var cond in conditions)
+                    {
+                        var ctf = string.IsNullOrWhiteSpace(cond.Timeframe) ? tf : cond.Timeframe;
+                        cond.Parameters ??= new Dictionary<string, object>();
+                        cond.Parameters["macro_context"] = macroContext.GetValueOrDefault(symbol);
+                        var r = await EvaluateConditionAsync(symbol, ctf, cond, cancellationToken);
+                        if (r.Matched) evals.Add(r);
+                    }
+                }
+
+                if (groups is { Count: > 0 })
+                {
+                    foreach (var group in groups)
+                    {
+                        var gtf = string.IsNullOrWhiteSpace(group.Timeframe) ? tf : group.Timeframe;
+                        var gr = await EvaluateGroupAsync(symbol, gtf, group, cancellationToken);
+                        if (gr.Matched) evals.Add(gr);
+                    }
+                }
+
+                if (evals.Count == 0) continue;
+
+                var score = ComputeWeightedScore(evals);
+
+                if (request.Filters != null && !request.Filters.ApplyBefore)
+                {
+                    var post = await PassesFiltersAsync(symbol, tf, request.Filters, cancellationToken);
+                    if (!post) score -= _thresholds.FilterPenaltyWeight;
+                }
+
+                var last = (await GetRecentCandlesAsync(symbol, tf, 1, cancellationToken)).LastOrDefault();
+                var explanation = BuildExplanation(evals);
+                var attributes = MergeAttributes(evals);
+                var detailed = ExtractDetailedTypes(evals);
+                var signalType = InferSignalType(evals);
+                var zones = ExtractZones(evals);
+
+                var confidence = Math.Min(100.0, Math.Max(0.0, (score / _thresholds.MediumMax) * 100.0));
+                var matchedTypes = evals.Select(e => e.Type).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
+                var matchedConds = evals.SelectMany(e => e.MatchedConditions).ToList();
+                var strength = SignalStrength.FromScore(score, _thresholds.WeakMax, _thresholds.MediumMax);
+
+                if (!string.IsNullOrWhiteSpace(request?.Preferences?.Signal_Strength))
+                {
+                    var desired = request.Preferences.Signal_Strength.Trim().ToLowerInvariant();
+                    var ok = desired switch
+                    {
+                        "strong" => strength.Equals(SignalStrength.Strong),
+                        "medium" => strength.Equals(SignalStrength.Medium) || strength.Equals(SignalStrength.Strong),
+                        "weak" => true,
+                        _ => true
+                    };
+                    if (!ok) continue;
+                }
+
+                results.Add(new SignalResultDto
+                {
+                    Symbol = symbol,
+                    TimeFrame = tf,
+                    Timestamp = last?.CloseTime ?? DateTime.UtcNow,
+                    SignalType = signalType,
+                    Strength = strength,
+                    Confidence = confidence,
+                    Explanation = explanation,
+                    MatchedConditions = matchedConds,
+                    MatchedTypes = matchedTypes,
+                    MatchedDetailedTypes = detailed,
+                    Attributes = attributes,
+                    Zones = zones
+                });
+            }
+        }
+
+        return results;
+    }
+
+    private static int GetTfRank(string tf)
+        => tf switch { "1d" => 500, "4h" => 400, "1h" => 300, "15m" => 200, "5m" => 150, "1m" => 100, _ => 50 };
+
+    private readonly Dictionary<string, List<ConditionEvaluationResult>> macroContext = new();
+
+    private double ComputeWeightedScore(List<ConditionEvaluationResult> evals)
+    {
+        double score = 0.0;
+        foreach (var e in evals)
+        {
+            var tf = e.Details != null && e.Details.TryGetValue("timeframe", out var tfv) ? tfv : "";
+            var tfWeight = GetTfRank(tf) >= 300 ? _thresholds.MacroWeight : _thresholds.MicroWeight;
+            var typeWeight = (e.Type?.Contains("fvg", StringComparison.OrdinalIgnoreCase) == true
+                              || e.Type?.Contains("order", StringComparison.OrdinalIgnoreCase) == true
+                              || e.Type?.Contains("bos", StringComparison.OrdinalIgnoreCase) == true
+                              || e.Type?.Contains("choch", StringComparison.OrdinalIgnoreCase) == true)
+                             ? _thresholds.PatternWeight : 1.0;
+            score += (e.ScoreContribution + _thresholds.BaseConditionWeight) * tfWeight * typeWeight;
+        }
+        return score;
+    }
+
+    private static List<PoiZoneDto> ExtractZones(IEnumerable<ConditionEvaluationResult> evals)
+    {
+        var zones = new List<PoiZoneDto>();
+        foreach (var e in evals)
+        {
+            if (e.Details == null || e.Details.Count == 0) continue;
+            if (e.Details.TryGetValue("zone_low", out var zl) || e.Details.TryGetValue("zone_high", out var zh) || e.Details.TryGetValue("entry", out var en))
+            {
+                var z = new PoiZoneDto
+                {
+                    Name = e.Type,
+                    Type = e.Details.GetValueOrDefault("zone_type"),
+                    Timeframe = e.Details.GetValueOrDefault("timeframe")
+                };
+                if (e.Details.TryGetValue("zone_low", out var zlStr) && decimal.TryParse(zlStr, out var zlVal)) z.PriceLow = zlVal;
+                if (e.Details.TryGetValue("zone_high", out var zhStr) && decimal.TryParse(zhStr, out var zhVal)) z.PriceHigh = zhVal;
+                if (e.Details.TryGetValue("entry", out var enStr) && decimal.TryParse(enStr, out var enVal)) z.Entry = enVal;
+                if (e.Details.TryGetValue("sl", out var slStr) && decimal.TryParse(slStr, out var slVal)) z.StopLoss = slVal;
+                foreach (var tpKey in new[] { "tp1", "tp2", "tp3" })
+                {
+                    if (e.Details.TryGetValue(tpKey, out var tpStr) && decimal.TryParse(tpStr, out var tpVal)) z.TakeProfits.Add(tpVal);
+                }
+                foreach (var kv in e.Details)
+                {
+                    if (!z.Attributes.ContainsKey(kv.Key)) z.Attributes[kv.Key] = kv.Value;
+                }
+                zones.Add(z);
+            }
+        }
+        return zones;
     }
 
     private async Task<List<string>> ResolveSymbolsAsync(SignalRequestDto request, CancellationToken ct)
@@ -110,6 +266,8 @@ public class SignalAnalysisService(
             return new ConditionEvaluationResult { Matched = false, Explanation = $"No evaluator for type: {cond.Type}" };
 
         var result = await evaluator.EvaluateAsync(symbol, tf, cond, ct);
+        result.Details ??= new Dictionary<string, string>();
+        result.Details["timeframe"] = tf;
 
         // Confirmations handling
         if (cond.ConfirmationRequired && cond.Confirmation.Count > 0)

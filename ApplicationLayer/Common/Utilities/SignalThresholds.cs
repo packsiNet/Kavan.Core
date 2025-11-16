@@ -13,6 +13,12 @@ namespace ApplicationLayer.Common.Utilities
         public double ConfirmationBonusWeight { get; set; } = 0.5;
 
         public double FilterPenaltyWeight { get; set; } = 1.0;
+
+        public double MacroWeight { get; set; } = 2.0;
+
+        public double MicroWeight { get; set; } = 1.0;
+
+        public double PatternWeight { get; set; } = 1.5;
     }
 
     public static class SignalThresholdsExtensions
