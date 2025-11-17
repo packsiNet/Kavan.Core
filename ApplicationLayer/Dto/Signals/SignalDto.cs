@@ -64,5 +64,7 @@ namespace ApplicationLayer.Dto.Signals
         public decimal Close { get; set; }
 
         public decimal Volume { get; set; }
+
+        public bool IsTrigger { get; set; }
     }
 }

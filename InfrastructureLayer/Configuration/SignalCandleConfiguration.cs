@@ -13,6 +13,10 @@ namespace InfrastructureLayer.Configuration
 
             builder.Property(x => x.Timeframe).HasMaxLength(10).IsRequired();
             builder.Property(x => x.Index).IsRequired();
+            builder.Property(x => x.IsTrigger).HasDefaultValue(false).IsRequired();
+
+            builder.HasIndex(x => new { x.SignalId, x.Index });
+            builder.HasIndex(x => new { x.SignalId, x.IsTrigger });
         }
     }
 }

@@ -1414,7 +1414,9 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CryptocurrencyId");
+                    b.HasIndex("CryptocurrencyId", "SignalTime");
+
+                    b.HasIndex("Symbol", "Timeframe", "SignalCategory", "SignalName", "Direction", "SignalTime");
 
                     b.ToTable("Signal", "dbo");
                 });
@@ -1458,6 +1460,11 @@ namespace InfrastructureLayer.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsTrigger")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<decimal>("Low")
                         .HasColumnType("decimal(18, 2)");
 
@@ -1498,7 +1505,9 @@ namespace InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SignalId");
+                    b.HasIndex("SignalId", "Index");
+
+                    b.HasIndex("SignalId", "IsTrigger");
 
                     b.ToTable("SignalCandle", "dbo");
                 });
