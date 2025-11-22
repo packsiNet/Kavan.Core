@@ -218,11 +218,31 @@ public class SignalLoggingService(ApplicationDbContext db) : ISignalLoggingServi
                     High = c.High,
                     Low = c.Low,
                     Close = c.Close,
-                    Volume = c.Volume
+                    Volume = c.Volume,
+                    IsTrigger = i == ordered.Count - 1
                 });
             }
 
             _db.AddRange(list);
+            await _db.SaveChangesAsync();
+        }
+        else
+        {
+            var sc = new SignalCandle
+            {
+                SignalId = log.Id,
+                Index = 0,
+                Timeframe = timeframe,
+                OpenTime = lastCandle.OpenTime,
+                CloseTime = lastCandle.CloseTime,
+                Open = lastCandle.Open,
+                High = lastCandle.High,
+                Low = lastCandle.Low,
+                Close = lastCandle.Close,
+                Volume = lastCandle.Volume,
+                IsTrigger = true
+            };
+            _db.Add(sc);
             await _db.SaveChangesAsync();
         }
 
@@ -311,11 +331,31 @@ public class SignalLoggingService(ApplicationDbContext db) : ISignalLoggingServi
                     High = c.High,
                     Low = c.Low,
                     Close = c.Close,
-                    Volume = c.Volume
+                    Volume = c.Volume,
+                    IsTrigger = i == ordered.Count - 1
                 });
             }
 
             _db.AddRange(list);
+            await _db.SaveChangesAsync();
+        }
+        else
+        {
+            var sc = new SignalCandle
+            {
+                SignalId = log.Id,
+                Index = 0,
+                Timeframe = timeframe,
+                OpenTime = lastCandle.OpenTime,
+                CloseTime = lastCandle.CloseTime,
+                Open = lastCandle.Open,
+                High = lastCandle.High,
+                Low = lastCandle.Low,
+                Close = lastCandle.Close,
+                Volume = lastCandle.Volume,
+                IsTrigger = true
+            };
+            _db.Add(sc);
             await _db.SaveChangesAsync();
         }
 

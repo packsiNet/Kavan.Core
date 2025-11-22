@@ -11,7 +11,8 @@ namespace ApplicationLayer.Features.Signals.Handler
 {
     public class GetSignalByIdHandler(
         IRepository<Signal> _signals,
-        IRepository<SignalCandle> _candles)
+        IRepository<SignalCandle> _candles,
+        ApplicationLayer.Interfaces.Services.Candles.ICandlesQueryService _candlesQuery)
         : IRequestHandler<GetSignalByIdQuery, HandlerResult>
     {
         public async Task<HandlerResult> Handle(GetSignalByIdQuery request, CancellationToken cancellationToken)
@@ -25,10 +26,86 @@ namespace ApplicationLayer.Features.Signals.Handler
                 if (log == null)
                     return Result.NotFound("سیگنال یافت نشد").ToHandlerResult();
 
-                var candleList = await _candles.Query()
-                    .Where(c => c.SignalId == request.Id)
-                    .OrderBy(c => c.Index)
-                    .ToListAsync(cancellationToken);
+            var candleList = await _candles.Query()
+                .Where(c => c.SignalId == request.Id)
+                .OrderBy(c => c.Index)
+                .ToListAsync(cancellationToken);
+
+            var before = await _candlesQuery.GetBeforeAsync(log.CryptocurrencyId, log.Timeframe, log.CandleCloseTime, 0, cancellationToken);
+            var after = await _candlesQuery.GetAfterAsync(log.CryptocurrencyId, log.Timeframe, log.CandleCloseTime, 0, cancellationToken);
+
+            var map = new Dictionary<long, ApplicationLayer.Dto.Signals.CandleDto>();
+
+            foreach (var c in before)
+            {
+                var key = c.CloseTime.Ticks;
+                if (!map.ContainsKey(key))
+                {
+                    map[key] = new ApplicationLayer.Dto.Signals.CandleDto
+                    {
+                        OpenTime = c.OpenTime,
+                        CloseTime = c.CloseTime,
+                        Open = c.Open,
+                        High = c.High,
+                        Low = c.Low,
+                        Close = c.Close,
+                        Volume = c.Volume,
+                        IsTrigger = false
+                    };
+                }
+            }
+
+            foreach (var sc in candleList)
+            {
+                var key = sc.CloseTime.Ticks;
+                map[key] = new ApplicationLayer.Dto.Signals.CandleDto
+                {
+                    OpenTime = sc.OpenTime,
+                    CloseTime = sc.CloseTime,
+                    Open = sc.Open,
+                    High = sc.High,
+                    Low = sc.Low,
+                    Close = sc.Close,
+                    Volume = sc.Volume,
+                    IsTrigger = sc.IsTrigger
+                };
+            }
+
+            foreach (var c in after)
+            {
+                var key = c.CloseTime.Ticks;
+                if (!map.ContainsKey(key))
+                {
+                    map[key] = new ApplicationLayer.Dto.Signals.CandleDto
+                    {
+                        OpenTime = c.OpenTime,
+                        CloseTime = c.CloseTime,
+                        Open = c.Open,
+                        High = c.High,
+                        Low = c.Low,
+                        Close = c.Close,
+                        Volume = c.Volume,
+                        IsTrigger = false
+                    };
+                }
+            }
+
+            if (!map.ContainsKey(log.CandleCloseTime.Ticks))
+            {
+                map[log.CandleCloseTime.Ticks] = new ApplicationLayer.Dto.Signals.CandleDto
+                {
+                    OpenTime = log.CandleOpenTime,
+                    CloseTime = log.CandleCloseTime,
+                    Open = log.CandleOpen,
+                    High = log.CandleHigh,
+                    Low = log.CandleLow,
+                    Close = log.CandleClose,
+                    Volume = log.CandleVolume,
+                    IsTrigger = true
+                };
+            }
+
+            var combined = map.Values.OrderBy(c => c.CloseTime).ToList();
 
                 var dto = new SignalDto
                 {
@@ -61,18 +138,20 @@ namespace ApplicationLayer.Features.Signals.Handler
                         High = log.CandleHigh,
                         Low = log.CandleLow,
                         Close = log.CandleClose,
-                        Volume = log.CandleVolume
+                        Volume = log.CandleVolume,
+                        IsTrigger = true
                     },
-                    Candles = candleList.Select(c => new CandleDto
+                    Candles = combined.Select((c, idx) => new CandleDto
                     {
-                        Index = c.Index,
+                        Index = idx,
                         OpenTime = c.OpenTime,
                         CloseTime = c.CloseTime,
                         Open = c.Open,
                         High = c.High,
                         Low = c.Low,
                         Close = c.Close,
-                        Volume = c.Volume
+                        Volume = c.Volume,
+                        IsTrigger = c.IsTrigger
                     }).ToList()
                 };
 
