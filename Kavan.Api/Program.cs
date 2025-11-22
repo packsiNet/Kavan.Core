@@ -11,7 +11,6 @@ builder.Services.Register(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 // Add SignalR
 builder.Services.AddSignalR();

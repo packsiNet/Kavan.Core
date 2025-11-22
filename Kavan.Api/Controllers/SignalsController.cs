@@ -1,5 +1,5 @@
-using ApplicationLayer.Common.Enums;
 using ApplicationLayer.Common.Extensions;
+using ApplicationLayer.Common.Enums;
 using ApplicationLayer.Dto.Signals;
 using ApplicationLayer.Features.Signals.Query;
 using MediatR;

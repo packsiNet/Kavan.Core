@@ -1,8 +1,8 @@
 using ApplicationLayer.Dto.BaseDtos;
 using ApplicationLayer.DTOs.Ideas;
 using ApplicationLayer.Interfaces;
-using ApplicationLayer.Interfaces.Ideas;
 using ApplicationLayer.Interfaces.External;
+using ApplicationLayer.Interfaces.Ideas;
 using DomainLayer.Common.Attributes;
 using DomainLayer.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +13,8 @@ namespace InfrastructureLayer.BusinessLogic.Services.Ideas;
 public class IdeaService(IUnitOfWork _uow,
                          IRepository<Idea> _ideas,
                          IRepository<Cryptocurrency> _cryptos,
-                         IFileStorageService _fileStorage) : IIdeaService
+                         IFileStorageService _fileStorage,
+                         IUserContextService _userContext) : IIdeaService
 {
     public async Task<Result<IdeaDto>> CreateAsync(CreateIdeaDto dto)
     {
@@ -64,6 +65,10 @@ public class IdeaService(IUnitOfWork _uow,
         if (entity == null)
             return Result<IdeaDto>.NotFound("ایده یافت نشد");
 
+        var ownerId = EF.Property<int?>(entity, "CreatedByUserId");
+        if (_userContext.UserId == null || ownerId != _userContext.UserId)
+            return Result<IdeaDto>.Failure(new Error("INCORRECT_USER", "اجازه ویرایش این ایده را ندارید", ApplicationLayer.Common.Enums.RequestStatus.IncorrectUser));
+
         if (!ApplicationLayer.Common.Enums.TimeframeUnit.IsValid(dto.Timeframe))
             return Result<IdeaDto>.ValidationFailure("محدوده زمانی نامعتبر است");
         if (!ApplicationLayer.Common.Enums.IdeaTrend.IsValid(dto.Trend))
@@ -107,6 +112,10 @@ public class IdeaService(IUnitOfWork _uow,
         if (entity == null)
             return Result.NotFound("ایده یافت نشد");
 
+        var ownerId = EF.Property<int?>(entity, "CreatedByUserId");
+        if (_userContext.UserId == null || ownerId != _userContext.UserId)
+            return Result.Failure(new Error("INCORRECT_USER", "اجازه حذف این ایده را ندارید", ApplicationLayer.Common.Enums.RequestStatus.IncorrectUser));
+
         await _uow.BeginTransactionAsync();
         _ideas.Remove(entity);
         await _uow.SaveChangesAsync();
@@ -125,6 +134,44 @@ public class IdeaService(IUnitOfWork _uow,
     public async Task<Result<IdeasPageDto>> GetPublicAsync(GetIdeasRequestDto dto)
     {
         var query = _ideas.Query().Where(x => x.IsPublic);
+
+        if (!string.IsNullOrWhiteSpace(dto.Symbol))
+            query = query.Where(x => x.Symbol == dto.Symbol);
+        if (!string.IsNullOrWhiteSpace(dto.Timeframe))
+            query = query.Where(x => x.Timeframe == dto.Timeframe);
+        if (!string.IsNullOrWhiteSpace(dto.Trend))
+            query = query.Where(x => x.Trend == dto.Trend);
+        if (dto.Tags != null && dto.Tags.Count > 0)
+        {
+            foreach (var tag in dto.Tags)
+                query = query.Where(x => x.Tags.Contains(tag));
+        }
+
+        var total = await query.CountAsync();
+        var items = await query
+            .OrderByDescending(x => x.CreatedAt)
+            .Skip(dto.Pagination.Skip)
+            .Take(dto.Pagination.PageSize)
+            .Select(x => ToDto(x))
+            .ToListAsync();
+
+        var page = new IdeasPageDto
+        {
+            Items = items,
+            Total = total,
+            Page = dto.Pagination.Page,
+            PageSize = dto.Pagination.PageSize
+        };
+        return Result<IdeasPageDto>.Success(page);
+    }
+
+    public async Task<Result<IdeasPageDto>> GetMineAsync(GetIdeasRequestDto dto)
+    {
+        if (_userContext.UserId == null)
+            return Result<IdeasPageDto>.AuthenticationFailure();
+
+        var uid = _userContext.UserId.Value;
+        var query = _ideas.Query().Where(x => EF.Property<int?>(x, "CreatedByUserId") == uid);
 
         if (!string.IsNullOrWhiteSpace(dto.Symbol))
             query = query.Where(x => x.Symbol == dto.Symbol);

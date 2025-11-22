@@ -1,0 +1,36 @@
+using ApplicationLayer.Common.Enums;
+using ApplicationLayer.Common.Extensions;
+using ApplicationLayer.DTOs.Profiles.Organizations;
+using ApplicationLayer.Features.Profiles.Organizations.Commands;
+using ApplicationLayer.Features.Profiles.Organizations.Query;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Kavan.Api.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+[ApiExplorerSettings(GroupName = "Trader")]
+[Authorize(Policy = nameof(ApiDefinitions.Public), Roles = "Users")]
+public class MyProfileController(IMediator mediator) : ControllerBase
+{
+    [HttpGet("organization")]
+    public async Task<IActionResult> GetMineAsync()
+        => await ResultHelper.GetResultAsync(mediator, new GetMyOrganizationProfileQuery());
+
+    [HttpPut("organization")]
+    [RequestSizeLimit(12_000_000)]
+    public async Task<IActionResult> UpsertAsync([FromForm] UpdateOrganizationProfileDto model)
+        => await ResultHelper.GetResultAsync(mediator, new UpsertOrganizationProfileCommand(model));
+
+    [HttpPost("organization/logo")]
+    [RequestSizeLimit(6_000_000)]
+    public async Task<IActionResult> UploadLogoAsync([FromForm] IFormFile file)
+        => await ResultHelper.GetResultAsync(mediator, new UploadLogoCommand(file));
+
+    [HttpPost("organization/banner")]
+    [RequestSizeLimit(6_000_000)]
+    public async Task<IActionResult> UploadBannerAsync([FromForm] IFormFile file)
+        => await ResultHelper.GetResultAsync(mediator, new UploadBannerCommand(file));
+}

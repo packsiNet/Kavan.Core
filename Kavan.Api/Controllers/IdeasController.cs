@@ -36,6 +36,22 @@ public class IdeasController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetByIdAsync(int id)
         => await ResultHelper.GetResultAsync(mediator, new GetIdeaByIdQuery(id));
 
+    [HttpGet("my")]
+    [Authorize(Policy = nameof(ApiDefinitions.Trader), Roles = "Users")]
+    public async Task<IActionResult> GetMineAsync([FromQuery] string symbol, [FromQuery] string timeframe, [FromQuery] string trend,
+                                                  [FromQuery] string tags, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        var model = new GetIdeasRequestDto
+        {
+            Symbol = symbol,
+            Timeframe = timeframe,
+            Trend = trend,
+            Tags = string.IsNullOrWhiteSpace(tags) ? new List<string>() : tags.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0).ToList(),
+            Pagination = new PaginationDto { Page = page, PageSize = pageSize }
+        };
+        return await ResultHelper.GetResultAsync(mediator, new GetMyIdeasQuery(model));
+    }
+
     [HttpPost]
     [Authorize(Policy = nameof(ApiDefinitions.Trader), Roles = "Users")]
     [RequestSizeLimit(6_000_000)]

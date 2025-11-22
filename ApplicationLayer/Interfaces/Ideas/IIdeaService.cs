@@ -10,4 +10,5 @@ public interface IIdeaService
     Task<Result> DeleteAsync(int id);
     Task<Result<IdeaDto>> GetByIdAsync(int id);
     Task<Result<IdeasPageDto>> GetPublicAsync(GetIdeasRequestDto dto);
+    Task<Result<IdeasPageDto>> GetMineAsync(GetIdeasRequestDto dto);
 }
