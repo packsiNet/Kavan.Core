@@ -4,10 +4,10 @@ using MediatR;
 namespace ApplicationLayer.Features.SignalsRetention.Commands
 {
     public record PurgeOldSignalsCommand(
-        List<string>? Timeframes,
+        List<string> Timeframes,
         DateTime? Until,
         bool DryRun,
-        List<string>? ExcludeCategories,
-        List<string>? ExcludeSignalNames
+        List<string> ExcludeCategories,
+        List<string> ExcludeSignalNames
     ) : IRequest<PurgeOldSignalsResultDto>;
 }
