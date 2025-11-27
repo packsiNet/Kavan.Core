@@ -11,9 +11,9 @@ public class CreateIdeaValidator : AbstractValidator<CreateIdeaDto>
     {
         RuleFor(x => x.Symbol).NotEmpty();
         RuleFor(x => x.Timeframe).NotEmpty().Must(TimeframeUnit.IsValid);
-        RuleFor(x => x.Trend).NotEmpty().Must(IdeaTrend.IsValid);
+        RuleFor(x => x.Trend).Must(IdeaTrend.IsValid);
         RuleFor(x => x.Title).NotEmpty();
-        RuleFor(x => x.Status).NotEmpty().Must(IdeaVisibility.IsValid);
+        RuleFor(x => x.Status).Must(IdeaVisibility.IsValid);
 
         When(x => x.Image != null, () =>
         {
@@ -29,9 +29,9 @@ public class UpdateIdeaValidator : AbstractValidator<UpdateIdeaDto>
     {
         RuleFor(x => x.Symbol).NotEmpty();
         RuleFor(x => x.Timeframe).NotEmpty().Must(TimeframeUnit.IsValid);
-        RuleFor(x => x.Trend).NotEmpty().Must(IdeaTrend.IsValid);
+        RuleFor(x => x.Trend).Must(IdeaTrend.IsValid);
         RuleFor(x => x.Title).NotEmpty();
-        RuleFor(x => x.Status).NotEmpty().Must(IdeaVisibility.IsValid);
+        RuleFor(x => x.Status).Must(IdeaVisibility.IsValid);
 
         When(x => x.Image != null, () =>
         {

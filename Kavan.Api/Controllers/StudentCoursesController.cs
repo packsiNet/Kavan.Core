@@ -12,7 +12,7 @@ namespace Kavan.Api.Controllers;
 [Route("api/student/[controller]")]
 [ApiController]
 [ApiExplorerSettings(GroupName = nameof(ApiDefinitions.Public))]
-[Authorize(Policy = nameof(ApiDefinitions.Public), Roles = "Users")]
+[Authorize(Policy = nameof(ApiDefinitions.Public), Roles = "User")]
 public class StudentCoursesController(IMediator mediator) : ControllerBase
 {
     [HttpPost("{courseId:int}/enroll")]

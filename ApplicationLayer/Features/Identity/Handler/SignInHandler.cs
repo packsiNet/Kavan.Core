@@ -1,11 +1,9 @@
 using ApplicationLayer.Common.Enums;
 using ApplicationLayer.DTOs.Identity;
-using ApplicationLayer.Dto.BaseDtos;
 using ApplicationLayer.Extensions;
+using ApplicationLayer.Extensions.Utilities;
 using ApplicationLayer.Features.Identity.Commands;
 using ApplicationLayer.Interfaces;
-using ApplicationLayer.Interfaces.Services;
-using ApplicationLayer.Extensions.Utilities;
 using MediatR;
 
 namespace ApplicationLayer.Features.Identity.Handler;

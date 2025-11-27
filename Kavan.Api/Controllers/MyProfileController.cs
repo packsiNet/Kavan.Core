@@ -12,7 +12,7 @@ namespace Kavan.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Trader")]
-[Authorize(Policy = nameof(ApiDefinitions.Public), Roles = "Users")]
+[Authorize(Policy = nameof(ApiDefinitions.Public), Roles = "User")]
 public class MyProfileController(IMediator mediator) : ControllerBase
 {
     [HttpGet("organization")]

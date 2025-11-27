@@ -38,16 +38,19 @@ public class IdeaService(IUnitOfWork _uow,
             imageUrl = saveImage.Value;
         }
 
+        var trendEnum = ApplicationLayer.Common.Enums.IdeaTrend.FromValue(dto.Trend);
+        var statusEnum = ApplicationLayer.Common.Enums.IdeaVisibility.FromValue(dto.Status);
+
         var entity = new Idea
         {
             Symbol = dto.Symbol,
             CryptocurrencyId = crypto.Id,
             Timeframe = dto.Timeframe,
-            Trend = dto.Trend,
+            Trend = trendEnum.Name,
             Title = dto.Title,
             Description = dto.Description ?? string.Empty,
             ImageUrl = imageUrl ?? string.Empty,
-            IsPublic = string.Equals(dto.Status, "public", StringComparison.OrdinalIgnoreCase),
+            IsPublic = statusEnum == ApplicationLayer.Common.Enums.IdeaVisibility.Public,
             Tags = dto.Tags != null ? string.Join(',', dto.Tags) : string.Empty
         };
 
@@ -83,7 +86,7 @@ public class IdeaService(IUnitOfWork _uow,
         entity.Symbol = dto.Symbol;
         entity.CryptocurrencyId = crypto.Id;
         entity.Timeframe = dto.Timeframe;
-        entity.Trend = dto.Trend;
+        entity.Trend = ApplicationLayer.Common.Enums.IdeaTrend.FromValue(dto.Trend).Name;
         entity.Title = dto.Title;
         entity.Description = dto.Description ?? string.Empty;
         if (dto.Image != null)
@@ -93,7 +96,7 @@ public class IdeaService(IUnitOfWork _uow,
                 return Result<IdeaDto>.Failure(saveImage.Error);
             entity.ImageUrl = saveImage.Value;
         }
-        entity.IsPublic = string.Equals(dto.Status, "public", StringComparison.OrdinalIgnoreCase);
+        entity.IsPublic = ApplicationLayer.Common.Enums.IdeaVisibility.FromValue(dto.Status) == ApplicationLayer.Common.Enums.IdeaVisibility.Public;
         entity.Tags = dto.Tags != null ? string.Join(',', dto.Tags) : string.Empty;
         entity.IsActive = dto.IsActive;
         entity.MarkAsUpdated();
@@ -160,7 +163,8 @@ public class IdeaService(IUnitOfWork _uow,
             Items = items,
             Total = total,
             Page = dto.Pagination.Page,
-            PageSize = dto.Pagination.PageSize
+            PageSize = dto.Pagination.PageSize,
+            IsOwner = false
         };
         return Result<IdeasPageDto>.Success(page);
     }
@@ -198,7 +202,46 @@ public class IdeaService(IUnitOfWork _uow,
             Items = items,
             Total = total,
             Page = dto.Pagination.Page,
-            PageSize = dto.Pagination.PageSize
+            PageSize = dto.Pagination.PageSize,
+            IsOwner = true
+        };
+        return Result<IdeasPageDto>.Success(page);
+    }
+
+    public async Task<Result<IdeasPageDto>> GetForUserAsync(int userId, GetIdeasRequestDto dto)
+    {
+        var isOwner = _userContext.UserId != null && _userContext.UserId.Value == userId;
+        var query = _ideas.Query().Where(x => EF.Property<int?>(x, "CreatedByUserId") == userId);
+        if (!isOwner)
+            query = query.Where(x => x.IsPublic);
+
+        if (!string.IsNullOrWhiteSpace(dto.Symbol))
+            query = query.Where(x => x.Symbol == dto.Symbol);
+        if (!string.IsNullOrWhiteSpace(dto.Timeframe))
+            query = query.Where(x => x.Timeframe == dto.Timeframe);
+        if (!string.IsNullOrWhiteSpace(dto.Trend))
+            query = query.Where(x => x.Trend == dto.Trend);
+        if (dto.Tags != null && dto.Tags.Count > 0)
+        {
+            foreach (var tag in dto.Tags)
+                query = query.Where(x => x.Tags.Contains(tag));
+        }
+
+        var total = await query.CountAsync();
+        var items = await query
+            .OrderByDescending(x => x.CreatedAt)
+            .Skip(dto.Pagination.Skip)
+            .Take(dto.Pagination.PageSize)
+            .Select(x => ToDto(x))
+            .ToListAsync();
+
+        var page = new IdeasPageDto
+        {
+            Items = items,
+            Total = total,
+            Page = dto.Pagination.Page,
+            PageSize = dto.Pagination.PageSize,
+            IsOwner = isOwner
         };
         return Result<IdeasPageDto>.Success(page);
     }
