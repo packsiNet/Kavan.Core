@@ -37,7 +37,8 @@ public class IdeasController(IMediator mediator) : ControllerBase
         => await ResultHelper.GetResultAsync(mediator, new GetIdeaByIdQuery(id));
 
     [HttpGet("my")]
-    [Authorize(Policy = nameof(ApiDefinitions.Trader), Roles = "Users")]
+    //[Authorize(Policy = nameof(ApiDefinitions.Trader), Roles = "Users")]
+    [Authorize(Roles = "Users")]
     public async Task<IActionResult> GetMineAsync([FromQuery] string symbol, [FromQuery] string timeframe, [FromQuery] string trend,
                                                   [FromQuery] string tags, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
@@ -53,19 +54,19 @@ public class IdeasController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = nameof(ApiDefinitions.Trader), Roles = "Users")]
+    [Authorize(Roles = "Users")]
     [RequestSizeLimit(6_000_000)]
     public async Task<IActionResult> CreateAsync([FromForm] CreateIdeaDto model)
         => await ResultHelper.GetResultAsync(mediator, new CreateIdeaCommand(model));
 
     [HttpPut("{id:int}")]
-    [Authorize(Policy = nameof(ApiDefinitions.Trader), Roles = "Users")]
+    [Authorize(Roles = "Users")]
     [RequestSizeLimit(6_000_000)]
     public async Task<IActionResult> UpdateAsync(int id, [FromForm] UpdateIdeaDto model)
         => await ResultHelper.GetResultAsync(mediator, new UpdateIdeaCommand(id, model));
 
     [HttpDelete("{id:int}")]
-    [Authorize(Policy = nameof(ApiDefinitions.Trader), Roles = "Users")]
+    [Authorize(Roles = "Users")]
     public async Task<IActionResult> DeleteAsync(int id)
         => await ResultHelper.GetResultAsync(mediator, new DeleteIdeaCommand(id));
 }

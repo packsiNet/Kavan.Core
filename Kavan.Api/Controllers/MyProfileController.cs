@@ -24,13 +24,19 @@ public class MyProfileController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> UpsertAsync([FromForm] UpdateOrganizationProfileDto model)
         => await ResultHelper.GetResultAsync(mediator, new UpsertOrganizationProfileCommand(model));
 
-    [HttpPost("organization/logo")]
+    [HttpPost("organization/logo", Name = "UploadLogo")]
+    [Consumes("multipart/form-data")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
     [RequestSizeLimit(6_000_000)]
-    public async Task<IActionResult> UploadLogoAsync([FromForm] IFormFile file)
+    public async Task<IActionResult> UploadLogoAsync(IFormFile file)
         => await ResultHelper.GetResultAsync(mediator, new UploadLogoCommand(file));
 
-    [HttpPost("organization/banner")]
+    [HttpPost("organization/banner", Name = "UploadBanner")]
+    [Consumes("multipart/form-data")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
     [RequestSizeLimit(6_000_000)]
-    public async Task<IActionResult> UploadBannerAsync([FromForm] IFormFile file)
+    public async Task<IActionResult> UploadBannerAsync(IFormFile file)
         => await ResultHelper.GetResultAsync(mediator, new UploadBannerCommand(file));
 }
