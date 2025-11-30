@@ -12,7 +12,7 @@ namespace Kavan.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[ApiExplorerSettings(GroupName = nameof(ApiDefinitions.Public))]
+[ApiExplorerSettings(GroupName = nameof(ApiDefinitions.Trader))]
 public class IdeasController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
