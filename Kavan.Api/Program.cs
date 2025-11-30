@@ -27,7 +27,7 @@ builder.WebHost.ConfigureKestrel((context, options) =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
 {
     app.UseSwagger(c =>
     {
