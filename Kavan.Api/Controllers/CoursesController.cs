@@ -18,7 +18,6 @@ public class CoursesController(IMediator mediator) : ControllerBase
         => await ResultHelper.GetResultAsync(mediator, new GetCoursesQuery(categoryId, level, isFree));
 
     [HttpGet("{courseId:int}/lessons/{lessonId:int}/stream")]
-    //[Authorize(Policy = nameof(ApiDefinitions.Public), Roles = "Users,Instructor")]
     public async Task<IActionResult> GetLessonStreamTokenAsync(int courseId, int lessonId)
         => await ResultHelper.GetResultAsync(mediator, new GetLessonStreamTokenQuery(courseId, lessonId));
 }
