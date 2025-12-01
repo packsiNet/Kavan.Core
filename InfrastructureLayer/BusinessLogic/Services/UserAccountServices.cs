@@ -131,22 +131,30 @@ public class UserAccountServices(IRepository<UserAccount> userAccountRepository,
     {
         try
         {
+            if (userAccountId == null || userAccountId.Id <= 0)
+                return new ServiceResult().Failed(logger, new ArgumentException("شناسه کاربر نامعتبر است"), CommonExceptionMessage.AddFailed("تخصیص نقش"));
+
+            var normalized = roleName?.Trim();
+            if (string.IsNullOrWhiteSpace(normalized))
+                return new ServiceResult().Failed(logger, new ArgumentException("نام نقش نامعتبر است"), CommonExceptionMessage.AddFailed("تخصیص نقش"));
+
             var role = await roleRepository.Query()
-                .FirstOrDefaultAsync(r => r.RoleName == roleName);
+                .FirstOrDefaultAsync(r => r.RoleName == normalized);
 
             if (role == null)
             {
-                return new ServiceResult
-                {
-                    RequestStatus = RequestStatus.NotFound,
-                    Message = $"نقش {roleName} یافت نشد."
-                };
+                role = new Role { RoleName = normalized };
+                await roleRepository.AddAsync(role);
             }
+
+            var alreadyAssigned = await userRoleRepository.AnyAsync(ur => ur.UserAccountId == userAccountId.Id && ur.RoleId == role.Id);
+            if (alreadyAssigned)
+                return new ServiceResult().Successful();
 
             var userRole = new UserRole
             {
                 UserAccountId = userAccountId.Id,
-                RoleId = role.Id
+                Role = role
             };
 
             await userRoleRepository.AddAsync(userRole);
