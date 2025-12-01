@@ -26,7 +26,7 @@ public class SignUpHandler(IUserAccountServices _userAccountServices,
 
         var user = new UserAccount
         {
-            UserName = dto.PhoneNumber,
+            UserName = PhoneNumberHelper.NormalizePhoneNumber(request.Model.PhonePrefix, dto.PhoneNumber),
             Password = hashed,
             SecurityStamp = securityStamp,
             Email = dto.Email,
