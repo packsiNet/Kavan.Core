@@ -6,13 +6,231 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InfrastructureLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialFirstDb : Migration
+    public partial class InitialFirstDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
                 name: "dbo");
+
+            migrationBuilder.CreateTable(
+                name: "Channel",
+                schema: "dbo",
+                columns: table => new
+                {
+                    ChannelId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OwnerUserId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Slug = table.Column<string>(type: "nvarchar(220)", maxLength: 220, nullable: false),
+                    Category = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    AccessType = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Channel", x => x.ChannelId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChannelMembership",
+                schema: "dbo",
+                columns: table => new
+                {
+                    ChannelMembershipId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ChannelId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChannelMembership", x => x.ChannelMembershipId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChannelNewsDetail",
+                schema: "dbo",
+                columns: table => new
+                {
+                    ChannelNewsDetailId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PostId = table.Column<int>(type: "int", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChannelNewsDetail", x => x.ChannelNewsDetailId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChannelPost",
+                schema: "dbo",
+                columns: table => new
+                {
+                    ChannelPostId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ChannelId = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChannelPost", x => x.ChannelPostId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChannelPostReaction",
+                schema: "dbo",
+                columns: table => new
+                {
+                    ChannelPostReactionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PostId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Reaction = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChannelPostReaction", x => x.ChannelPostReactionId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChannelRating",
+                schema: "dbo",
+                columns: table => new
+                {
+                    ChannelRatingId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ChannelId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Stars = table.Column<int>(type: "int", nullable: false),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChannelRating", x => x.ChannelRatingId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChannelSignalDetail",
+                schema: "dbo",
+                columns: table => new
+                {
+                    ChannelSignalDetailId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PostId = table.Column<int>(type: "int", nullable: false),
+                    Symbol = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Timeframe = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    TradeType = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    StopLoss = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChannelSignalDetail", x => x.ChannelSignalDetailId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChannelSignalEntry",
+                schema: "dbo",
+                columns: table => new
+                {
+                    ChannelSignalEntryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PostId = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChannelSignalEntry", x => x.ChannelSignalEntryId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChannelSignalTp",
+                schema: "dbo",
+                columns: table => new
+                {
+                    ChannelSignalTpId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PostId = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChannelSignalTp", x => x.ChannelSignalTpId);
+                });
 
             migrationBuilder.CreateTable(
                 name: "CourseCategory",
@@ -132,6 +350,35 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PortfolioEntry",
+                schema: "dbo",
+                columns: table => new
+                {
+                    PortfolioEntryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CryptocurrencyId = table.Column<int>(type: "int", nullable: false),
+                    Symbol = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    BuyPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    BuyDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PortfolioEntry", x => x.PortfolioEntryId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Role",
                 schema: "dbo",
                 columns: table => new
@@ -202,6 +449,58 @@ namespace InfrastructureLayer.Migrations
                         principalSchema: "dbo",
                         principalTable: "UserAccount",
                         principalColumn: "UserAccountId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Watchlist",
+                schema: "dbo",
+                columns: table => new
+                {
+                    WatchlistId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OwnerUserId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Watchlist", x => x.WatchlistId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WatchlistItem",
+                schema: "dbo",
+                columns: table => new
+                {
+                    WatchlistItemId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WatchlistId = table.Column<int>(type: "int", nullable: false),
+                    Symbol = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    CreatedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WatchlistItem", x => x.WatchlistItemId);
                 });
 
             migrationBuilder.CreateTable(
@@ -1288,6 +1587,70 @@ namespace InfrastructureLayer.Migrations
                 column: "OpenTime");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Channel_OwnerUserId",
+                schema: "dbo",
+                table: "Channel",
+                column: "OwnerUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Channel_Slug",
+                schema: "dbo",
+                table: "Channel",
+                column: "Slug",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChannelMembership_ChannelId_UserId",
+                schema: "dbo",
+                table: "ChannelMembership",
+                columns: new[] { "ChannelId", "UserId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChannelPost_ChannelId",
+                schema: "dbo",
+                table: "ChannelPost",
+                column: "ChannelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChannelPostReaction_PostId",
+                schema: "dbo",
+                table: "ChannelPostReaction",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChannelPostReaction_PostId_UserId",
+                schema: "dbo",
+                table: "ChannelPostReaction",
+                columns: new[] { "PostId", "UserId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChannelRating_ChannelId",
+                schema: "dbo",
+                table: "ChannelRating",
+                column: "ChannelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChannelRating_ChannelId_UserId",
+                schema: "dbo",
+                table: "ChannelRating",
+                columns: new[] { "ChannelId", "UserId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChannelSignalEntry_PostId",
+                schema: "dbo",
+                table: "ChannelSignalEntry",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChannelSignalTp_PostId",
+                schema: "dbo",
+                table: "ChannelSignalTp",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Course_CategoryId",
                 schema: "dbo",
                 table: "Course",
@@ -1432,6 +1795,24 @@ namespace InfrastructureLayer.Migrations
                 column: "PlanId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PortfolioEntry_CryptocurrencyId",
+                schema: "dbo",
+                table: "PortfolioEntry",
+                column: "CryptocurrencyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PortfolioEntry_Symbol",
+                schema: "dbo",
+                table: "PortfolioEntry",
+                column: "Symbol");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PortfolioEntry_Symbol_BuyDate",
+                schema: "dbo",
+                table: "PortfolioEntry",
+                columns: new[] { "Symbol", "BuyDate" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RefreshToken_UserAccountId",
                 schema: "dbo",
                 table: "RefreshToken",
@@ -1496,6 +1877,25 @@ namespace InfrastructureLayer.Migrations
                 schema: "dbo",
                 table: "UserRole",
                 column: "UserAccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Watchlist_OwnerUserId",
+                schema: "dbo",
+                table: "Watchlist",
+                column: "OwnerUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WatchlistItem_Symbol",
+                schema: "dbo",
+                table: "WatchlistItem",
+                column: "Symbol");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WatchlistItem_WatchlistId_Symbol",
+                schema: "dbo",
+                table: "WatchlistItem",
+                columns: new[] { "WatchlistId", "Symbol" },
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -1519,6 +1919,42 @@ namespace InfrastructureLayer.Migrations
 
             migrationBuilder.DropTable(
                 name: "Candle_5m",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "Channel",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "ChannelMembership",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "ChannelNewsDetail",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "ChannelPost",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "ChannelPostReaction",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "ChannelRating",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "ChannelSignalDetail",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "ChannelSignalEntry",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "ChannelSignalTp",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
@@ -1566,6 +2002,10 @@ namespace InfrastructureLayer.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
+                name: "PortfolioEntry",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
                 name: "RefreshToken",
                 schema: "dbo");
 
@@ -1583,6 +2023,14 @@ namespace InfrastructureLayer.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserRole",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "Watchlist",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "WatchlistItem",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
