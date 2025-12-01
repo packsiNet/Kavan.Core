@@ -1,4 +1,4 @@
-﻿using ApplicationLayer.Common;
+using ApplicationLayer.Common;
 using ApplicationLayer.Common.Enums;
 using ApplicationLayer.Common.Extensions;
 using ApplicationLayer.Dto.BaseDtos;
@@ -82,8 +82,9 @@ public class IdentityService(IConfiguration _iConfiguration,
         if (_httpContextAccessor == null) throw new ArgumentNullException(nameof(_httpContextAccessor));
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenKey = Encoding.UTF8.GetBytes(_iConfiguration["JWT:Key"]);
-
+        var keyString = _iConfiguration["JWT:Key"] ?? Environment.GetEnvironmentVariable("JWT__Key");
+        if (string.IsNullOrWhiteSpace(keyString)) throw new InvalidOperationException("JWT:Key is not configured");
+        var tokenKey = Encoding.UTF8.GetBytes(keyString);
         if (tokenKey.Length < 32) throw new ArgumentException("JWT key must be at least 256 bits (32 bytes) long.");
 
         var claims = new List<Claim>
@@ -99,12 +100,17 @@ public class IdentityService(IConfiguration _iConfiguration,
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
 
+        var expStr = _iConfiguration["JWT:JwtTokenExpirationTimeInMinutes"] ?? Environment.GetEnvironmentVariable("JWT__JwtTokenExpirationTimeInMinutes");
+        if (!double.TryParse(expStr, out var expMinutes)) expMinutes = 15;
+        var issuer = _iConfiguration["JWT:Issuer"] ?? Environment.GetEnvironmentVariable("JWT__Issuer") ?? "Kavan";
+        var audience = _iConfiguration["JWT:Audience"] ?? Environment.GetEnvironmentVariable("JWT__Audience") ?? "Kavan.Users";
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_iConfiguration["JWT:JwtTokenExpirationTimeInMinutes"])),
-            Issuer = _iConfiguration["JWT:Issuer"],
-            Audience = _iConfiguration["JWT:Audience"],
+            Expires = DateTime.UtcNow.AddMinutes(expMinutes),
+            Issuer = issuer,
+            Audience = audience,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
         };
 
@@ -125,8 +131,9 @@ public class IdentityService(IConfiguration _iConfiguration,
             .ToListAsync();
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenKey = Encoding.UTF8.GetBytes(_iConfiguration["JWT:Key"]);
-
+        var keyString = _iConfiguration["JWT:Key"] ?? Environment.GetEnvironmentVariable("JWT__Key");
+        if (string.IsNullOrWhiteSpace(keyString)) throw new InvalidOperationException("JWT:Key is not configured");
+        var tokenKey = Encoding.UTF8.GetBytes(keyString);
         if (tokenKey.Length < 32) throw new ArgumentException("JWT key must be at least 256 bits (32 bytes) long.");
 
         var claims = new List<Claim>
@@ -142,12 +149,17 @@ public class IdentityService(IConfiguration _iConfiguration,
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
 
+        var expStr = _iConfiguration["JWT:JwtTokenExpirationTimeInMinutes"] ?? Environment.GetEnvironmentVariable("JWT__JwtTokenExpirationTimeInMinutes");
+        if (!double.TryParse(expStr, out var expMinutes)) expMinutes = 15;
+        var issuer = _iConfiguration["JWT:Issuer"] ?? Environment.GetEnvironmentVariable("JWT__Issuer") ?? "Kavan";
+        var audience = _iConfiguration["JWT:Audience"] ?? Environment.GetEnvironmentVariable("JWT__Audience") ?? "Kavan.Users";
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_iConfiguration["JWT:JwtTokenExpirationTimeInMinutes"])),
-            Issuer = _iConfiguration["JWT:Issuer"],
-            Audience = _iConfiguration["JWT:Audience"],
+            Expires = DateTime.UtcNow.AddMinutes(expMinutes),
+            Issuer = issuer,
+            Audience = audience,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
         };
 
