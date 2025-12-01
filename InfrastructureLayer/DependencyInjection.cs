@@ -56,7 +56,7 @@ public static class DependencyInjection
         services.RateLimitingConfiguration(configuration);
         services.AddCors(opt => opt.AddPolicy("AllowSpecificOrigin", builder =>
         {
-            builder.WithOrigins("https://tg.kavan.trade", "https://core.kavan.trade", "https://panel.kavan.trade", "http://localhost:3003", "http://localhost:5173", "http://localhost:8080", "http://127.0.0.1:3003", "http://127.0.0.1:5173", "http://127.0.0.1:8080", "http://kavan.packsi.net")
+            builder.WithOrigins("https://tg.kavan.trade", "https://core.kavan.trade", "https://panel.kavan.trade", "http://localhost:3003", "http://localhost:5173", "http://localhost:8080", "http://127.0.0.1:3003", "http://127.0.0.1:5173", "http://127.0.0.1:8080", "http://kavan.packsi.net", "https://kavan-core.packsi.net")
             .SetIsOriginAllowed(origin => true) // Allow any origin for development
             .AllowAnyMethod()
             .AllowAnyHeader()
