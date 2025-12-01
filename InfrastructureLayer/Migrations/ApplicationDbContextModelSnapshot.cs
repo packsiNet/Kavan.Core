@@ -47,9 +47,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<int>("CryptocurrencyId")
                         .HasColumnType("int");
 
@@ -75,9 +72,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("NumberOfTrades")
                         .HasColumnType("int");
@@ -139,9 +133,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<int>("CryptocurrencyId")
                         .HasColumnType("int");
 
@@ -167,9 +158,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("NumberOfTrades")
                         .HasColumnType("int");
@@ -231,9 +219,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<int>("CryptocurrencyId")
                         .HasColumnType("int");
 
@@ -259,9 +244,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("NumberOfTrades")
                         .HasColumnType("int");
@@ -323,9 +305,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<int>("CryptocurrencyId")
                         .HasColumnType("int");
 
@@ -351,9 +330,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("NumberOfTrades")
                         .HasColumnType("int");
@@ -415,9 +391,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<int>("CryptocurrencyId")
                         .HasColumnType("int");
 
@@ -443,9 +416,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("NumberOfTrades")
                         .HasColumnType("int");
@@ -510,9 +480,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -527,9 +494,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -584,9 +548,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -598,9 +559,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -676,9 +634,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -697,9 +652,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -744,9 +696,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -758,9 +707,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("PostId")
                         .HasColumnType("int");
@@ -813,9 +759,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -827,9 +770,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -995,9 +935,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -1020,9 +957,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int?>("OwnerUserId")
                         .HasColumnType("int");
@@ -1079,9 +1013,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("Description")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
@@ -1097,9 +1028,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1153,9 +1081,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<DateTime>("EnrolledAt")
                         .HasColumnType("datetime2");
 
@@ -1173,9 +1098,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("PaymentReference")
                         .HasMaxLength(100)
@@ -1229,9 +1151,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1243,9 +1162,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("QuoteAsset")
                         .HasColumnType("nvarchar(max)");
@@ -1290,9 +1206,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<int?>("CryptocurrencyId")
                         .HasColumnType("int");
 
@@ -1318,9 +1231,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -1385,9 +1295,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("Description")
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(4000)");
@@ -1411,9 +1318,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("Order")
                         .HasColumnType("int");
@@ -1463,9 +1367,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<int?>("DurationSeconds")
                         .HasColumnType("int");
 
@@ -1501,9 +1402,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -1547,9 +1445,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1571,9 +1466,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -1617,9 +1509,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("Description")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
@@ -1635,9 +1524,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("OrganizationProfileId")
                         .HasColumnType("int");
@@ -1684,9 +1570,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1698,9 +1581,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .HasMaxLength(200)
@@ -1747,9 +1627,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1764,9 +1641,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .HasMaxLength(200)
@@ -1821,9 +1695,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -1839,9 +1710,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("OrganizationProfileId")
                         .HasColumnType("int");
@@ -1908,9 +1776,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("Description")
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(4000)");
@@ -1946,9 +1811,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("OrganizationName")
                         .HasMaxLength(200)
@@ -2000,9 +1862,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2014,9 +1873,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("OrganizationProfileId")
                         .HasColumnType("int");
@@ -2063,9 +1919,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2077,9 +1930,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("OrganizationProfileId")
                         .HasColumnType("int");
@@ -2129,9 +1979,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -2149,9 +1996,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -2194,9 +2038,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2211,9 +2052,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("PlanId")
                         .HasColumnType("int");
@@ -2265,9 +2103,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<int>("CryptocurrencyId")
                         .HasColumnType("int");
 
@@ -2282,9 +2117,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<decimal>("Quantity")
                         .HasPrecision(18, 8)
@@ -2333,9 +2165,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime2");
 
@@ -2360,9 +2189,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -2408,9 +2234,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2422,9 +2245,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("RoleName")
                         .HasColumnType("nvarchar(max)");
@@ -2491,9 +2311,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<int>("CryptocurrencyId")
                         .HasColumnType("int");
 
@@ -2511,9 +2328,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<decimal>("NearestResistance")
                         .HasColumnType("decimal(18, 2)");
@@ -2610,9 +2424,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<decimal>("High")
                         .HasColumnType("decimal(18, 2)");
 
@@ -2638,9 +2449,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<decimal>("Open")
                         .HasColumnType("decimal(18, 2)");
@@ -2704,9 +2512,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("Email")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -2740,9 +2545,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Password")
                         .HasMaxLength(128)
@@ -2807,9 +2609,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -2824,9 +2623,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("PlanId")
                         .HasColumnType("int");
@@ -2880,9 +2676,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("DisplayName")
                         .HasColumnType("nvarchar(max)");
 
@@ -2905,9 +2698,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("PostalCode")
                         .HasColumnType("nvarchar(max)");
@@ -2949,9 +2739,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -2963,9 +2750,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
@@ -3009,9 +2793,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -3023,9 +2804,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -3069,9 +2847,6 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -3083,9 +2858,6 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset?>("ModifiedDateTime")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
