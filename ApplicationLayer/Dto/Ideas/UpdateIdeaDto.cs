@@ -6,11 +6,11 @@ public class UpdateIdeaDto
 {
     public string Symbol { get; set; }
     public string Timeframe { get; set; }
-    public string Trend { get; set; }
+    public int Trend { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
     public IFormFile Image { get; set; }
-    public string Status { get; set; }
+    public int Status { get; set; }
     public List<string> Tags { get; set; } = [];
     public bool IsActive { get; set; } = true;
 }

@@ -44,6 +44,8 @@ public class SignUpHandler(IUserAccountServices _userAccountServices,
             return addUser.ToHandlerResult();
         }
 
+        await _uow.SaveChangesAsync(cancellationToken);
+
         var profileResult = await _userAccountServices.AddProfileAsync(new UserProfile
         {
             UserAccountId = user.Id,

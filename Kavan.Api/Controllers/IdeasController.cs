@@ -36,8 +36,9 @@ public class IdeasController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetByIdAsync(int id)
         => await ResultHelper.GetResultAsync(mediator, new GetIdeaByIdQuery(id));
 
-    [HttpGet("my")]
-    [Authorize(Policy = nameof(ApiDefinitions.Trader), Roles = "Users")]
+    [HttpGet("user/me")]
+    //[Authorize(Policy = nameof(ApiDefinitions.Trader), Roles = "User")]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> GetMineAsync([FromQuery] string symbol, [FromQuery] string timeframe, [FromQuery] string trend,
                                                   [FromQuery] string tags, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
@@ -52,20 +53,36 @@ public class IdeasController(IMediator mediator) : ControllerBase
         return await ResultHelper.GetResultAsync(mediator, new GetMyIdeasQuery(model));
     }
 
+    [HttpGet("user/{userId:int}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetByUserAsync(int userId, [FromQuery] string symbol, [FromQuery] string timeframe, [FromQuery] string trend,
+                                                    [FromQuery] string tags, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        var model = new GetIdeasRequestDto
+        {
+            Symbol = symbol,
+            Timeframe = timeframe,
+            Trend = trend,
+            Tags = string.IsNullOrWhiteSpace(tags) ? [] : [.. tags.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0)],
+            Pagination = new PaginationDto { Page = page, PageSize = pageSize }
+        };
+        return await ResultHelper.GetResultAsync(mediator, new GetUserIdeasQuery(userId, model));
+    }
+
     [HttpPost]
-    [Authorize(Policy = nameof(ApiDefinitions.Trader), Roles = "Users")]
+    [Authorize(Roles = "User")]
     [RequestSizeLimit(6_000_000)]
     public async Task<IActionResult> CreateAsync([FromForm] CreateIdeaDto model)
         => await ResultHelper.GetResultAsync(mediator, new CreateIdeaCommand(model));
 
     [HttpPut("{id:int}")]
-    [Authorize(Policy = nameof(ApiDefinitions.Trader), Roles = "Users")]
+    [Authorize(Roles = "User")]
     [RequestSizeLimit(6_000_000)]
     public async Task<IActionResult> UpdateAsync(int id, [FromForm] UpdateIdeaDto model)
         => await ResultHelper.GetResultAsync(mediator, new UpdateIdeaCommand(id, model));
 
     [HttpDelete("{id:int}")]
-    [Authorize(Policy = nameof(ApiDefinitions.Trader), Roles = "Users")]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> DeleteAsync(int id)
         => await ResultHelper.GetResultAsync(mediator, new DeleteIdeaCommand(id));
 }

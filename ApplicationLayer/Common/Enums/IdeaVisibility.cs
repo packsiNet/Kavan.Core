@@ -21,4 +21,16 @@ public sealed class IdeaVisibility
     };
 
     public static bool IsValid(string name) => _byName.ContainsKey(name);
+
+    private static readonly Dictionary<int, IdeaVisibility> _byValue = new()
+    {
+        { Public.Value, Public },
+        { Private.Value, Private }
+    };
+
+    public static bool IsValid(int value) => _byValue.ContainsKey(value);
+
+    public static IdeaVisibility FromValue(int value) => _byValue[value];
+
+    public static bool TryFromValue(int value, out IdeaVisibility vis) => _byValue.TryGetValue(value, out vis);
 }

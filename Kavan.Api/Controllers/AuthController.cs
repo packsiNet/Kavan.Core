@@ -31,7 +31,7 @@ public class AuthController(IMediator mediator) : ControllerBase
         => await ResultHelper.GetResultAsync(mediator, new TokenRequestQuery(model.AccessTokens, model.RefreshToken));
 
     [HttpPost("token/revoke")]
-    [Authorize(Policy = nameof(ApiDefinitions.Public), Roles = "Users")]
+    [Authorize(Policy = nameof(ApiDefinitions.Public), Roles = "User")]
     public async Task<IActionResult> RevokeTokensAsync([FromBody] RevokeRefreshTokenDto model)
-        => await ResultHelper.GetResultAsync(mediator, new ApplicationLayer.Features.Identity.Commands.RevokeRefreshTokenCommand(model.UserId));
+        => await ResultHelper.GetResultAsync(mediator, new RevokeRefreshTokenCommand(model.UserId));
 }

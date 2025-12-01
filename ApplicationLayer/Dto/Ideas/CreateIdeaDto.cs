@@ -8,7 +8,7 @@ public class CreateIdeaDto
 
     public string Timeframe { get; set; }
 
-    public string Trend { get; set; }
+    public int Trend { get; set; }
 
     public string Title { get; set; }
 
@@ -16,7 +16,7 @@ public class CreateIdeaDto
 
     public IFormFile Image { get; set; }
 
-    public string Status { get; set; }
+    public int Status { get; set; }
 
     public List<string> Tags { get; set; } = [];
 }

@@ -22,5 +22,18 @@ public sealed class IdeaTrend
         { nameof(Range), Range }
     };
 
+    private static readonly Dictionary<int, IdeaTrend> _byValue = new()
+    {
+        { Bullish.Value, Bullish },
+        { Bearish.Value, Bearish },
+        { Range.Value, Range }
+    };
+
     public static bool IsValid(string name) => _byName.ContainsKey(name);
+
+    public static bool IsValid(int value) => _byValue.ContainsKey(value);
+
+    public static IdeaTrend FromValue(int value) => _byValue[value];
+
+    public static bool TryFromValue(int value, out IdeaTrend trend) => _byValue.TryGetValue(value, out trend);
 }
