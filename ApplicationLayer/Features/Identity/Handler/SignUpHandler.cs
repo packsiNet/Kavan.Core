@@ -45,27 +45,29 @@ public class SignUpHandler(IUserAccountServices _userAccountServices,
         }
 
         await _uow.SaveChangesAsync(cancellationToken);
+        var newUserid = addUser.Value.Id;
 
         var profileResult = await _userAccountServices.AddProfileAsync(new UserProfile
         {
-            UserAccountId = user.Id,
+            UserAccountId = newUserid,
             DisplayName = dto.DisplayName
         });
+
         if (!profileResult.RequestStatus.Equals(Common.Enums.RequestStatus.Successful))
         {
             await _uow.RollbackAsync();
             return profileResult.ToResult().ToHandlerResult();
         }
 
-        var roleAssign = await _userAccountServices.AssignRoleToUserAsync(new DTOs.User.UserAccountKeyDto { Id = user.Id }, "User");
+        var roleAssign = await _userAccountServices.AssignRoleToUserAsync(new DTOs.User.UserAccountKeyDto { Id = newUserid }, "User");
         if (!roleAssign.RequestStatus.Equals(Common.Enums.RequestStatus.Successful))
         {
             await _uow.RollbackAsync();
             return roleAssign.ToResult().ToHandlerResult();
         }
 
-        var token = await _identityService.TokenRequestGeneratorAsync(user.UserName, user.Id);
-        var refresh = _refreshTokenService.RefreshTokenGenerator(user.Id, token.tokenId);
+        var token = await _identityService.TokenRequestGeneratorAsync(user.UserName, newUserid);
+        var refresh = _refreshTokenService.RefreshTokenGenerator(newUserid, token.tokenId);
         refresh.UserFullName = dto.DisplayName;
         var addRefresh = _refreshTokenService.AddRefreshToken(refresh);
         if (addRefresh.IsFailure)
