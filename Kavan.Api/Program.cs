@@ -43,19 +43,19 @@ var app = builder.Build();
     });
 }
 
-// Startup automatic seeding
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
         var db = services.GetRequiredService<ApplicationDbContext>();
-        // Apply migrations before seeding
         db.Database.Migrate();
 
         var seedService = services.GetRequiredService<ICandleSeedService>();
-        // Seed 100 candles for BTCUSDT 1m with defined pattern
         seedService.SeedSymbolAsync().GetAwaiter().GetResult();
+
+        var roleSeed = services.GetRequiredService<IRoleSeedService>();
+        roleSeed.SeedRolesAsync().GetAwaiter().GetResult();
     }
     catch (Exception ex)
     {
