@@ -89,6 +89,13 @@ public static class DependencyInjection
             client.Timeout = TimeSpan.FromSeconds(30);
         });
 
+        // HttpClient for Coinbase API
+        services.AddHttpClient("CoinbaseClient", client =>
+        {
+            client.BaseAddress = new Uri(configuration["CoinbaseApi:BaseUrl"] ?? "https://api.exchange.coinbase.com");
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
+
         // Background Service registration is handled in Register() to avoid duplication
     }
 
