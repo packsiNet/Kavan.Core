@@ -47,7 +47,7 @@ public class FileStorageService(IWebHostEnvironment _env) : IFileStorageService
             await file.CopyToAsync(stream, cancellationToken);
         }
 
-        var url = $"/uploads/ideas/{fileName}";
+        var url = $"https://kavan-core.packsi.net/uploads/ideas/{fileName}";
         return Result<string>.Success(url);
     }
 
