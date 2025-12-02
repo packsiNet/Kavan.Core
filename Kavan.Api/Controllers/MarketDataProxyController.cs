@@ -1,4 +1,3 @@
-using ApplicationLayer.Common.Enums;
 using ApplicationLayer.Common.Extensions;
 using ApplicationLayer.Features.MarketDataProxy.Query;
 using MediatR;
@@ -9,7 +8,7 @@ namespace Kavan.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[ApiExplorerSettings(GroupName = nameof(ApiDefinitions.External))]
+[ApiExplorerSettings(GroupName = "Trader")]
 public class MarketDataProxyController(IMediator mediator) : ControllerBase
 {
     [HttpGet("binance/klines")]
