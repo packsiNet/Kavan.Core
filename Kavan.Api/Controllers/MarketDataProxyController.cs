@@ -15,11 +15,13 @@ public class MarketDataProxyController(IMediator mediator) : ControllerBase
     [HttpGet("binance/klines")]
     [AllowAnonymous]
     public async Task<IActionResult> GetBinanceKlinesAsync([FromQuery] string symbol, [FromQuery] string interval)
-        => await ResultHelper.GetResultAsync(mediator, new GetBinanceKlinesQuery(symbol, interval));
+    {
+        var effectiveInterval = string.IsNullOrWhiteSpace(interval) ? "1M" : interval;
+        return await ResultHelper.GetResultAsync(mediator, new GetBinanceKlinesQuery(symbol, effectiveInterval));
+    }
 
     [HttpGet("coinbase/candles")]
     [AllowAnonymous]
     public async Task<IActionResult> GetCoinbaseCandlesAsync([FromQuery] string symbol, [FromQuery] int granularity)
         => await ResultHelper.GetResultAsync(mediator, new GetCoinbaseCandlesQuery(symbol, granularity));
 }
-
