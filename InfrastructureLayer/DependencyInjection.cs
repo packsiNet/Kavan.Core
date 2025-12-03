@@ -69,6 +69,12 @@ public static class DependencyInjection
         services.RegisterServicesAutomatically();
         services.FluentValidationConfiguration();
         services.RateLimitingConfiguration(configuration);
+        services.AddHttpClient("OpenRouterClient", client =>
+        {
+            var baseUrl = configuration["OpenRouter:BaseUrl"] ?? "https://openrouter.ai/api/v1";
+            client.BaseAddress = new Uri(baseUrl);
+            client.Timeout = TimeSpan.FromSeconds(60);
+        });
         services.AddCors(opt => opt.AddPolicy("AllowSpecificOrigin", builder =>
         {
             var explicitOrigins = configurePolicy;
