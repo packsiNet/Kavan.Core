@@ -26,7 +26,13 @@ public class IdeaConfiguration : BaseEntityConfiguration<Idea>
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.Property(x => x.TitleTranslate)
+            .HasMaxLength(200);
+
         builder.Property(x => x.Description)
+            .HasMaxLength(4000);
+
+        builder.Property(x => x.DescriptionTranslate)
             .HasMaxLength(4000);
 
         builder.Property(x => x.ImageUrl)

@@ -13,8 +13,10 @@ public class Idea : BaseEntityModel, IAuditableEntity
     public string Trend { get; set; } = string.Empty;
 
     public string Title { get; set; } = string.Empty;
+    public string TitleTranslate { get; set; } = string.Empty;
 
     public string Description { get; set; } = string.Empty;
+    public string DescriptionTranslate { get; set; } = string.Empty;
 
     public string ImageUrl { get; set; } = string.Empty;
 

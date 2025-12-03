@@ -14,8 +14,20 @@ public class IdeaService(IUnitOfWork _uow,
                          IRepository<Idea> _ideas,
                          IRepository<Cryptocurrency> _cryptos,
                          IFileStorageService _fileStorage,
-                         IUserContextService _userContext) : IIdeaService
+                         IUserContextService _userContext,
+                         IAiTranslationService _aiTranslation) : IIdeaService
 {
+    private async Task<string> SafeTranslateAsync(string text)
+    {
+        try
+        {
+            return string.IsNullOrWhiteSpace(text) ? string.Empty : await _aiTranslation.TranslateAsync(text);
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
     public async Task<Result<IdeaDto>> CreateAsync(CreateIdeaDto dto)
     {
         if (!ApplicationLayer.Common.Enums.TimeframeUnit.IsValid(dto.Timeframe))
@@ -48,7 +60,9 @@ public class IdeaService(IUnitOfWork _uow,
             Timeframe = dto.Timeframe,
             Trend = trendEnum.Name,
             Title = dto.Title,
+            TitleTranslate = await SafeTranslateAsync(dto.Title ?? string.Empty),
             Description = dto.Description ?? string.Empty,
+            DescriptionTranslate = await SafeTranslateAsync(dto.Description ?? string.Empty),
             ImageUrl = imageUrl ?? string.Empty,
             IsPublic = statusEnum == ApplicationLayer.Common.Enums.IdeaVisibility.Public,
             Tags = dto.Tags != null ? string.Join(',', dto.Tags) : string.Empty
@@ -88,7 +102,9 @@ public class IdeaService(IUnitOfWork _uow,
         entity.Timeframe = dto.Timeframe;
         entity.Trend = ApplicationLayer.Common.Enums.IdeaTrend.FromValue(dto.Trend).Name;
         entity.Title = dto.Title;
+        entity.TitleTranslate = await SafeTranslateAsync(dto.Title ?? string.Empty);
         entity.Description = dto.Description ?? string.Empty;
+        entity.DescriptionTranslate = await SafeTranslateAsync(dto.Description ?? string.Empty);
         if (dto.Image != null)
         {
             var saveImage = await _fileStorage.SaveIdeaImageAsync(dto.Image);
@@ -255,7 +271,9 @@ public class IdeaService(IUnitOfWork _uow,
             Timeframe = entity.Timeframe,
             Trend = entity.Trend,
             Title = entity.Title,
+            TitleTranslate = entity.TitleTranslate,
             Description = entity.Description,
+            DescriptionTranslate = entity.DescriptionTranslate,
             Image = entity.ImageUrl,
             Status = entity.IsPublic ? "public" : "private",
             Tags = string.IsNullOrEmpty(entity.Tags) ? new List<string>() : entity.Tags.Split(',').ToList(),
