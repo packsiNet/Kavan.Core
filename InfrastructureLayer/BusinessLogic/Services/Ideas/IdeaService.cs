@@ -25,7 +25,7 @@ public class IdeaService(IUnitOfWork _uow,
         }
         catch
         {
-            return string.Empty;
+            return text ?? string.Empty;
         }
     }
     public async Task<Result<IdeaDto>> CreateAsync(CreateIdeaDto dto)
@@ -52,6 +52,7 @@ public class IdeaService(IUnitOfWork _uow,
 
         var trendEnum = ApplicationLayer.Common.Enums.IdeaTrend.FromValue(dto.Trend);
         var statusEnum = ApplicationLayer.Common.Enums.IdeaVisibility.FromValue(dto.Status);
+        var xxx = await SafeTranslateAsync(dto.Title ?? string.Empty);
 
         var entity = new Idea
         {
