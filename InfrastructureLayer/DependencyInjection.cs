@@ -28,6 +28,21 @@ namespace InfrastructureLayer;
 
 public static class DependencyInjection
 {
+    private static readonly string[] configurePolicy = new[]
+            {
+                "https://tg.kavan.trade",
+                "https://core.kavan.trade",
+                "https://panel.kavan.trade",
+                "http://localhost:3003",
+                "http://localhost:5173",
+                "http://localhost:8080",
+                "http://127.0.0.1:3003",
+                "http://127.0.0.1:5173",
+                "http://127.0.0.1:8080",
+                "https://kavan.packsi.net",
+                "https://kavan-core.packsi.net"
+            };
+
     public static IServiceCollection Register(this IServiceCollection services, IConfiguration configuration)
     {
         services.RegisterService(configuration);
@@ -56,21 +71,29 @@ public static class DependencyInjection
         services.RateLimitingConfiguration(configuration);
         services.AddCors(opt => opt.AddPolicy("AllowSpecificOrigin", builder =>
         {
-            builder.WithOrigins(
-            "https://tg.kavan.trade",
-            "https://core.kavan.trade",
-            "https://panel.kavan.trade",
-            "http://localhost:3003",
-            "http://localhost:5173",
-            "http://localhost:8080",
-            "http://127.0.0.1:3003",
-            "http://127.0.0.1:5173",
-            "http://127.0.0.1:8080",
-            "https://kavan.packsi.net",
-            "https://kavan-core.packsi.net")
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
+            var explicitOrigins = configurePolicy;
+
+            builder
+                .SetIsOriginAllowed(origin =>
+                {
+                    try
+                    {
+                        var uri = new Uri(origin);
+                        var host = uri.Host;
+                        return explicitOrigins.Contains(origin)
+                               || host.EndsWith("packsi.net")
+                               || host.EndsWith("kavan.trade")
+                               || host == "localhost"
+                               || host == "127.0.0.1";
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                })
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
         }));
 
         services.AddHsts(options =>

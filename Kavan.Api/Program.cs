@@ -71,6 +71,7 @@ app.UseClientRateLimiting();
 
 app.UseRouting();
 app.UseCors("AllowSpecificOrigin");
+app.UseAuthentication();
 
 app.UseAuthorization();
 
