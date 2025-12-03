@@ -69,6 +69,7 @@ app.UseStaticFiles();
 app.UseIpRateLimiting();
 app.UseClientRateLimiting();
 
+app.UseRouting();
 app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthorization();
