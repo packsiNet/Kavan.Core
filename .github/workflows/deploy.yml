@@ -28,6 +28,12 @@ jobs:
         run: dotnet test Tests/Kavan.Tests/Kavan.Tests.csproj --configuration Release --no-build
       - name: Publish
         run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --output ${{ env.PUBLISH_DIR }}
+      - name: Strip wwwroot from publish package
+        run: |
+          set -e
+          if [ -d "${{ env.PUBLISH_DIR }}/wwwroot" ]; then
+            rm -rf "${{ env.PUBLISH_DIR }}/wwwroot"
+          fi
       - name: Prepare remote directory
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -38,7 +44,7 @@ jobs:
           script: |
             set -e
             mkdir -p ${{ env.DEPLOY_PATH }}
-            rm -rf ${{ env.DEPLOY_PATH }}/*
+            find ${{ env.DEPLOY_PATH }} -mindepth 1 -maxdepth 1 ! -name 'wwwroot' -exec rm -rf {} +
             echo "APP_URL=${APP_URL}" > ${{ env.DEPLOY_PATH }}/deploy.env
       - name: Deploy files
         uses: appleboy/scp-action@v0.1.7
