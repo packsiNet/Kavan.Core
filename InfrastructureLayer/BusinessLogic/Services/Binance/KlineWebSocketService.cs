@@ -1,5 +1,6 @@
 using ApplicationLayer.Interfaces;
 using ApplicationLayer.Interfaces.Services;
+using ApplicationLayer.Dto.MarketData;
 using DomainLayer.Common.Attributes;
 using DomainLayer.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,8 @@ public class KlineWebSocketService(
     IRepository<Candle_4h> c4h,
     IRepository<Candle_1d> c1d,
     ILogger<KlineWebSocketService> logger,
-    IConfiguration configuration) : IKlineWebSocketService
+    IConfiguration configuration,
+    IKlineStreamBroadcaster broadcaster) : IKlineWebSocketService
 {
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
@@ -110,10 +112,15 @@ public class KlineWebSocketService(
                     continue;
 
                 var k = msg.Data.Kline;
-                if (!k.IsFinal)
-                    continue; // only final candles
+                var dto = MapToDto(k);
+                dto.Symbol = crypto.Symbol;
 
-                await PersistFinalCandleAsync(crypto.Id, k, ct);
+                await SafeBroadcastAsync(dto, ct);
+
+                if (k.IsFinal)
+                {
+                    await PersistFinalCandleAsync(crypto.Id, k, ct);
+                }
             }
             catch (JsonException jex)
             {
@@ -191,6 +198,36 @@ public class KlineWebSocketService(
         await repo.AddAsync(entity);
         await uow.SaveChangesAsync(ct);
         logger.LogInformation("Inserted {Interval} candle for cryptoId={Id} at {OpenTime}", k.Interval, cryptoId, openTimeUtc);
+    }
+
+    private KlineStreamDto MapToDto(BinanceKline k)
+    {
+        var culture = System.Globalization.CultureInfo.InvariantCulture;
+        return new KlineStreamDto
+        {
+            Interval = k.Interval,
+            OpenTime = DateTimeOffset.FromUnixTimeMilliseconds(k.OpenStart).UtcDateTime,
+            CloseTime = DateTimeOffset.FromUnixTimeMilliseconds(k.CloseEnd).UtcDateTime,
+            Open = decimal.Parse(k.Open, culture),
+            High = decimal.Parse(k.High, culture),
+            Low = decimal.Parse(k.Low, culture),
+            Close = decimal.Parse(k.Close, culture),
+            Volume = decimal.Parse(k.Volume ?? "0", culture),
+            NumberOfTrades = (int)k.NumberOfTrades,
+            IsFinal = k.IsFinal
+        };
+    }
+
+    private async Task SafeBroadcastAsync(KlineStreamDto dto, CancellationToken ct)
+    {
+        try
+        {
+            await broadcaster.BroadcastAsync(dto, ct);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to broadcast kline update {Symbol}@{Interval}", dto.Symbol, dto.Interval);
+        }
     }
 
     private record BinanceCombinedStream

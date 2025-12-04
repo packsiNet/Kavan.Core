@@ -14,6 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 // Add SignalR
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<ApplicationLayer.Interfaces.Services.IKlineStreamBroadcaster, Kavan.Api.Services.SignalR.SignalRKlineBroadcaster>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -76,5 +77,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<Kavan.Api.Hubs.MarketDataHub>("/hubs/marketdata");
 
 app.Run();
