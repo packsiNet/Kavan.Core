@@ -13,7 +13,7 @@ namespace Kavan.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [ApiExplorerSettings(GroupName = "Trader")]
-[Authorize(Policy = nameof(ApiDefinitions.Public), Roles = "User")]
+[Authorize(Roles = "User")]
 public class WatchlistController(IMediator mediator) : ControllerBase
 {
     [HttpGet]
