@@ -12,7 +12,7 @@ namespace Kavan.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [ApiExplorerSettings(GroupName = nameof(ApiDefinitions.Public))]
-[Authorize(Policy = nameof(ApiDefinitions.Public), Roles = "User")]
+[Authorize(Roles = "User")]
 public class PlansController(IMediator mediator) : ControllerBase
 {
     /// <summary>
