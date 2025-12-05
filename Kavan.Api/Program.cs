@@ -78,5 +78,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<Kavan.Api.Hubs.MarketDataHub>("/hubs/marketdata");
+app.MapHub<Kavan.Api.Hubs.MarketDataHub>("/api/marketdataHub");
 
 app.Run();

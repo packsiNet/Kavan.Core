@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Kavan.Api.Hubs;
 
-[Authorize]
+[AllowAnonymous]
 public class MarketDataHub : Hub
 {
     public async Task SubscribeKlines(string symbol, string interval)
