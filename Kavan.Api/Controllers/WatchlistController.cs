@@ -1,8 +1,6 @@
-using ApplicationLayer.Common.Enums;
 using ApplicationLayer.Common.Extensions;
-using ApplicationLayer.Dto.BaseDtos;
 using ApplicationLayer.DTOs.Watchlist;
-using ApplicationLayer.Features.Watchlist.Commands;
+using ApplicationLayer.Features.Watchlist.  Commands;
 using ApplicationLayer.Features.Watchlist.Query;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

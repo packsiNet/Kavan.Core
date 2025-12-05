@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>تست وب‌سوکت کندل‌ها</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    .row { margin-bottom: 10px; }
+    label { display: inline-block; width: 100px; }
+    input, select { padding: 6px; }
+    button { margin-right: 8px; padding: 6px 12px; }
+    #log { border: 1px solid #ddd; padding: 10px; height: 300px; overflow: auto; }
+    .final { background: #e6ffed; }
+    .live { background: #fff7d6; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+  <script>
+    let connection = null;
+    const qs = (id) => document.getElementById(id);
+    const log = (obj, cssClass) => {
+      const div = document.createElement('div');
+      div.className = cssClass || '';
+      div.textContent = typeof obj === 'string' ? obj : JSON.stringify(obj);
+      qs('log').prepend(div);
+      const children = qs('log').children;
+      if (children.length > 100) qs('log').removeChild(children[children.length - 1]);
+    };
+
+    const buildBaseUrl = () => {
+      const host = qs('host').value.trim();
+      return host || (location.origin);
+    };
+
+    const getSymbol = () => qs('symbol').value.trim();
+    const getInterval = () => qs('interval').value.trim();
+
+    async function onConnect() {
+      if (connection) return;
+      const base = buildBaseUrl();
+      const token = qs('token').value.trim();
+
+      const transportMap = {
+        WebSockets: signalR.HttpTransportType.WebSockets,
+        ServerSentEvents: signalR.HttpTransportType.ServerSentEvents,
+        LongPolling: signalR.HttpTransportType.LongPolling
+      };
+
+      const selectedTransport = transportMap[qs('transport')?.value || 'WebSockets'] || signalR.HttpTransportType.WebSockets;
+      const skipNegotiation = !!qs('skipNeg')?.checked;
+
+      const hubPath = (qs('hubPath')?.value || '/hubs/marketdata').trim();
+      connection = new signalR.HubConnectionBuilder()
+        .withUrl(base + hubPath, {
+          accessTokenFactory: token ? () => token : undefined,
+          transport: selectedTransport,
+          skipNegotiation: skipNegotiation && selectedTransport === signalR.HttpTransportType.WebSockets
+        })
+        .withAutomaticReconnect()
+        .build();
+
+      connection.on('klineUpdate', (k) => {
+        const klass = k.isFinal ? 'final' : 'live';
+        log({
+          symbol: k.symbol,
+          interval: k.interval,
+          openTime: k.openTime,
+          closeTime: k.closeTime,
+          open: k.open,
+          high: k.high,
+          low: k.low,
+          close: k.close,
+          volume: k.volume,
+          trades: k.numberOfTrades,
+          isFinal: k.isFinal
+        }, klass);
+      });
+
+      try {
+        await connection.start();
+        log('Connected to SignalR');
+        qs('subscribeBtn').disabled = false;
+        qs('disconnectBtn').disabled = false;
+        qs('loadInitialBtn').disabled = false;
+      } catch (e) {
+        log('Connect error: ' + e.message);
+      }
+
+      connection.onclose(err => {
+        log('Closed: ' + (err ? err.message : 'no error'));
+      });
+      connection.onreconnecting(err => {
+        log('Reconnecting: ' + (err ? err.message : ''));
+      });
+      connection.onreconnected(connId => {
+        log('Reconnected: ' + connId);
+      });
+    }
+
+    async function onSubscribe() {
+      if (!connection) return;
+      const symbol = getSymbol();
+      const interval = getInterval();
+      try {
+        await connection.invoke('SubscribeKlines', symbol, interval);
+        log('Subscribed ' + symbol + '@' + interval);
+        qs('unsubscribeBtn').disabled = false;
+      } catch (e) {
+        log('Subscribe error: ' + e.message);
+      }
+    }
+
+    async function onUnsubscribe() {
+      if (!connection) return;
+      const symbol = getSymbol();
+      const interval = getInterval();
+      try {
+        await connection.invoke('UnsubscribeKlines', symbol, interval);
+        log('Unsubscribed ' + symbol + '@' + interval);
+      } catch (e) {
+        log('Unsubscribe error: ' + e.message);
+      }
+    }
+
+    async function onDisconnect() {
+      if (!connection) return;
+      try {
+        await connection.stop();
+        log('Disconnected');
+      } catch (e) {
+        log('Disconnect error: ' + e.message);
+      } finally {
+        connection = null;
+        qs('subscribeBtn').disabled = true;
+        qs('unsubscribeBtn').disabled = true;
+        qs('disconnectBtn').disabled = true;
+        qs('loadInitialBtn').disabled = true;
+      }
+    }
+
+    async function onLoadInitial() {
+      const base = buildBaseUrl();
+      const symbol = getSymbol();
+      const interval = getInterval();
+      const url = base + '/api/MarketDataProxy/binance/klines?symbol=' + encodeURIComponent(symbol) + '&interval=' + encodeURIComponent(interval);
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        log({ initialCount: Array.isArray(data) ? data.length : 0 }, 'live');
+      } catch (e) {
+        log('Initial load error: ' + e.message);
+      }
+    }
+  </script>
+</head>
+<body>
+  <h2>تست وب‌سوکت کندل‌های بایننس</h2>
+
+  <div class="row">
+    <label>Host</label>
+    <input id="host" placeholder="https://localhost:5001" />
+    <small>خالی = مبدا فعلی</small>
+  </div>
+  <div class="row">
+    <label>Hub Path</label>
+    <input id="hubPath" value="/hubs/marketdata" />
+    <small>درصورت نیاز: /api/marketdataHub</small>
+  </div>
+  <div class="row">
+    <label>Token</label>
+    <input id="token" placeholder="JWT (در صورت نیاز)" />
+  </div>
+  <div class="row">
+    <label>Transport</label>
+    <select id="transport">
+      <option>WebSockets</option>
+      <option>ServerSentEvents</option>
+      <option>LongPolling</option>
+    </select>
+    <label style="width:auto;margin-left:10px;">Direct WS</label>
+    <input id="skipNeg" type="checkbox" />
+    <small>skip negotiation (فقط با WebSockets)</small>
+  </div>
+  <div class="row">
+    <label>Symbol</label>
+    <input id="symbol" value="BTCUSDT" />
+  </div>
+  <div class="row">
+    <label>Interval</label>
+    <select id="interval">
+      <option>1m</option>
+      <option>5m</option>
+      <option>1h</option>
+      <option>4h</option>
+      <option>1d</option>
+    </select>
+  </div>
+
+  <div class="row">
+    <button id="connectBtn" onclick="onConnect()">Connect</button>
+    <button id="subscribeBtn" onclick="onSubscribe()" disabled>Subscribe</button>
+    <button id="unsubscribeBtn" onclick="onUnsubscribe()" disabled>Unsubscribe</button>
+    <button id="disconnectBtn" onclick="onDisconnect()" disabled>Disconnect</button>
+    <button id="loadInitialBtn" onclick="onLoadInitial()" disabled>Load Initial (REST)</button>
+  </div>
+
+  <h3>رویدادها</h3>
+  <div id="log"></div>
+</body>
+</html>
