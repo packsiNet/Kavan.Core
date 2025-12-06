@@ -9,6 +9,8 @@ public class PersonalPublicProfileDto
     public string LastName { get; set; }
     public string AvatarUrl { get; set; }
     public string AboutMe { get; set; }
+    public string Company { get; set; }
+    public string Address { get; set; }
 }
 
 public class PublicProfileDto
