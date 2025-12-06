@@ -112,6 +112,8 @@ public class OrganizationProfileService(IUnitOfWork _uow,
                 BannerUrl = bannerUrl ?? string.Empty
             };
             isNew = true;
+            await _profiles.AddAsync(entity);
+            await _uow.SaveChangesAsync();
         }
         else
         {
@@ -146,18 +148,16 @@ public class OrganizationProfileService(IUnitOfWork _uow,
         }
 
         // Re-add child items
-        entity.Activities = dto.Activities.Select(a => new OrganizationActivity { OrganizationProfileId = entity.Id, Title = a.Title, Description = a.Description ?? string.Empty }).ToList();
-        entity.Websites = dto.Websites.Select(w => new OrganizationWebsite { OrganizationProfileId = entity.Id, Url = w.Url, Type = w.Type ?? string.Empty }).ToList();
-        entity.SocialLinks = dto.SocialLinks.Select(s => new OrganizationSocialLink { OrganizationProfileId = entity.Id, Platform = s.Platform ?? string.Empty, Url = s.Url }).ToList();
-        entity.Licenses = dto.Licenses.Select(l => new OrganizationLicense { OrganizationProfileId = entity.Id, RegulatorName = l.RegulatorName, LicenseNumber = l.LicenseNumber, Country = l.Country }).ToList();
-        entity.Exchanges = dto.Exchanges.Select(e => new OrganizationExchange { OrganizationProfileId = entity.Id, Name = e.Name, Country = e.Country, Url = e.Url }).ToList();
-        entity.InvestmentPanels = dto.InvestmentPanels.Select(p => new OrganizationInvestmentPanel { OrganizationProfileId = entity.Id, Name = p.Name, Url = p.Url, MinimumInvestment = p.MinimumInvestment, ProfitShareModel = p.ProfitShareModel }).ToList();
-        entity.Phones = dto.Phones.Select(ph => new OrganizationPhone { OrganizationProfileId = entity.Id, Title = ph.Title ?? string.Empty, PhoneNumber = ph.PhoneNumber }).ToList();
-        entity.Emails = dto.Emails.Select(em => new OrganizationEmail { OrganizationProfileId = entity.Id, Title = em.Title ?? string.Empty, Email = em.Email }).ToList();
+        entity.Activities = dto.Activities.Select(a => new OrganizationActivity { OrganizationProfile = entity, Title = a.Title, Description = a.Description ?? string.Empty }).ToList();
+        entity.Websites = dto.Websites.Select(w => new OrganizationWebsite { OrganizationProfile = entity, Url = w.Url, Type = w.Type ?? string.Empty }).ToList();
+        entity.SocialLinks = dto.SocialLinks.Select(s => new OrganizationSocialLink { OrganizationProfile = entity, Platform = s.Platform ?? string.Empty, Url = s.Url }).ToList();
+        entity.Licenses = dto.Licenses.Select(l => new OrganizationLicense { OrganizationProfile = entity, RegulatorName = l.RegulatorName, LicenseNumber = l.LicenseNumber, Country = l.Country }).ToList();
+        entity.Exchanges = dto.Exchanges.Select(e => new OrganizationExchange { OrganizationProfile = entity, Name = e.Name, Country = e.Country, Url = e.Url }).ToList();
+        entity.InvestmentPanels = dto.InvestmentPanels.Select(p => new OrganizationInvestmentPanel { OrganizationProfile = entity, Name = p.Name, Url = p.Url, MinimumInvestment = p.MinimumInvestment, ProfitShareModel = p.ProfitShareModel }).ToList();
+        entity.Phones = dto.Phones.Select(ph => new OrganizationPhone { OrganizationProfile = entity, Title = ph.Title ?? string.Empty, PhoneNumber = ph.PhoneNumber }).ToList();
+        entity.Emails = dto.Emails.Select(em => new OrganizationEmail { OrganizationProfile = entity, Title = em.Title ?? string.Empty, Email = em.Email }).ToList();
 
-        if (isNew)
-            await _profiles.AddAsync(entity);
-        else
+        if (!isNew)
             await _profiles.UpdateAsync(entity);
         await _uow.SaveChangesAsync();
         await _uow.CommitAsync();
