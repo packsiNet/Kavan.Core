@@ -17,7 +17,7 @@ namespace InfrastructureLayer.BusinessLogic.Services;
 [InjectAsScoped]
 public class UserAccountServices(IRepository<UserAccount> userAccountRepository, IRepository<UserProfile> userProfileRepository,
     IRepository<Role> roleRepository, IRepository<UserRole> userRoleRepository, IUserContextService userContextService,
-    ILogger<UserAccountServices> logger, IMapper mapper) : IUserAccountServices
+    ILogger<UserAccountServices> logger, IMapper mapper, IUnitOfWork _uow) : IUserAccountServices
 {
     public async Task<UserAccount> GetUserAccountByIdAsync(UserAccountKeyDto userAccount)
         => await Task.Run(() => userAccountRepository.GetDbSet().FirstOrDefaultAsync(row => row.Id == userAccount.Id));
@@ -83,6 +83,7 @@ public class UserAccountServices(IRepository<UserAccount> userAccountRepository,
                 return Result<UserAccount>.DuplicateFailure();
 
             await userAccountRepository.AddAsync(model);
+            await _uow.SaveChangesAsync();
             return Result<UserAccount>.Success(model);
         }
         catch (Exception exception)
@@ -98,6 +99,7 @@ public class UserAccountServices(IRepository<UserAccount> userAccountRepository,
         {
             model.IsActive = true;
             await userProfileRepository.AddAsync(model);
+            await _uow.SaveChangesAsync();
             return new ServiceResult { RequestStatus = RequestStatus.Successful, Data = model, Message = CommonMessages.Successful };
         }
         catch (Exception exception)
@@ -122,7 +124,7 @@ public class UserAccountServices(IRepository<UserAccount> userAccountRepository,
 
             mapper.Map(model, profileExists);
             await userProfileRepository.UpdateAsync(profileExists);
-
+            await _uow.SaveChangesAsync();
             return new ServiceResult().Successful();
         }
         catch (Exception excepotion)
@@ -162,7 +164,7 @@ public class UserAccountServices(IRepository<UserAccount> userAccountRepository,
             };
 
             await userRoleRepository.AddAsync(userRole);
-
+            await _uow.SaveChangesAsync();
             return new ServiceResult().Successful();
         }
         catch (Exception exception)
