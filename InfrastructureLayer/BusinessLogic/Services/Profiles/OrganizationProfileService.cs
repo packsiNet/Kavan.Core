@@ -87,6 +87,7 @@ public class OrganizationProfileService(IUnitOfWork _uow,
         }
 
         await _uow.BeginTransactionAsync();
+        var isNew = false;
         if (entity == null)
         {
             entity = new OrganizationProfile
@@ -110,7 +111,7 @@ public class OrganizationProfileService(IUnitOfWork _uow,
                 LogoUrl = logoUrl ?? string.Empty,
                 BannerUrl = bannerUrl ?? string.Empty
             };
-            await _profiles.AddAsync(entity);
+            isNew = true;
         }
         else
         {
@@ -154,7 +155,10 @@ public class OrganizationProfileService(IUnitOfWork _uow,
         entity.Phones = dto.Phones.Select(ph => new OrganizationPhone { OrganizationProfileId = entity.Id, Title = ph.Title ?? string.Empty, PhoneNumber = ph.PhoneNumber }).ToList();
         entity.Emails = dto.Emails.Select(em => new OrganizationEmail { OrganizationProfileId = entity.Id, Title = em.Title ?? string.Empty, Email = em.Email }).ToList();
 
-        await _profiles.UpdateAsync(entity);
+        if (isNew)
+            await _profiles.AddAsync(entity);
+        else
+            await _profiles.UpdateAsync(entity);
         await _uow.SaveChangesAsync();
         await _uow.CommitAsync();
 
