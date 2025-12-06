@@ -1,4 +1,4 @@
-﻿namespace ApplicationLayer.DTOs.User
+namespace ApplicationLayer.DTOs.User
 {
     public class UpdateUserProfileDto
     {
@@ -17,5 +17,7 @@
         public int CountryOfResidenceId { get; set; }
 
         public List<int> CityIds { get; set; }
+
+        public string AboutMe { get; set; }
     }
 }

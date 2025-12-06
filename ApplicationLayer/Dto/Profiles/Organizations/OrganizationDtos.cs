@@ -23,6 +23,18 @@ public class OrganizationSocialLinkDto
     public string Url { get; set; }
 }
 
+public class OrganizationPhoneDto
+{
+    public string Title { get; set; }
+    public string PhoneNumber { get; set; }
+}
+
+public class OrganizationEmailDto
+{
+    public string Title { get; set; }
+    public string Email { get; set; }
+}
+
 public class OrganizationLicenseDto
 {
     public string RegulatorName { get; set; }
@@ -66,6 +78,8 @@ public class OrganizationProfileDto
 
     public string Description { get; set; }
 
+    public string DescriptionDetails { get; set; }
+
     public int? FoundedYear { get; set; }
 
     public string RegistrationNumber { get; set; }
@@ -75,6 +89,8 @@ public class OrganizationProfileDto
     public string City { get; set; }
 
     public string Address { get; set; }
+
+    public string PostalCode { get; set; }
 
     public string ContactEmailPublic { get; set; }
 
@@ -99,6 +115,10 @@ public class OrganizationProfileDto
     public List<OrganizationExchangeDto> Exchanges { get; set; } = [];
 
     public List<OrganizationInvestmentPanelDto> InvestmentPanels { get; set; } = [];
+
+    public List<OrganizationPhoneDto> Phones { get; set; } = [];
+
+    public List<OrganizationEmailDto> Emails { get; set; } = [];
 }
 
 public class UpdateOrganizationProfileDto
@@ -111,6 +131,8 @@ public class UpdateOrganizationProfileDto
 
     public string Description { get; set; }
 
+    public string DescriptionDetails { get; set; }
+
     public int? FoundedYear { get; set; }
 
     public string RegistrationNumber { get; set; }
@@ -120,6 +142,8 @@ public class UpdateOrganizationProfileDto
     public string City { get; set; }
 
     public string Address { get; set; }
+
+    public string PostalCode { get; set; }
 
     public string ContactEmailPublic { get; set; }
 
@@ -140,6 +164,10 @@ public class UpdateOrganizationProfileDto
     public List<OrganizationExchangeDto> Exchanges { get; set; } = [];
 
     public List<OrganizationInvestmentPanelDto> InvestmentPanels { get; set; } = [];
+
+    public List<OrganizationPhoneDto> Phones { get; set; } = [];
+
+    public List<OrganizationEmailDto> Emails { get; set; } = [];
 
     public IFormFile Logo { get; set; }
 

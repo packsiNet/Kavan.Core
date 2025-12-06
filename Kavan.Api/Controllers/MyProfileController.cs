@@ -3,6 +3,9 @@ using ApplicationLayer.Common.Extensions;
 using ApplicationLayer.DTOs.Profiles.Organizations;
 using ApplicationLayer.Features.Profiles.Organizations.Commands;
 using ApplicationLayer.Features.Profiles.Organizations.Query;
+using ApplicationLayer.DTOs.User;
+using ApplicationLayer.Features.Profiles.Users.Query;
+using ApplicationLayer.Features.Profiles.Users.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,4 +42,12 @@ public class MyProfileController(IMediator mediator) : ControllerBase
     [RequestSizeLimit(6_000_000)]
     public async Task<IActionResult> UploadBannerAsync(IFormFile file)
         => await ResultHelper.GetResultAsync(mediator, new UploadBannerCommand(file));
+
+    [HttpGet("personal")]
+    public async Task<IActionResult> GetMyPersonalAsync()
+        => await ResultHelper.GetResultAsync(mediator, new GetMyUserProfileQuery());
+
+    [HttpPut("personal")]
+    public async Task<IActionResult> UpdateMyPersonalAsync([FromBody] UpdateUserProfileDto model)
+        => await ResultHelper.GetResultAsync(mediator, new UpdateMyUserProfileCommand(model));
 }

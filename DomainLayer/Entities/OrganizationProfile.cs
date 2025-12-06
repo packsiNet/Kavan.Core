@@ -14,6 +14,8 @@ public class OrganizationProfile : BaseEntityModel, IAuditableEntity
 
     public string Description { get; set; } = string.Empty;
 
+    public string DescriptionDetails { get; set; } = string.Empty;
+
     public int? FoundedYear { get; set; }
 
     public string RegistrationNumber { get; set; } = string.Empty;
@@ -23,6 +25,8 @@ public class OrganizationProfile : BaseEntityModel, IAuditableEntity
     public string City { get; set; } = string.Empty;
 
     public string Address { get; set; } = string.Empty;
+
+    public string PostalCode { get; set; } = string.Empty;
 
     public string ContactEmailPublic { get; set; } = string.Empty;
 
@@ -49,4 +53,8 @@ public class OrganizationProfile : BaseEntityModel, IAuditableEntity
     public ICollection<OrganizationExchange> Exchanges { get; set; } = [];
 
     public ICollection<OrganizationInvestmentPanel> InvestmentPanels { get; set; } = [];
+
+    public ICollection<OrganizationPhone> Phones { get; set; } = [];
+
+    public ICollection<OrganizationEmail> Emails { get; set; } = [];
 }

@@ -24,6 +24,16 @@ public class UpdateOrganizationProfileValidator : AbstractValidator<UpdateOrgani
             s.RuleFor(y => y.Platform).Must(SocialPlatform.IsValid);
         });
 
+        RuleForEach(x => x.Phones).ChildRules(p =>
+        {
+            p.RuleFor(y => y.PhoneNumber).NotEmpty();
+        });
+
+        RuleForEach(x => x.Emails).ChildRules(e =>
+        {
+            e.RuleFor(y => y.Email).NotEmpty().EmailAddress();
+        });
+
         When(x => x.Logo != null, () =>
         {
             RuleFor(x => x.Logo.ContentType).Must(ct => new[] { "image/jpeg", "image/png", "image/webp" }.Contains(ct));

@@ -27,6 +27,8 @@ public class PublicProfileService(IRepository<UserAccount> _users,
             .Include(x => x.Licenses)
             .Include(x => x.Exchanges)
             .Include(x => x.InvestmentPanels)
+            .Include(x => x.Phones)
+            .Include(x => x.Emails)
             .FirstOrDefaultAsync(x => x.UserAccountId == userId && x.IsPublic);
 
         var dto = new PublicProfileDto
@@ -56,11 +58,13 @@ public class PublicProfileService(IRepository<UserAccount> _users,
             OrganizationName = e.OrganizationName,
             LegalName = e.LegalName,
             Description = e.Description,
+            DescriptionDetails = e.DescriptionDetails,
             FoundedYear = e.FoundedYear,
             RegistrationNumber = e.RegistrationNumber,
             Country = e.Country,
             City = e.City,
             Address = e.Address,
+            PostalCode = e.PostalCode,
             ContactEmailPublic = e.ContactEmailPublic,
             ContactPhonePublic = e.ContactPhonePublic,
             LogoUrl = e.LogoUrl,
@@ -72,7 +76,9 @@ public class PublicProfileService(IRepository<UserAccount> _users,
             SocialLinks = e.SocialLinks.Select(s => new OrganizationSocialLinkDto { Platform = s.Platform, Url = s.Url }).ToList(),
             Licenses = e.Licenses.Select(l => new OrganizationLicenseDto { RegulatorName = l.RegulatorName, LicenseNumber = l.LicenseNumber, Country = l.Country }).ToList(),
             Exchanges = e.Exchanges.Select(x => new OrganizationExchangeDto { Name = x.Name, Country = x.Country, Url = x.Url }).ToList(),
-            InvestmentPanels = e.InvestmentPanels.Select(p => new OrganizationInvestmentPanelDto { Name = p.Name, Url = p.Url, MinimumInvestment = p.MinimumInvestment, ProfitShareModel = p.ProfitShareModel }).ToList()
+            InvestmentPanels = e.InvestmentPanels.Select(p => new OrganizationInvestmentPanelDto { Name = p.Name, Url = p.Url, MinimumInvestment = p.MinimumInvestment, ProfitShareModel = p.ProfitShareModel }).ToList(),
+            Phones = e.Phones.Select(ph => new OrganizationPhoneDto { Title = ph.Title, PhoneNumber = ph.PhoneNumber }).ToList(),
+            Emails = e.Emails.Select(em => new OrganizationEmailDto { Title = em.Title, Email = em.Email }).ToList()
         };
     }
 }

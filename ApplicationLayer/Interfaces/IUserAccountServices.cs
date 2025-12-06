@@ -1,4 +1,4 @@
-﻿using ApplicationLayer.Dto.BaseDtos;
+using ApplicationLayer.Dto.BaseDtos;
 using ApplicationLayer.DTOs.Identity;
 using ApplicationLayer.DTOs.User;
 using DomainLayer.Entities;
@@ -20,4 +20,6 @@ public interface IUserAccountServices
     Task<ServiceResult> AssignRoleToUserAsync(UserAccountKeyDto userAccountId, string roleName);
 
     Task<ServiceResult> UserInfoAsync();
+
+    Task<ServiceResult> GetMyUserProfileAsync();
 }

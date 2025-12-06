@@ -192,6 +192,38 @@ public class UserAccountServices(IRepository<UserAccount> userAccountRepository,
         }
     }
 
+    public async Task<ServiceResult> GetMyUserProfileAsync()
+    {
+        try
+        {
+            if (userContextService.UserId == null)
+                return new ServiceResult().IncorectUser();
+
+            var uid = userContextService.UserId.Value;
+            var profile = await userProfileRepository.Query().FirstOrDefaultAsync(x => x.UserAccountId == uid);
+            if (profile == null)
+                return new ServiceResult().NotFound();
+
+            var dto = new ApplicationLayer.DTOs.User.MyUserProfileDto
+            {
+                UserAccountId = profile.UserAccountId,
+                FirstName = profile.FirstName,
+                LastName = profile.LastName,
+                DisplayName = profile.DisplayName,
+                Address = profile.Address,
+                Company = profile.Company,
+                PostalCode = profile.PostalCode,
+                AboutMe = profile.AboutMe
+            };
+
+            return new ServiceResult().Successful(dto);
+        }
+        catch (Exception exception)
+        {
+            return new ServiceResult().Failed(logger, exception, CommonExceptionMessage.GetFailed("پروفایل شخصی کاربر"));
+        }
+    }
+
     private static int GenerateSecurityCode()
     {
         using var rng = RandomNumberGenerator.Create();

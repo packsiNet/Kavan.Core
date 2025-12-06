@@ -20,6 +20,8 @@ public class OrganizationProfileService(IUnitOfWork _uow,
                                         IRepository<OrganizationLicense> _licenses,
                                         IRepository<OrganizationExchange> _exchanges,
                                         IRepository<OrganizationInvestmentPanel> _panels,
+                                        IRepository<OrganizationPhone> _phones,
+                                        IRepository<OrganizationEmail> _emails,
                                         IFileStorageService _files) : IOrganizationProfileService
 {
     public async Task<Result<OrganizationProfileDto>> GetPublicByUserIdAsync(int userId)
@@ -31,6 +33,8 @@ public class OrganizationProfileService(IUnitOfWork _uow,
             .Include(x => x.Licenses)
             .Include(x => x.Exchanges)
             .Include(x => x.InvestmentPanels)
+            .Include(x => x.Phones)
+            .Include(x => x.Emails)
             .FirstOrDefaultAsync(x => x.UserAccountId == userId && x.IsPublic);
         var entity = await q;
         if (entity == null) return Result<OrganizationProfileDto>.NotFound("پروفایل سازمان عمومی یافت نشد");
@@ -48,6 +52,8 @@ public class OrganizationProfileService(IUnitOfWork _uow,
             .Include(x => x.Licenses)
             .Include(x => x.Exchanges)
             .Include(x => x.InvestmentPanels)
+            .Include(x => x.Phones)
+            .Include(x => x.Emails)
             .FirstOrDefaultAsync(x => x.UserAccountId == uid);
         if (entity == null) return Result<OrganizationProfileDto>.NotFound("پروفایل سازمانی یافت نشد");
         return Result<OrganizationProfileDto>.Success(ToDto(entity));
@@ -90,11 +96,13 @@ public class OrganizationProfileService(IUnitOfWork _uow,
                 OrganizationName = dto.OrganizationName,
                 LegalName = dto.LegalName,
                 Description = dto.Description,
+                DescriptionDetails = dto.DescriptionDetails,
                 FoundedYear = dto.FoundedYear,
                 RegistrationNumber = dto.RegistrationNumber,
                 Country = dto.Country,
                 City = dto.City,
                 Address = dto.Address,
+                PostalCode = dto.PostalCode,
                 ContactEmailPublic = dto.ContactEmailPublic,
                 ContactPhonePublic = dto.ContactPhonePublic,
                 HasExchange = dto.HasExchange,
@@ -110,11 +118,13 @@ public class OrganizationProfileService(IUnitOfWork _uow,
             entity.OrganizationName = dto.OrganizationName;
             entity.LegalName = dto.LegalName;
             entity.Description = dto.Description;
+            entity.DescriptionDetails = dto.DescriptionDetails;
             entity.FoundedYear = dto.FoundedYear;
             entity.RegistrationNumber = dto.RegistrationNumber;
             entity.Country = dto.Country;
             entity.City = dto.City;
             entity.Address = dto.Address;
+            entity.PostalCode = dto.PostalCode;
             entity.ContactEmailPublic = dto.ContactEmailPublic;
             entity.ContactPhonePublic = dto.ContactPhonePublic;
             entity.HasExchange = dto.HasExchange;
@@ -130,6 +140,8 @@ public class OrganizationProfileService(IUnitOfWork _uow,
             _licenses.RemoveRange(entity.Licenses.ToList());
             _exchanges.RemoveRange(entity.Exchanges.ToList());
             _panels.RemoveRange(entity.InvestmentPanels.ToList());
+            _phones.RemoveRange(entity.Phones.ToList());
+            _emails.RemoveRange(entity.Emails.ToList());
         }
 
         // Re-add child items
@@ -139,6 +151,8 @@ public class OrganizationProfileService(IUnitOfWork _uow,
         entity.Licenses = dto.Licenses.Select(l => new OrganizationLicense { OrganizationProfileId = entity.Id, RegulatorName = l.RegulatorName, LicenseNumber = l.LicenseNumber, Country = l.Country }).ToList();
         entity.Exchanges = dto.Exchanges.Select(e => new OrganizationExchange { OrganizationProfileId = entity.Id, Name = e.Name, Country = e.Country, Url = e.Url }).ToList();
         entity.InvestmentPanels = dto.InvestmentPanels.Select(p => new OrganizationInvestmentPanel { OrganizationProfileId = entity.Id, Name = p.Name, Url = p.Url, MinimumInvestment = p.MinimumInvestment, ProfitShareModel = p.ProfitShareModel }).ToList();
+        entity.Phones = dto.Phones.Select(ph => new OrganizationPhone { OrganizationProfileId = entity.Id, Title = ph.Title ?? string.Empty, PhoneNumber = ph.PhoneNumber }).ToList();
+        entity.Emails = dto.Emails.Select(em => new OrganizationEmail { OrganizationProfileId = entity.Id, Title = em.Title ?? string.Empty, Email = em.Email }).ToList();
 
         await _profiles.UpdateAsync(entity);
         await _uow.SaveChangesAsync();
@@ -151,6 +165,8 @@ public class OrganizationProfileService(IUnitOfWork _uow,
             .Include(x => x.Licenses)
             .Include(x => x.Exchanges)
             .Include(x => x.InvestmentPanels)
+            .Include(x => x.Phones)
+            .Include(x => x.Emails)
             .FirstAsync(x => x.Id == entity.Id);
         return Result<OrganizationProfileDto>.Success(ToDto(updated));
     }
@@ -230,7 +246,9 @@ public class OrganizationProfileService(IUnitOfWork _uow,
             SocialLinks = e.SocialLinks.Select(s => new OrganizationSocialLinkDto { Platform = s.Platform, Url = s.Url }).ToList(),
             Licenses = e.Licenses.Select(l => new OrganizationLicenseDto { RegulatorName = l.RegulatorName, LicenseNumber = l.LicenseNumber, Country = l.Country }).ToList(),
             Exchanges = e.Exchanges.Select(x => new OrganizationExchangeDto { Name = x.Name, Country = x.Country, Url = x.Url }).ToList(),
-            InvestmentPanels = e.InvestmentPanels.Select(p => new OrganizationInvestmentPanelDto { Name = p.Name, Url = p.Url, MinimumInvestment = p.MinimumInvestment, ProfitShareModel = p.ProfitShareModel }).ToList()
+            InvestmentPanels = e.InvestmentPanels.Select(p => new OrganizationInvestmentPanelDto { Name = p.Name, Url = p.Url, MinimumInvestment = p.MinimumInvestment, ProfitShareModel = p.ProfitShareModel }).ToList(),
+            Phones = e.Phones.Select(ph => new OrganizationPhoneDto { Title = ph.Title, PhoneNumber = ph.PhoneNumber }).ToList(),
+            Emails = e.Emails.Select(em => new OrganizationEmailDto { Title = em.Title, Email = em.Email }).ToList()
         };
     }
 }

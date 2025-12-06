@@ -1,4 +1,4 @@
-﻿using ApplicationLayer.Common.Extensions;
+using ApplicationLayer.Common.Extensions;
 using ApplicationLayer.DTOs.Identity;
 using ApplicationLayer.DTOs.User;
 using AutoMapper;
@@ -19,6 +19,7 @@ public class UserAccountProfile : Profile
         .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
         .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
         .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DisplayName))
-        .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address));
+        .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+        .ForMember(dest => dest.AboutMe, opt => opt.MapFrom(src => src.AboutMe));
     }
 }
