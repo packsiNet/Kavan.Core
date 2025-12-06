@@ -6,6 +6,7 @@ using ApplicationLayer.Features.Profiles.Organizations.Query;
 using ApplicationLayer.DTOs.User;
 using ApplicationLayer.Features.Profiles.Users.Query;
 using ApplicationLayer.Features.Profiles.Users.Commands;
+using ApplicationLayer.Features.Profiles.Public.Query;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -50,4 +51,8 @@ public class MyProfileController(IMediator mediator) : ControllerBase
     [HttpPut("personal")]
     public async Task<IActionResult> UpdateMyPersonalAsync([FromBody] UpdateUserProfileDto model)
         => await ResultHelper.GetResultAsync(mediator, new UpdateMyUserProfileCommand(model));
+
+    [HttpGet("full")]
+    public async Task<IActionResult> GetFullAsync([FromQuery] int? userId)
+        => await ResultHelper.GetResultAsync(mediator, new GetFullProfileQuery(userId));
 }
