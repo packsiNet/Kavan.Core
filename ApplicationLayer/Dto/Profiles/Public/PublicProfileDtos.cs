@@ -8,6 +8,7 @@ public class PersonalPublicProfileDto
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string AvatarUrl { get; set; }
+    public string AboutMe { get; set; }
 }
 
 public class PublicProfileDto

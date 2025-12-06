@@ -40,6 +40,7 @@ public class PublicProfileService(IRepository<UserAccount> _users,
                 DisplayName = personal?.DisplayName,
                 FirstName = personal?.FirstName,
                 LastName = personal?.LastName,
+                AboutMe = personal?.AboutMe,
                 AvatarUrl = user.Avatar
             },
             Organization = org == null ? null : ToOrgDto(org)
