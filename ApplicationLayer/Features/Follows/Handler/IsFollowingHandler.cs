@@ -25,8 +25,11 @@ public class IsFollowingHandler(IRepository<UserFollow> followRepo, IUserContext
         var isFollowing = await followRepo.Query()
             .AnyAsync(x => x.FollowerUserId == uid.Value && x.FolloweeUserId == request.TargetUserId, cancellationToken);
 
-        var followersCount = await followRepo.Query().CountAsync(x => x.FolloweeUserId == request.TargetUserId, cancellationToken);
-        var followingCount = await followRepo.Query().CountAsync(x => x.FollowerUserId == uid.Value, cancellationToken);
+        var followersCount = await followRepo.Query()
+            .CountAsync(x => x.FolloweeUserId == request.TargetUserId, cancellationToken);
+
+        var followingCount = await followRepo.Query()
+            .CountAsync(x => x.FollowerUserId == request.TargetUserId, cancellationToken);
 
         var dto = new FollowStatusDto
         {
