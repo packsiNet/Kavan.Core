@@ -111,7 +111,11 @@ public class UserAccountServices(IRepository<UserAccount> userAccountRepository,
     {
         try
         {
-            var profileExists = await userProfileRepository.Query().FirstOrDefaultAsync(x => x.UserAccountId == model.Id);
+            if (userContextService.UserId == null)
+                return new ServiceResult().IncorectUser();
+
+            var uid = userContextService.UserId.Value;
+            var profileExists = await userProfileRepository.Query().FirstOrDefaultAsync(x => x.UserAccountId == uid);
 
             if (profileExists == null)
                 return new ServiceResult { RequestStatus = RequestStatus.IncorrectUser, Message = CommonMessages.IncorrectUser };
