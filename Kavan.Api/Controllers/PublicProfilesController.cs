@@ -2,6 +2,7 @@ using ApplicationLayer.Common.Enums;
 using ApplicationLayer.Common.Extensions;
 using ApplicationLayer.DTOs.Profiles.Organizations;
 using ApplicationLayer.Features.Profiles.Organizations.Query;
+using ApplicationLayer.Features.Profiles.Public.Query;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,11 @@ public class PublicProfilesController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetPublicAsync(int userId)
         => await ResultHelper.GetResultAsync(_mediator, new GetPublicProfileByUserIdQuery(userId));
+
+    [HttpGet("{userId:int}/full")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetFullPublicAsync(int userId)
+        => await ResultHelper.GetResultAsync(_mediator, new GetUserPublicProfileQuery(userId));
 
     [HttpGet("organizations/search")]
     [AllowAnonymous]
