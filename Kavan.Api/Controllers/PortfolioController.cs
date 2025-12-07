@@ -35,4 +35,12 @@ public class PortfolioController(IMediator mediator) : ControllerBase
     [HttpDelete("entry/{id:int}")]
     public async Task<IActionResult> DeleteEntryAsync(int id)
         => await ResultHelper.GetResultAsync(mediator, new DeletePortfolioEntryCommand(id));
+
+    [HttpDelete("symbol/{symbol}")]
+    public async Task<IActionResult> DeleteSymbolAsync(string symbol)
+        => await ResultHelper.GetResultAsync(mediator, new DeletePortfolioSymbolCommand(symbol));
+
+    [HttpPost("sale")]
+    public async Task<IActionResult> AddSaleAsync([FromBody] CreatePortfolioSaleDto model)
+        => await ResultHelper.GetResultAsync(mediator, new AddPortfolioSaleCommand(model));
 }
