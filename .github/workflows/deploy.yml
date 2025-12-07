@@ -9,7 +9,7 @@ env:
   APP_URL: ${{ secrets.APP_URL }}
   PROJECT_PATH: Kavan.Api/Kavan.Api.csproj
   PUBLISH_DIR: build/publish
-  DEPLOY_PATH: /var/www/kavan-core
+  DEPLOY_PATH: /var/www/api-app
 
 jobs:
   build_test_publish_deploy:
