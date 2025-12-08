@@ -41,6 +41,19 @@ public class ChannelsController(IMediator mediator) : ControllerBase
         return await ResultHelper.GetResultAsync(mediator, new GetMyChannelsQuery(model));
     }
 
+    [HttpGet("created")]
+    [Authorize(Roles = "User")]
+    public async Task<IActionResult> GetCreatedAsync([FromQuery] int? category, [FromQuery] int? accessType, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        var model = new GetChannelsRequestDto
+        {
+            Category = category,
+            AccessType = accessType,
+            Pagination = new PaginationDto { Page = page, PageSize = pageSize }
+        };
+        return await ResultHelper.GetResultAsync(mediator, new GetCreatedChannelsQuery(model));
+    }
+
     [HttpGet("{id:int}")]
     [AllowAnonymous]
     public async Task<IActionResult> GetByIdAsync(int id)
@@ -75,4 +88,9 @@ public class ChannelsController(IMediator mediator) : ControllerBase
     [Authorize(Roles = "User")]
     public async Task<IActionResult> RateAsync(int id, [FromBody] RateChannelDto model)
         => await ResultHelper.GetResultAsync(mediator, new RateChannelCommand(model));
+
+    [HttpPost("{id:int}/mute")]
+    [Authorize(Roles = "User")]
+    public async Task<IActionResult> MuteAsync(int id)
+        => await ResultHelper.GetResultAsync(mediator, new MuteChannelCommand(id));
 }

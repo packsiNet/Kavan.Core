@@ -9,10 +9,13 @@ public class PostDto
     public string Description { get; set; }
     public string Image { get; set; }
     public DateTime CreatedAt { get; set; }
+    public string TimeAgo { get; set; } // Added
     public SignalDetailDto SignalDetail { get; set; }
     public NewsDetailDto NewsDetail { get; set; }
     public int Likes { get; set; }
     public int Dislikes { get; set; }
+    public int CommentsCount { get; set; } // Added
+    public List<CommentDto> Comments { get; set; } = new(); // Added
 }
 
 public class SignalDetailDto
@@ -28,4 +31,14 @@ public class SignalDetailDto
 public class NewsDetailDto
 {
     public string Url { get; set; }
+}
+
+public class CommentDto
+{
+    public int Id { get; set; }
+    public int UserId { get; set; }
+    public string UserName { get; set; } // Needs User join
+    public string Comment { get; set; }
+    public string TimeAgo { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

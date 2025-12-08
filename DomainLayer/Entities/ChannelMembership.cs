@@ -7,4 +7,5 @@ public class ChannelMembership : BaseEntityModel, IAuditableEntity
     public int ChannelId { get; set; }
     public int UserId { get; set; }
     public bool IsActive { get; set; }
+    public bool IsMuted { get; set; }
 }

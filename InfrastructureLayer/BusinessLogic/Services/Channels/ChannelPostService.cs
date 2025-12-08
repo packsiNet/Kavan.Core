@@ -18,6 +18,8 @@ public class ChannelPostService(IUnitOfWork _uow,
                                 IRepository<ChannelSignalTp> _signalTps,
                                 IRepository<ChannelNewsDetail> _newsDetails,
                                 IRepository<ChannelPostReaction> _reactions,
+                                IRepository<ChannelPostComment> _comments,
+                                IRepository<UserAccount> _users,
                                 ApplicationLayer.Interfaces.External.IFileStorageService _files,
                                 IUserContextService _user) : IChannelPostService
 {
@@ -157,7 +159,8 @@ public class ChannelPostService(IUnitOfWork _uow,
     {
         var ch = await _channels.GetDbSet().FirstOrDefaultAsync(x => x.Id == channelId);
         if (ch == null) return Result<PostsPageDto>.NotFound("کانال یافت نشد");
-        var isPaid = ch.AccessType == ApplicationLayer.Common.Enums.ChannelAccessType.Paid.Name;
+        
+        var isPaid = ch.AccessType == ApplicationLayer.Common.Enums.ChannelAccessType.VIP.Value;
         if (isPaid)
         {
             if (_user.UserId == null) return Result<PostsPageDto>.AuthenticationFailure();
@@ -181,7 +184,7 @@ public class ChannelPostService(IUnitOfWork _uow,
         var post = await _posts.GetDbSet().FirstOrDefaultAsync(x => x.Id == dto.PostId);
         if (post == null) return Result<PostDto>.NotFound("پست یافت نشد");
         var ch = await _channels.GetDbSet().FirstOrDefaultAsync(x => x.Id == post.ChannelId);
-        var isPaid = ch.AccessType == ApplicationLayer.Common.Enums.ChannelAccessType.Paid.Name;
+        var isPaid = ch.AccessType == ApplicationLayer.Common.Enums.ChannelAccessType.VIP.Value;
         var member = await _members.GetDbSet().FirstOrDefaultAsync(x => x.ChannelId == ch.Id && x.UserId == _user.UserId.Value && (!isPaid || x.IsActive));
         if (member == null) return Result<PostDto>.Failure(new Error("FORBIDDEN", "فقط اعضا می‌توانند واکنش ثبت کنند", ApplicationLayer.Common.Enums.RequestStatus.IncorrectUser));
         var rx = await _reactions.GetDbSet().FirstOrDefaultAsync(x => x.PostId == dto.PostId && x.UserId == _user.UserId.Value);
@@ -210,6 +213,27 @@ public class ChannelPostService(IUnitOfWork _uow,
         var post = await _posts.GetDbSet().FirstOrDefaultAsync(x => x.Id == postId);
         var likes = await _reactions.Query().Where(x => x.PostId == postId && x.Reaction == "like").CountAsync();
         var dislikes = await _reactions.Query().Where(x => x.PostId == postId && x.Reaction == "dislike").CountAsync();
+        
+        var comments = await _comments.Query()
+            .Where(x => x.PostId == postId)
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync();
+        
+        var commentDtos = new List<CommentDto>();
+        foreach (var c in comments)
+        {
+            var user = await _users.GetDbSet().FirstOrDefaultAsync(u => u.Id == c.UserId);
+            commentDtos.Add(new CommentDto
+            {
+                Id = c.Id,
+                UserId = c.UserId,
+                UserName = user?.UserName ?? "Unknown",
+                Comment = c.Comment,
+                CreatedAt = c.CreatedAt,
+                TimeAgo = GetTimeAgo(c.CreatedAt)
+            });
+        }
+
         var dto = new PostDto
         {
             Id = post.Id,
@@ -219,29 +243,46 @@ public class ChannelPostService(IUnitOfWork _uow,
             Description = post.Description,
             Image = post.ImageUrl,
             CreatedAt = post.CreatedAt,
+            TimeAgo = GetTimeAgo(post.CreatedAt),
             Likes = likes,
-            Dislikes = dislikes
+            Dislikes = dislikes,
+            CommentsCount = comments.Count,
+            Comments = commentDtos
         };
+
         if (post.Type == ApplicationLayer.Common.Enums.ChannelPostType.Signal.Name)
         {
             var det = await _signalDetails.GetDbSet().FirstOrDefaultAsync(x => x.PostId == postId);
-            var entries = await _signalEntries.Query().Where(x => x.PostId == postId).Select(x => x.Price).ToListAsync();
-            var tps = await _signalTps.Query().Where(x => x.PostId == postId).Select(x => x.Price).ToListAsync();
-            dto.SignalDetail = new SignalDetailDto
+            if (det != null)
             {
-                Symbol = det.Symbol,
-                Timeframe = det.Timeframe,
-                TradeType = det.TradeType,
-                EntryPoints = entries,
-                Tps = tps,
-                StopLoss = det.StopLoss
-            };
+                var entries = await _signalEntries.Query().Where(x => x.PostId == postId).Select(x => x.Price).ToListAsync();
+                var tps = await _signalTps.Query().Where(x => x.PostId == postId).Select(x => x.Price).ToListAsync();
+                dto.SignalDetail = new SignalDetailDto
+                {
+                    Symbol = det.Symbol,
+                    Timeframe = det.Timeframe,
+                    TradeType = det.TradeType,
+                    EntryPoints = entries,
+                    Tps = tps,
+                    StopLoss = det.StopLoss
+                };
+            }
         }
         else
         {
             var det = await _newsDetails.GetDbSet().FirstOrDefaultAsync(x => x.PostId == postId);
-            dto.NewsDetail = new NewsDetailDto { Url = det.Url };
+            if (det != null)
+                dto.NewsDetail = new NewsDetailDto { Url = det.Url };
         }
         return dto;
+    }
+
+    private string GetTimeAgo(DateTime date)
+    {
+        var span = DateTime.UtcNow - date; // Assuming CreatedAt is UTC
+        if (span.TotalMinutes < 1) return "Just now";
+        if (span.TotalHours < 1) return $"{span.Minutes} minutes ago";
+        if (span.TotalHours < 24) return $"{(int)span.TotalHours} hours ago";
+        return $"{(int)span.TotalDays} days ago";
     }
 }

@@ -12,12 +12,12 @@ public sealed class ChannelAccessType
     }
 
     public static readonly ChannelAccessType Free = new(nameof(Free), 1);
-    public static readonly ChannelAccessType Paid = new(nameof(Paid), 2);
+    public static readonly ChannelAccessType VIP = new(nameof(VIP), 2);
 
     private static readonly Dictionary<string, ChannelAccessType> _byName = new(StringComparer.OrdinalIgnoreCase)
     {
         { nameof(Free), Free },
-        { nameof(Paid), Paid }
+        { nameof(VIP), VIP }
     };
 
     public static bool IsValid(string name) => _byName.ContainsKey(name);
@@ -25,7 +25,7 @@ public sealed class ChannelAccessType
     private static readonly Dictionary<int, ChannelAccessType> _byValue = new()
     {
         { Free.Value, Free },
-        { Paid.Value, Paid }
+        { VIP.Value, VIP }
     };
 
     public static bool IsValid(int value) => _byValue.ContainsKey(value);
