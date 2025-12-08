@@ -9,31 +9,38 @@ env:
   APP_URL: ${{ secrets.APP_URL }}
   PROJECT_PATH: Kavan.Api/Kavan.Api.csproj
   PUBLISH_DIR: api-app
-  DEPLOY_PATH: /var/www
+  DEPLOY_PATH: /var/www/api-app
 
 jobs:
   build_test_publish_deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
+
       - name: Restore
         run: dotnet restore Kavan.Core.sln
+
       - name: Build
         run: dotnet build Kavan.Core.sln --configuration Release --no-restore
+
       - name: Test
         run: dotnet test Tests/Kavan.Tests/Kavan.Tests.csproj --configuration Release --no-build
+
       - name: Publish
         run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --output ${{ env.PUBLISH_DIR }}
+
+      # حذف wwwroot از پکیج (اختیاری)
       - name: Strip wwwroot from publish package
         run: |
-          set -e
           if [ -d "${{ env.PUBLISH_DIR }}/wwwroot" ]; then
             rm -rf "${{ env.PUBLISH_DIR }}/wwwroot"
           fi
+
       - name: Prepare remote directory
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -42,19 +49,15 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            set -e
-            # 1. Create persistent storage directory (outside the app folder)
+            # ایجاد مسیر پروژه در سرور (بدون حذف)
+            mkdir -p ${{ env.DEPLOY_PATH }}
+
+            # ایجاد مسیرهای permanent uploads
             mkdir -p /var/www/kavan-uploads/ideas
             mkdir -p /var/www/kavan-uploads/profiles
-            # Set permissions (optional, adjust as needed)
+
             chmod -R 755 /var/www/kavan-uploads
 
-            # 2. Prepare deploy path
-            mkdir -p ${{ env.DEPLOY_PATH }}
-            
-            # 3. Clean up old files BUT exclude wwwroot to avoid accidental deletion before we link
-            find ${{ env.DEPLOY_PATH }} -mindepth 1 -maxdepth 1 ! -name 'wwwroot' -exec rm -rf {} +
-            
             echo "APP_URL=${APP_URL}" > ${{ env.DEPLOY_PATH }}/deploy.env
 
       - name: Deploy files
@@ -66,7 +69,6 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           source: ${{ env.PUBLISH_DIR }}/*
           target: ${{ env.DEPLOY_PATH }}
-          strip_components: 2
           overwrite: true
 
       - name: Configure Persistent Uploads
@@ -77,19 +79,13 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            set -e
-            # Ensure wwwroot exists
             mkdir -p ${{ env.DEPLOY_PATH }}/wwwroot
 
-            # Check if 'uploads' exists and is a real directory (not a symlink)
+            # اگر uploads وجود دارد و symlink نبود → به persistent منتقل کن
             if [ -d "${{ env.DEPLOY_PATH }}/wwwroot/uploads" ] && [ ! -L "${{ env.DEPLOY_PATH }}/wwwroot/uploads" ]; then
-                echo "Moving existing uploads to persistent storage..."
                 cp -rn ${{ env.DEPLOY_PATH }}/wwwroot/uploads/* /var/www/kavan-uploads/ || true
                 rm -rf ${{ env.DEPLOY_PATH }}/wwwroot/uploads
             fi
 
-            # Create/Update the symlink
-            # /var/www/api-app/wwwroot/uploads -> /var/www/kavan-uploads
+            # ساخت Symlink امن
             ln -sfn /var/www/kavan-uploads ${{ env.DEPLOY_PATH }}/wwwroot/uploads
-            
-            echo "Symlink created: ${{ env.DEPLOY_PATH }}/wwwroot/uploads -> /var/www/kavan-uploads"
