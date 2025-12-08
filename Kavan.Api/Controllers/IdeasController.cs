@@ -2,6 +2,10 @@ using ApplicationLayer.Common.Enums;
 using ApplicationLayer.Common.Extensions;
 using ApplicationLayer.Dto.BaseDtos;
 using ApplicationLayer.DTOs.Ideas;
+using ApplicationLayer.Features.IdeaComments.Commands;
+using ApplicationLayer.Features.IdeaComments.Query;
+using ApplicationLayer.Features.IdeaRatings.Commands;
+using ApplicationLayer.Features.IdeaRatings.Query;
 using ApplicationLayer.Features.Ideas.Commands;
 using ApplicationLayer.Features.Ideas.Query;
 using MediatR;
@@ -15,6 +19,37 @@ namespace Kavan.Api.Controllers;
 [ApiExplorerSettings(GroupName = nameof(ApiDefinitions.Trader))]
 public class IdeasController(IMediator mediator) : ControllerBase
 {
+    [HttpGet("{id:int}/comments")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetCommentsAsync(int id)
+        => await ResultHelper.GetResultAsync(mediator, new GetIdeaCommentsQuery(id));
+
+    [HttpPost("{id:int}/comments")]
+    [Authorize(Roles = "User")]
+    public async Task<IActionResult> AddCommentAsync(int id, [FromBody] ApplicationLayer.Dto.IdeaComments.CreateIdeaCommentDto model)
+    {
+        model.IdeaId = id;
+        return await ResultHelper.GetResultAsync(mediator, new CreateIdeaCommentCommand(model));
+    }
+
+    [HttpDelete("comments/{commentId:int}")]
+    [Authorize(Roles = "User")]
+    public async Task<IActionResult> DeleteCommentAsync(int commentId)
+        => await ResultHelper.GetResultAsync(mediator, new DeleteIdeaCommentCommand(commentId));
+
+    [HttpGet("{id:int}/rating")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetRatingStatsAsync(int id)
+        => await ResultHelper.GetResultAsync(mediator, new GetIdeaRatingStatsQuery(id));
+
+    [HttpPost("{id:int}/rating")]
+    [Authorize(Roles = "User")]
+    public async Task<IActionResult> AddRatingAsync(int id, [FromBody] ApplicationLayer.Dto.IdeaRatings.AddIdeaRatingDto model)
+    {
+        model.IdeaId = id;
+        return await ResultHelper.GetResultAsync(mediator, new AddIdeaRatingCommand(model));
+    }
+
     [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> GetAllAsync([FromQuery] string symbol, [FromQuery] string timeframe, [FromQuery] string trend,
