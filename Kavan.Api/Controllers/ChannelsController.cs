@@ -61,7 +61,7 @@ public class ChannelsController(IMediator mediator) : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "User")]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateChannelDto model)
+    public async Task<IActionResult> CreateAsync([FromForm] CreateChannelDto model)
         => await ResultHelper.GetResultAsync(mediator, new CreateChannelCommand(model));
 
     [HttpPut("{id:int}")]

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace ApplicationLayer.DTOs.Channels;
 
 public class CreateChannelDto
@@ -8,6 +10,6 @@ public class CreateChannelDto
     public int AccessType { get; set; } // 1=Free, 2=VIP
     public decimal Price { get; set; }
     public string Currency { get; set; }
-    public string BannerUrl { get; set; }
-    public string LogoUrl { get; set; }
+    public IFormFile Banner { get; set; }
+    public IFormFile Logo { get; set; }
 }

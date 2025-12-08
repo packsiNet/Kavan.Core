@@ -6,6 +6,7 @@ using DomainLayer.Common.Attributes;
 using DomainLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using ApplicationLayer.Common.Enums;
+using ApplicationLayer.Interfaces.External;
 
 namespace InfrastructureLayer.BusinessLogic.Services.Channels;
 
@@ -14,6 +15,7 @@ public class ChannelService(IUnitOfWork _uow,
                             IRepository<Channel> _channels,
                             IRepository<ChannelMembership> _members,
                             IRepository<ChannelRating> _ratings,
+                            IFileStorageService _files,
                             IUserContextService _user) : IChannelService
 {
     public async Task<Result<ChannelDto>> CreateAsync(CreateChannelDto dto)
@@ -36,6 +38,22 @@ public class ChannelService(IUnitOfWork _uow,
             uniqueCode = "KCH" + new Random().Next(100, 9999);
         } while (await _channels.Query().AnyAsync(x => x.UniqueCode == uniqueCode));
 
+        string bannerUrl = string.Empty;
+        if (dto.Banner != null)
+        {
+            var save = await _files.SaveProfileImageAsync(dto.Banner, "channel-banner");
+            if (save.IsFailure) return Result<ChannelDto>.Failure(save.Error);
+            bannerUrl = save.Value;
+        }
+
+        string logoUrl = string.Empty;
+        if (dto.Logo != null)
+        {
+            var save = await _files.SaveProfileImageAsync(dto.Logo, "channel-logo");
+            if (save.IsFailure) return Result<ChannelDto>.Failure(save.Error);
+            logoUrl = save.Value;
+        }
+
         var entity = new Channel
         {
             OwnerUserId = _user.UserId.Value,
@@ -47,8 +65,8 @@ public class ChannelService(IUnitOfWork _uow,
             UniqueCode = uniqueCode,
             Price = dto.Price,
             Currency = dto.Currency ?? "IRR",
-            BannerUrl = dto.BannerUrl ?? string.Empty,
-            LogoUrl = dto.LogoUrl ?? string.Empty
+            BannerUrl = bannerUrl,
+            LogoUrl = logoUrl
         };
 
         await _uow.BeginTransactionAsync();
