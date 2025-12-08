@@ -8,8 +8,8 @@ on:
 env:
   APP_URL: ${{ secrets.APP_URL }}
   PROJECT_PATH: Kavan.Api/Kavan.Api.csproj
-  PUBLISH_DIR: build/publish
-  DEPLOY_PATH: /var/www/api-app
+  PUBLISH_DIR: api-app
+  DEPLOY_PATH: /var/www
 
 jobs:
   build_test_publish_deploy:
