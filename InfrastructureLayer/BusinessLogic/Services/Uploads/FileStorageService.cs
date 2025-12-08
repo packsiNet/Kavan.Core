@@ -3,11 +3,12 @@ using ApplicationLayer.Interfaces.External;
 using DomainLayer.Common.Attributes;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace InfrastructureLayer.BusinessLogic.Services.Uploads;
 
 [InjectAsScoped]
-public class FileStorageService(IWebHostEnvironment _env) : IFileStorageService
+public class FileStorageService(IWebHostEnvironment _env, IConfiguration _configuration) : IFileStorageService
 {
     public async Task<Result<string>> SaveIdeaImageAsync(IFormFile file, CancellationToken cancellationToken = default)
     {
@@ -47,7 +48,10 @@ public class FileStorageService(IWebHostEnvironment _env) : IFileStorageService
             await file.CopyToAsync(stream, cancellationToken);
         }
 
-        var url = $"https://kavan-core.packsi.net/uploads/ideas/{fileName}";
+        // Get domain from config or fallback
+        var domain = _configuration["Domain"]?.TrimEnd('/') ?? "https://api.packsi.net";
+        var url = $"{domain}/uploads/ideas/{fileName}";
+        
         return Result<string>.Success(url);
     }
 
@@ -89,7 +93,9 @@ public class FileStorageService(IWebHostEnvironment _env) : IFileStorageService
             await file.CopyToAsync(stream, cancellationToken);
         }
 
-        var url = $"/uploads/profiles/{fileName}";
+        var domain = _configuration["Domain"]?.TrimEnd('/') ?? "https://api.packsi.net";
+        var url = $"{domain}/uploads/profiles/{fileName}";
+        
         return Result<string>.Success(url);
     }
 }

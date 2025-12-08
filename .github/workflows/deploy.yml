@@ -43,9 +43,20 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             set -e
+            # 1. Create persistent storage directory (outside the app folder)
+            mkdir -p /var/www/kavan-uploads/ideas
+            mkdir -p /var/www/kavan-uploads/profiles
+            # Set permissions (optional, adjust as needed)
+            chmod -R 755 /var/www/kavan-uploads
+
+            # 2. Prepare deploy path
             mkdir -p ${{ env.DEPLOY_PATH }}
+            
+            # 3. Clean up old files BUT exclude wwwroot to avoid accidental deletion before we link
             find ${{ env.DEPLOY_PATH }} -mindepth 1 -maxdepth 1 ! -name 'wwwroot' -exec rm -rf {} +
+            
             echo "APP_URL=${APP_URL}" > ${{ env.DEPLOY_PATH }}/deploy.env
+
       - name: Deploy files
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -55,4 +66,30 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           source: ${{ env.PUBLISH_DIR }}/*
           target: ${{ env.DEPLOY_PATH }}
+          strip_components: 2
           overwrite: true
+
+      - name: Configure Persistent Uploads
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            set -e
+            # Ensure wwwroot exists
+            mkdir -p ${{ env.DEPLOY_PATH }}/wwwroot
+
+            # Check if 'uploads' exists and is a real directory (not a symlink)
+            if [ -d "${{ env.DEPLOY_PATH }}/wwwroot/uploads" ] && [ ! -L "${{ env.DEPLOY_PATH }}/wwwroot/uploads" ]; then
+                echo "Moving existing uploads to persistent storage..."
+                cp -rn ${{ env.DEPLOY_PATH }}/wwwroot/uploads/* /var/www/kavan-uploads/ || true
+                rm -rf ${{ env.DEPLOY_PATH }}/wwwroot/uploads
+            fi
+
+            # Create/Update the symlink
+            # /var/www/api-app/wwwroot/uploads -> /var/www/kavan-uploads
+            ln -sfn /var/www/kavan-uploads ${{ env.DEPLOY_PATH }}/wwwroot/uploads
+            
+            echo "Symlink created: ${{ env.DEPLOY_PATH }}/wwwroot/uploads -> /var/www/kavan-uploads"
