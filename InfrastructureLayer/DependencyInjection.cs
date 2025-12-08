@@ -39,6 +39,8 @@ public static class DependencyInjection
                 "http://127.0.0.1:3003",
                 "http://127.0.0.1:5173",
                 "http://127.0.0.1:8080",
+                "https://api.packsi.net",
+                "https://packsi.net",
                 "https://kavan.packsi.net",
                 "https://kavan-core.packsi.net"
             };
