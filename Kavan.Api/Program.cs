@@ -2,7 +2,9 @@ using ApplicationLayer.Interfaces;
 using AspNetCoreRateLimit;
 using InfrastructureLayer;
 using InfrastructureLayer.Context;
+using InfrastructureLayer.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +27,7 @@ builder.WebHost.ConfigureKestrel((context, options) =>
 });
 
 // Background hosted service for signals
-var app = builder.Build();
+ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
@@ -57,6 +59,15 @@ using (var scope = app.Services.CreateScope())
 
         var roleSeed = services.GetRequiredService<IRoleSeedService>();
         roleSeed.SeedRolesAsync().GetAwaiter().GetResult();
+
+        var cryptoPanicOptions = services.GetRequiredService<IOptions<CryptoPanicOptions>>().Value;
+        if (cryptoPanicOptions.RunStartupSync)
+        {
+            var newsSync = services.GetRequiredService<ApplicationLayer.Interfaces.Services.News.INewsSyncService>();
+            var count = newsSync.SyncLatestAsync(new ApplicationLayer.Dto.News.CryptoPanicQuery { Public = true }, CancellationToken.None).GetAwaiter().GetResult();
+            var logger = services.GetService<ILoggerFactory>()?.CreateLogger("Startup");
+            logger?.LogInformation("Startup CryptoPanic sync fetched {Count} new posts", count);
+        }
     }
     catch (Exception ex)
     {

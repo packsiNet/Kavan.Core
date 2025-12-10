@@ -65,6 +65,7 @@ public static class DependencyInjection
         services.AddHostedService<BinanceKlineWebSocketHostedService>();
         services.AddHostedService<SignalsBackgroundService>();
         services.AddHostedService<SignalsRetentionBackgroundService>();
+        services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.News.NewsSyncBackgroundService>();
 
         services.AddHttpContextAccessor();
         services.MediatRDependency();
@@ -117,6 +118,7 @@ public static class DependencyInjection
     {
         services.ConfigurationDependency();
         services.Configure<InfrastructureLayer.Configuration.SignalRetentionOptions>(configuration.GetSection("SignalRetention"));
+        services.Configure<InfrastructureLayer.Configuration.CryptoPanicOptions>(configuration.GetSection("CryptoPanic"));
         services.AddMemoryCache();
         services.SwaggerConfiguration(configuration);
         services.JwtAuthorizeConfiguration(configuration);
@@ -134,6 +136,14 @@ public static class DependencyInjection
         services.AddHttpClient("CoinbaseClient", client =>
         {
             client.BaseAddress = new Uri(configuration["CoinbaseApi:BaseUrl"] ?? "https://api.exchange.coinbase.com");
+            client.Timeout = TimeSpan.FromSeconds(30);
+        });
+
+        services.AddHttpClient("CryptoPanicClient", client =>
+        {
+            var baseUrl = configuration["CryptoPanic:BaseUrl"] ?? "https://cryptopanic.com/api/developer/v2";
+            if (!baseUrl.EndsWith("/")) baseUrl += "/";
+            client.BaseAddress = new Uri(baseUrl);
             client.Timeout = TimeSpan.FromSeconds(30);
         });
 
