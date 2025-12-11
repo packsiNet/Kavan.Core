@@ -11,7 +11,7 @@ namespace Kavan.Api.Controllers;
 [Route("api/instructor/[controller]")]
 [ApiController]
 [ApiExplorerSettings(GroupName = nameof(ApiDefinitions.Public))]
-[Authorize(Roles = "Instructor")]
+[Authorize(Roles = "User")]
 public class InstructorCoursesController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
