@@ -2,6 +2,7 @@ using ApplicationLayer.Common.Enums;
 using ApplicationLayer.Common.Extensions;
 using ApplicationLayer.DTOs.Education;
 using ApplicationLayer.Features.Education.Commands;
+using ApplicationLayer.Features.Education.Query;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,10 @@ namespace Kavan.Api.Controllers;
 [Authorize(Roles = "User")]
 public class InstructorCoursesController(IMediator mediator) : ControllerBase
 {
+    [HttpGet("my/created")]
+    public async Task<IActionResult> GetMyCreatedCoursesAsync()
+        => await ResultHelper.GetResultAsync(mediator, new GetCreatedCoursesQuery());
+
     [HttpPost]
     public async Task<IActionResult> CreateCourseAsync([FromBody] CreateCourseDto model)
         => await ResultHelper.GetResultAsync(mediator, new CreateCourseCommand(model));
