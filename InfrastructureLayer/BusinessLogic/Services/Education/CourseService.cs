@@ -13,7 +13,8 @@ namespace InfrastructureLayer.BusinessLogic.Services.Education;
 public class CourseService(
     IRepository<Course> courseRepository,
     IRepository<CourseCategory> categoryRepository,
-    IUserContextService userContext
+    IUserContextService userContext,
+    IUnitOfWork _uow
 ) : ICourseService
 {
     public async Task<Result<CourseDto>> CreateAsync(CreateCourseDto dto)
@@ -44,6 +45,7 @@ public class CourseService(
         };
 
         await courseRepository.AddAsync(entity);
+        await _uow.SaveChangesAsync();
 
         var result = new CourseDto
         {
@@ -89,6 +91,7 @@ public class CourseService(
         entity.CategoryId = dto.CategoryId;
 
         await courseRepository.UpdateAsync(entity);
+        await _uow.SaveChangesAsync();
 
         var result = new CourseDto
         {
@@ -123,6 +126,7 @@ public class CourseService(
         entity.Price = price;
         entity.IsFree = isFree;
         await courseRepository.UpdateAsync(entity);
+        await _uow.SaveChangesAsync();
         return Result.Success();
     }
 
@@ -140,6 +144,7 @@ public class CourseService(
             return Result.Failure(new Error("AUTHZ_ERROR", "دسترسی مدیریت این دوره برای شما مجاز نیست", RequestStatus.AuthenticationFailed));
 
         courseRepository.Remove(entity);
+        await _uow.SaveChangesAsync();
         return Result.Success();
     }
 }
