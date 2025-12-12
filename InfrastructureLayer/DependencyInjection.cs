@@ -57,6 +57,7 @@ public static class DependencyInjection
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserContextService, UserContextService>();
+        services.AddScoped<InfrastructureLayer.BusinessLogic.Services.External.DuneTxCountSyncService>();
 
         // Register BackgroundService(s)
         // Disable legacy 1m REST fetcher
@@ -66,6 +67,8 @@ public static class DependencyInjection
         services.AddHostedService<SignalsBackgroundService>();
         services.AddHostedService<SignalsRetentionBackgroundService>();
         services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.News.NewsSyncBackgroundService>();
+        services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneSyncBackgroundService>();
+        services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneTxCountBackgroundService>();
 
         services.AddHttpContextAccessor();
         services.MediatRDependency();
@@ -114,16 +117,28 @@ public static class DependencyInjection
         return services;
     }
 
-    private static void RegisterService(this IServiceCollection services, IConfiguration configuration)
-    {
+        private static void RegisterService(this IServiceCollection services, IConfiguration configuration)
+        {
         services.ConfigurationDependency();
         services.Configure<InfrastructureLayer.Configuration.SignalRetentionOptions>(configuration.GetSection("SignalRetention"));
         services.Configure<InfrastructureLayer.Configuration.CryptoPanicOptions>(configuration.GetSection("CryptoPanic"));
-        services.AddMemoryCache();
-        services.SwaggerConfiguration(configuration);
-        services.JwtAuthorizeConfiguration(configuration);
-        services.SeriLogConfiguration(configuration);
-        services.AddAutoMapper(typeof(UserAccountProfile).GetTypeInfo().Assembly);
+        services.Configure<InfrastructureLayer.Configuration.DuneOptions>(configuration.GetSection("Dune"));
+        services.PostConfigure<InfrastructureLayer.Configuration.DuneOptions>(opt =>
+        {
+            if (string.IsNullOrWhiteSpace(opt.ApiKey))
+            {
+                opt.ApiKey = Environment.GetEnvironmentVariable("DUNE_API_KEY")
+                           ?? configuration["DUNE_API_KEY"]
+                           ?? configuration["Dune:ApiKey"]
+                           ?? configuration["Dune__ApiKey"]
+                           ?? string.Empty;
+            }
+        });
+            services.AddMemoryCache();
+            services.SwaggerConfiguration(configuration);
+            services.JwtAuthorizeConfiguration(configuration);
+            services.SeriLogConfiguration(configuration);
+            services.AddAutoMapper(typeof(UserAccountProfile).GetTypeInfo().Assembly);
 
         // HttpClient for Binance API
         services.AddHttpClient("BinanceClient", client =>
@@ -131,21 +146,29 @@ public static class DependencyInjection
             client.BaseAddress = new Uri(configuration["BinanceApi:BaseUrl"] ?? "https://api.binance.com");
             client.Timeout = TimeSpan.FromSeconds(30);
         });
+        
+            // HttpClient for Coinbase API
+            services.AddHttpClient("CoinbaseClient", client =>
+            {
+                client.BaseAddress = new Uri(configuration["CoinbaseApi:BaseUrl"] ?? "https://api.exchange.coinbase.com");
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
 
-        // HttpClient for Coinbase API
-        services.AddHttpClient("CoinbaseClient", client =>
-        {
-            client.BaseAddress = new Uri(configuration["CoinbaseApi:BaseUrl"] ?? "https://api.exchange.coinbase.com");
-            client.Timeout = TimeSpan.FromSeconds(30);
-        });
+            services.AddHttpClient("CryptoPanicClient", client =>
+            {
+                var baseUrl = configuration["CryptoPanic:BaseUrl"] ?? "https://cryptopanic.com/api/developer/v2";
+                if (!baseUrl.EndsWith("/")) baseUrl += "/";
+                client.BaseAddress = new Uri(baseUrl);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            });
 
-        services.AddHttpClient("CryptoPanicClient", client =>
-        {
-            var baseUrl = configuration["CryptoPanic:BaseUrl"] ?? "https://cryptopanic.com/api/developer/v2";
-            if (!baseUrl.EndsWith("/")) baseUrl += "/";
-            client.BaseAddress = new Uri(baseUrl);
-            client.Timeout = TimeSpan.FromSeconds(30);
-        });
+            services.AddHttpClient("DuneClient", client =>
+            {
+                var baseUrl = configuration["Dune:BaseUrl"] ?? "https://api.dune.com/api/v1";
+                if (!baseUrl.EndsWith("/")) baseUrl += "/";
+                client.BaseAddress = new Uri(baseUrl);
+                client.Timeout = TimeSpan.FromSeconds(60);
+            });
 
         // Background Service registration is handled in Register() to avoid duplication
     }
