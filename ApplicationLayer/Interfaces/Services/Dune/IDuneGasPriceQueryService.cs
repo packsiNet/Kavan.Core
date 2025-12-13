@@ -4,5 +4,5 @@ namespace ApplicationLayer.Interfaces.Services.Dune;
 
 public interface IDuneGasPriceQueryService
 {
-    Task<DuneGasPriceSnapshot?> GetLatestAsync(CancellationToken cancellationToken);
+    Task<List<DuneGasPriceSnapshot>> GetLatestAsync(CancellationToken cancellationToken);
 }

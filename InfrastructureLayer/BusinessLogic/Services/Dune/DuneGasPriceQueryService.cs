@@ -16,10 +16,10 @@ public class DuneGasPriceQueryService : IDuneGasPriceQueryService
         _repo = repo;
     }
 
-    public async Task<DuneGasPriceSnapshot> GetLatestAsync(CancellationToken cancellationToken)
+    public async Task<List<DuneGasPriceSnapshot>> GetLatestAsync(CancellationToken cancellationToken)
     {
         return await _repo.Query()
             .OrderByDescending(x => x.Time)
-            .FirstOrDefaultAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
     }
 }

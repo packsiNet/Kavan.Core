@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ApplicationLayer.Features.DuneGasPrice.Query;
 
-public record GetLatestGasPriceQuery() : IRequest<DuneGasPriceSnapshot?>;
+public record GetLatestGasPriceQuery() : IRequest<List<DuneGasPriceSnapshot>>;

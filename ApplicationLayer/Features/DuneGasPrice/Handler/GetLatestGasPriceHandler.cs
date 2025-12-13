@@ -4,7 +4,7 @@ using MediatR;
 
 namespace ApplicationLayer.Features.DuneGasPrice.Handler;
 
-public class GetLatestGasPriceHandler : IRequestHandler<Query.GetLatestGasPriceQuery, DuneGasPriceSnapshot?>
+public class GetLatestGasPriceHandler : IRequestHandler<Query.GetLatestGasPriceQuery, List<DuneGasPriceSnapshot>>
 {
     private readonly IDuneGasPriceQueryService _service;
 
@@ -13,7 +13,7 @@ public class GetLatestGasPriceHandler : IRequestHandler<Query.GetLatestGasPriceQ
         _service = service;
     }
 
-    public async Task<DuneGasPriceSnapshot> Handle(Query.GetLatestGasPriceQuery request, CancellationToken cancellationToken)
+    public async Task<List<DuneGasPriceSnapshot>> Handle(Query.GetLatestGasPriceQuery request, CancellationToken cancellationToken)
     {
         return await _service.GetLatestAsync(cancellationToken);
     }
