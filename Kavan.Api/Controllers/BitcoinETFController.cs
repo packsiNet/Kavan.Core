@@ -18,4 +18,8 @@ public class BitcoinETFController(IMediator mediator) : ControllerBase
     [HttpGet("latest-tx-count")]
     public async Task<IActionResult> GetLatestTxCountAsync()
         => await ResultHelper.GetResultAsync(mediator, new GetLatestBitcoinTxCountQuery());
+
+    [HttpGet("latest-issuer-flows")]
+    public async Task<IActionResult> GetLatestIssuerFlowsAsync()
+        => await ResultHelper.GetResultAsync(mediator, new GetLatestBitcoinEtfIssuerFlowsQuery());
 }
