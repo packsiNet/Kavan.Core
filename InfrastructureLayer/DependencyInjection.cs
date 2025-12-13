@@ -69,6 +69,7 @@ public static class DependencyInjection
         services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.News.NewsSyncBackgroundService>();
         services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneSyncBackgroundService>();
         services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneTxCountBackgroundService>();
+        services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneGasPriceBackgroundService>();
 
         services.AddHttpContextAccessor();
         services.MediatRDependency();

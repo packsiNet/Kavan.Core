@@ -67,16 +67,6 @@ public class DuneSyncService : IDuneSyncService
             return 0;
         }
 
-        var previousActives = await _repo.Query()
-            .Where(x => x.QueryId == queryId && x.IsActive)
-            .ToListAsync(cancellationToken);
-        if (previousActives.Count > 0)
-        {
-            foreach (var p in previousActives) p.IsActive = false;
-            await _repo.UpdateRangeAsync(previousActives);
-            await _uow.SaveChangesAsync(cancellationToken);
-        }
-
         var entity = new DuneMetricsSnapshot
         {
             ExecutionId = dto.execution_id,
@@ -101,9 +91,30 @@ public class DuneSyncService : IDuneSyncService
             WeekAnnualisedImpactOnSupply = row.week_annualised_impact_on_supply,
         };
 
-        await _repo.AddAsync(entity);
-        await _uow.SaveChangesAsync();
-        _logger.LogInformation("Dune metrics inserted: ExecutionId={ExecutionId}", entity.ExecutionId);
-        return 1;
+        await _uow.BeginTransactionAsync();
+        try
+        {
+            await _repo.AddAsync(entity);
+            await _uow.SaveChangesAsync(cancellationToken);
+
+            var previousActives = await _repo.Query()
+                .Where(x => x.QueryId == queryId && x.IsActive && x.Id != entity.Id)
+                .ToListAsync(cancellationToken);
+            if (previousActives.Count > 0)
+            {
+                foreach (var p in previousActives) p.IsActive = false;
+                await _repo.UpdateRangeAsync(previousActives);
+                await _uow.SaveChangesAsync(cancellationToken);
+            }
+
+            await _uow.CommitAsync();
+            _logger.LogInformation("Dune metrics inserted: ExecutionId={ExecutionId}", entity.ExecutionId);
+            return 1;
+        }
+        catch
+        {
+            await _uow.RollbackAsync();
+            throw;
+        }
     }
 }

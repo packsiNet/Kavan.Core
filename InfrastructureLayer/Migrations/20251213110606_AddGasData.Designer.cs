@@ -4,6 +4,7 @@ using InfrastructureLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251213110606_AddGasData")]
+    partial class AddGasData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1346,7 +1349,7 @@ namespace InfrastructureLayer.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("EthTransferPriceUsd")
-                        .HasColumnType("decimal(38,20)");
+                        .HasColumnType("decimal(28,10)");
 
                     b.Property<DateTime>("ExecutionEndedAt")
                         .HasColumnType("datetime2");
@@ -1368,7 +1371,7 @@ namespace InfrastructureLayer.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("MedianGasPriceGwei")
-                        .HasColumnType("decimal(38,20)");
+                        .HasColumnType("decimal(28,10)");
 
                     b.Property<int>("QueryId")
                         .HasColumnType("int");

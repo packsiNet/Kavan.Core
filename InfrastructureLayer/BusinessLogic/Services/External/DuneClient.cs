@@ -25,7 +25,7 @@ namespace InfrastructureLayer.BusinessLogic.Services.External;
         _logger = logger;
     }
 
-    public async Task<DuneQueryResultDto<T>?> GetQueryResultsAsync<T>(int queryId, int limit, CancellationToken cancellationToken)
+    public async Task<DuneQueryResultDto<T>> GetQueryResultsAsync<T>(int queryId, int limit, CancellationToken cancellationToken)
     {
         var apiKey = _options.Value.ApiKey;
         if (string.IsNullOrWhiteSpace(apiKey))
