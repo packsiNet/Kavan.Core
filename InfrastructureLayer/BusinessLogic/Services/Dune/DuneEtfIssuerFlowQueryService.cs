@@ -18,20 +18,15 @@ public class DuneEtfIssuerFlowQueryService : IDuneEtfIssuerFlowQueryService
         _repo = repo;
     }
 
-    public async Task<Result<List<BitcoinEtfIssuerFlowDto>>> GetLatestAsync(CancellationToken cancellationToken)
+    public async Task<Result<List<BitcoinEtfIssuerFlowDto>>> GetLatestAsync(
+        CancellationToken cancellationToken)
     {
-        var latestDate = await _repo.Query()
-            .Where(x => x.IsActive)
-            .Select(x => x.Time)
-            .OrderByDescending(x => x)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        if (latestDate == default)
-            return Result<List<BitcoinEtfIssuerFlowDto>>.NotFound("No ETF issuer flows found");
+        var fromDate = DateTime.UtcNow.Date.AddYears(-1);
 
         var rows = await _repo.Query()
-            .Where(x => x.IsActive && x.Time == latestDate)
-            .OrderBy(x => x.EtfTicker)
+            .Where(x => x.IsActive && x.Time >= fromDate)
+            .OrderBy(x => x.Time)
+            .ThenBy(x => x.EtfTicker)
             .Select(x => new BitcoinEtfIssuerFlowDto
             {
                 Time = x.Time,
@@ -43,6 +38,10 @@ public class DuneEtfIssuerFlowQueryService : IDuneEtfIssuerFlowQueryService
                 AmountUsdNetFlow = x.AmountUsdNetFlow
             })
             .ToListAsync(cancellationToken);
+
+        if (!rows.Any())
+            return Result<List<BitcoinEtfIssuerFlowDto>>
+                .NotFound("No ETF issuer flows found for last year");
 
         return Result<List<BitcoinEtfIssuerFlowDto>>.Success(rows);
     }
