@@ -20,17 +20,8 @@ public class DuneEtfIssuerFlowQueryService : IDuneEtfIssuerFlowQueryService
 
     public async Task<Result<List<BitcoinEtfIssuerFlowDto>>> GetLatestAsync(CancellationToken cancellationToken)
     {
-        var latestDate = await _repo.Query()
-            .Where(x => x.IsActive)
-            .Select(x => x.Time)
-            .OrderByDescending(x => x)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        if (latestDate == default)
-            return Result<List<BitcoinEtfIssuerFlowDto>>.NotFound("No ETF issuer flows found");
-
         var rows = await _repo.Query()
-            .Where(x => x.IsActive && x.Time == latestDate)
+            .Where(x => x.IsActive)
             .OrderBy(x => x.EtfTicker)
             .Select(x => new BitcoinEtfIssuerFlowDto
             {
