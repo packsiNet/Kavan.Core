@@ -25,8 +25,8 @@ public class DuneUserCountSyncService
 
     public async Task<int> SyncLatestAsync(CancellationToken cancellationToken)
     {
-        var queryId = 6353195;
-        var limit = 1000;
+        var queryId = 6353378;
+        var limit = 2;
         var dto = await _client.GetQueryResultsAsync<ApplicationLayer.Dto.External.Dune.DuneUserCountRow>(queryId, limit, cancellationToken);
         if (dto == null || dto.result.rows.Count == 0)
         {
