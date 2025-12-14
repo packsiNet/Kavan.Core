@@ -59,6 +59,7 @@ public static class DependencyInjection
         services.AddScoped<IUserContextService, UserContextService>();
         services.AddScoped<InfrastructureLayer.BusinessLogic.Services.External.DuneTxCountSyncService>();
         services.AddScoped<InfrastructureLayer.BusinessLogic.Services.External.DuneUserCountSyncService>();
+        services.AddScoped<InfrastructureLayer.BusinessLogic.Services.External.DuneEtfIssuerFlowSyncService>();
 
         // Register BackgroundService(s)
         // Disable legacy 1m REST fetcher
@@ -72,6 +73,7 @@ public static class DependencyInjection
         services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneTxCountBackgroundService>();
         services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneGasPriceBackgroundService>();
         services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneUserCountBackgroundService>();
+        services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneEtfIssuerFlowBackgroundService>();
 
         services.AddHttpContextAccessor();
         services.MediatRDependency();

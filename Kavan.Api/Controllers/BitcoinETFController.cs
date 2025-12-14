@@ -22,4 +22,8 @@ public class BitcoinETFController(IMediator mediator) : ControllerBase
     [HttpGet("bitcoin-active-wallet")]
     public async Task<IActionResult> GetUserCountsAsync()
         => await ResultHelper.GetResultAsync(mediator, new GetBitcoinUserCountsQuery());
+
+    [HttpGet("latest-issuer-flows")]
+    public async Task<IActionResult> GetLatestIssuerFlowsAsync()
+        => await ResultHelper.GetResultAsync(mediator, new GetLatestBitcoinEtfIssuerFlowsQuery());
 }
