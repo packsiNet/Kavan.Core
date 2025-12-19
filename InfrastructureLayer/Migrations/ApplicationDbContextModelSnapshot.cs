@@ -79,6 +79,87 @@ namespace InfrastructureLayer.Migrations
                     b.ToTable("BitcoinActiveAddress", "dbo");
                 });
 
+            modelBuilder.Entity("DomainLayer.Entities.Candle_15m", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Candle_15mId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Close")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("CloseTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasColumnType("char(15)");
+
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CryptocurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("High")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Low")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<string>("ModifiedByIp")
+                        .HasColumnType("char(15)");
+
+                    b.Property<int?>("ModifiedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfTrades")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Open")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("OpenTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Volume")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OpenTime");
+
+                    b.HasIndex("CryptocurrencyId", "OpenTime")
+                        .IsUnique();
+
+                    b.ToTable("Candle_15m", "dbo");
+                });
+
             modelBuilder.Entity("DomainLayer.Entities.Candle_1d", b =>
                 {
                     b.Property<int>("Id")
@@ -335,6 +416,87 @@ namespace InfrastructureLayer.Migrations
                         .IsUnique();
 
                     b.ToTable("Candle_1m", "dbo");
+                });
+
+            modelBuilder.Entity("DomainLayer.Entities.Candle_1w", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Candle_1wId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Close")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("CloseTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasColumnType("char(15)");
+
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CryptocurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("High")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Low")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<string>("ModifiedByIp")
+                        .HasColumnType("char(15)");
+
+                    b.Property<int?>("ModifiedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NumberOfTrades")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Open")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("OpenTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Volume")
+                        .HasPrecision(18, 8)
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OpenTime");
+
+                    b.HasIndex("CryptocurrencyId", "OpenTime")
+                        .IsUnique();
+
+                    b.ToTable("Candle_1w", "dbo");
                 });
 
             modelBuilder.Entity("DomainLayer.Entities.Candle_4h", b =>
@@ -1284,6 +1446,11 @@ namespace InfrastructureLayer.Migrations
                     b.Property<string>("BaseAsset")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -1305,6 +1472,11 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int?>("ModifiedByUserId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("QuoteAsset")
                         .HasColumnType("nvarchar(max)");
 
@@ -1316,8 +1488,8 @@ namespace InfrastructureLayer.Migrations
 
                     b.Property<string>("Symbol")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1388,6 +1560,82 @@ namespace InfrastructureLayer.Migrations
                         .IsUnique();
 
                     b.ToTable("DuneDailyTxCountSnapshot", "dbo");
+                });
+
+            modelBuilder.Entity("DomainLayer.Entities.DuneEtfIssuerFlowSnapshot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("DuneEtfIssuerFlowSnapshotId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(28,10)");
+
+                    b.Property<decimal?>("AmountNetFlow")
+                        .HasColumnType("decimal(28,10)");
+
+                    b.Property<decimal>("AmountUsd")
+                        .HasColumnType("decimal(28,10)");
+
+                    b.Property<decimal?>("AmountUsdNetFlow")
+                        .HasColumnType("decimal(28,10)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EtfTicker")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<DateTime>("ExecutionEndedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExecutionId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime>("ExecutionStartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Issuer")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<int>("QueryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RowCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Time", "EtfTicker")
+                        .IsUnique();
+
+                    b.ToTable("DuneEtfIssuerFlowSnapshot", "dbo");
                 });
 
             modelBuilder.Entity("DomainLayer.Entities.DuneGasPriceSnapshot", b =>
@@ -3931,6 +4179,17 @@ namespace InfrastructureLayer.Migrations
                     b.ToTable("WatchlistItem", "dbo");
                 });
 
+            modelBuilder.Entity("DomainLayer.Entities.Candle_15m", b =>
+                {
+                    b.HasOne("DomainLayer.Entities.Cryptocurrency", "Cryptocurrency")
+                        .WithMany()
+                        .HasForeignKey("CryptocurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cryptocurrency");
+                });
+
             modelBuilder.Entity("DomainLayer.Entities.Candle_1d", b =>
                 {
                     b.HasOne("DomainLayer.Entities.Cryptocurrency", "Cryptocurrency")
@@ -3972,6 +4231,17 @@ namespace InfrastructureLayer.Migrations
                     b.HasOne("DomainLayer.Entities.Cryptocurrency", null)
                         .WithMany("Candles_1m")
                         .HasForeignKey("CryptocurrencyId1");
+
+                    b.Navigation("Cryptocurrency");
+                });
+
+            modelBuilder.Entity("DomainLayer.Entities.Candle_1w", b =>
+                {
+                    b.HasOne("DomainLayer.Entities.Cryptocurrency", "Cryptocurrency")
+                        .WithMany()
+                        .HasForeignKey("CryptocurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Cryptocurrency");
                 });

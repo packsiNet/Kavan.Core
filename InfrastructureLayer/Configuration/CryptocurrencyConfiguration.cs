@@ -9,8 +9,16 @@ public class CryptocurrencyConfiguration : BaseEntityConfiguration<Cryptocurrenc
     {
         base.Configure(builder);
 
+        builder.Property(x => x.Category)
+            .HasMaxLength(100)
+            .IsRequired();
+
+        builder.Property(x => x.Name)
+            .HasMaxLength(100)
+            .IsRequired();
+
         builder.Property(x => x.Symbol)
-            .HasMaxLength(20)
+            .HasMaxLength(50)
             .IsRequired();
 
         builder.HasIndex(x => x.Symbol).IsUnique();

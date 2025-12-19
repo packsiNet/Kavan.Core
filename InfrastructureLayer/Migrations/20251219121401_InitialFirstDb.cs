@@ -6,13 +6,39 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InfrastructureLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCleanDatabase : Migration
+    public partial class InitialFirstDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
                 name: "dbo");
+
+            migrationBuilder.CreateTable(
+                name: "BitcoinActiveAddress",
+                schema: "dbo",
+                columns: table => new
+                {
+                    BitcoinActiveAddressId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExecutionId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    QueryId = table.Column<int>(type: "int", nullable: false),
+                    SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExecutionStartedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExecutionEndedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RowCount = table.Column<int>(type: "int", nullable: false),
+                    Time = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Users = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BitcoinActiveAddress", x => x.BitcoinActiveAddressId);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Channel",
@@ -22,11 +48,16 @@ namespace InfrastructureLayer.Migrations
                     ChannelId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OwnerUserId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Slug = table.Column<string>(type: "nvarchar(220)", maxLength: 220, nullable: false),
-                    Category = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    AccessType = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Slug = table.Column<string>(type: "nvarchar(220)", maxLength: 220, nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    AccessType = table.Column<int>(type: "int", nullable: false),
+                    UniqueCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Currency = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    BannerUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    LogoUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     CreatedByUserId = table.Column<int>(type: "int", nullable: true),
                     ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
@@ -52,6 +83,7 @@ namespace InfrastructureLayer.Migrations
                     ChannelId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsMuted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     CreatedByUserId = table.Column<int>(type: "int", nullable: true),
                     ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
@@ -97,6 +129,8 @@ namespace InfrastructureLayer.Migrations
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    LikesCount = table.Column<int>(type: "int", nullable: false),
+                    CommentsCount = table.Column<int>(type: "int", nullable: false),
                     CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     CreatedByUserId = table.Column<int>(type: "int", nullable: true),
                     ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
@@ -110,6 +144,31 @@ namespace InfrastructureLayer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ChannelPost", x => x.ChannelPostId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChannelPostComment",
+                schema: "dbo",
+                columns: table => new
+                {
+                    ChannelPostCommentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PostId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChannelPostComment", x => x.ChannelPostCommentId);
                 });
 
             migrationBuilder.CreateTable(
@@ -254,7 +313,9 @@ namespace InfrastructureLayer.Migrations
                 {
                     CryptocurrencyId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Symbol = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Symbol = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     BaseAsset = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     QuoteAsset = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
@@ -273,6 +334,132 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DuneDailyTxCountSnapshot",
+                schema: "dbo",
+                columns: table => new
+                {
+                    DuneDailyTxCountSnapshotId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExecutionId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    QueryId = table.Column<int>(type: "int", nullable: false),
+                    SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExecutionStartedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExecutionEndedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RowCount = table.Column<int>(type: "int", nullable: false),
+                    Time = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TxCount = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    TxCountMovingAverage = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DuneDailyTxCountSnapshot", x => x.DuneDailyTxCountSnapshotId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DuneEtfIssuerFlowSnapshot",
+                schema: "dbo",
+                columns: table => new
+                {
+                    DuneEtfIssuerFlowSnapshotId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExecutionId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    QueryId = table.Column<int>(type: "int", nullable: false),
+                    SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExecutionStartedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExecutionEndedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RowCount = table.Column<int>(type: "int", nullable: false),
+                    Time = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Issuer = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    EtfTicker = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    AmountUsd = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    AmountNetFlow = table.Column<decimal>(type: "decimal(28,10)", nullable: true),
+                    AmountUsdNetFlow = table.Column<decimal>(type: "decimal(28,10)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DuneEtfIssuerFlowSnapshot", x => x.DuneEtfIssuerFlowSnapshotId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DuneGasPriceSnapshot",
+                schema: "dbo",
+                columns: table => new
+                {
+                    DuneGasPriceSnapshotId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExecutionId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    QueryId = table.Column<int>(type: "int", nullable: false),
+                    SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExecutionStartedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExecutionEndedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RowCount = table.Column<int>(type: "int", nullable: false),
+                    Time = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    MedianGasPriceGwei = table.Column<decimal>(type: "decimal(38,20)", nullable: false),
+                    EthTransferPriceUsd = table.Column<decimal>(type: "decimal(38,20)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DuneGasPriceSnapshot", x => x.DuneGasPriceSnapshotId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DuneMetricsSnapshot",
+                schema: "dbo",
+                columns: table => new
+                {
+                    DuneMetricsSnapshotId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExecutionId = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    QueryId = table.Column<int>(type: "int", nullable: false),
+                    SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExecutionStartedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExecutionEndedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RowCount = table.Column<int>(type: "int", nullable: false),
+                    TvlInThousands = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    UsdTvlInBillions = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    PastWeekFlows = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    FlowsUsdSinceApprovalInThousands = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    PastWeekFlowsUsdInThousands = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    PercentageOfBtc = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    BtcSupply = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    SixMonthsAnnualisedImpactOnSupply = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    ThreeMonthsAnnualisedImpactOnSupply = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    MonthlyAnnualisedImpactOnSupply = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    ByWeeklyAnnualisedImpactOnSupply = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    WeekAnnualisedImpactOnSupply = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DuneMetricsSnapshot", x => x.DuneMetricsSnapshotId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Idea",
                 schema: "dbo",
                 columns: table => new
@@ -284,7 +471,9 @@ namespace InfrastructureLayer.Migrations
                     Timeframe = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Trend = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    TitleTranslate = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
+                    DescriptionTranslate = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
                     ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     IsPublic = table.Column<bool>(type: "bit", nullable: false),
                     Tags = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
@@ -301,6 +490,56 @@ namespace InfrastructureLayer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Idea", x => x.IdeaId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NewsPost",
+                schema: "dbo",
+                columns: table => new
+                {
+                    NewsPostId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExternalId = table.Column<int>(type: "int", nullable: false),
+                    Slug = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(1024)", maxLength: 1024, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: true),
+                    PublishedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAtRemote = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Kind = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    OriginalUrl = table.Column<string>(type: "nvarchar(1024)", maxLength: 1024, nullable: true),
+                    Url = table.Column<string>(type: "nvarchar(1024)", maxLength: 1024, nullable: true),
+                    Image = table.Column<string>(type: "nvarchar(1024)", maxLength: 1024, nullable: true),
+                    SourceTitle = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    SourceRegion = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: true),
+                    SourceDomain = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    SourceType = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    VotesNegative = table.Column<int>(type: "int", nullable: false),
+                    VotesPositive = table.Column<int>(type: "int", nullable: false),
+                    VotesImportant = table.Column<int>(type: "int", nullable: false),
+                    VotesLiked = table.Column<int>(type: "int", nullable: false),
+                    VotesDisliked = table.Column<int>(type: "int", nullable: false),
+                    VotesLol = table.Column<int>(type: "int", nullable: false),
+                    VotesToxic = table.Column<int>(type: "int", nullable: false),
+                    VotesSaved = table.Column<int>(type: "int", nullable: false),
+                    VotesComments = table.Column<int>(type: "int", nullable: false),
+                    PanicScore = table.Column<int>(type: "int", nullable: true),
+                    PanicScore1h = table.Column<int>(type: "int", nullable: true),
+                    Author = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ContentOriginal = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ContentClean = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NewsPost", x => x.NewsPostId);
                 });
 
             migrationBuilder.CreateTable(
@@ -359,6 +598,33 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PortfolioSale",
+                schema: "dbo",
+                columns: table => new
+                {
+                    PortfolioSaleId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CryptocurrencyId = table.Column<int>(type: "int", nullable: false),
+                    Symbol = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    SellPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    SellDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PortfolioSale", x => x.PortfolioSaleId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Role",
                 schema: "dbo",
                 columns: table => new
@@ -379,6 +645,37 @@ namespace InfrastructureLayer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Role", x => x.RoleId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Transaction",
+                schema: "dbo",
+                columns: table => new
+                {
+                    TransactionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Currency = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReferenceId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    RelatedEntityId = table.Column<int>(type: "int", nullable: true),
+                    RelatedEntityType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transaction", x => x.TransactionId);
                 });
 
             migrationBuilder.CreateTable(
@@ -473,6 +770,44 @@ namespace InfrastructureLayer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WatchlistItem", x => x.WatchlistItemId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Candle_15m",
+                schema: "dbo",
+                columns: table => new
+                {
+                    Candle_15mId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CryptocurrencyId = table.Column<int>(type: "int", nullable: false),
+                    OpenTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CloseTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Open = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    High = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    Low = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    Close = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    Volume = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    NumberOfTrades = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Candle_15m", x => x.Candle_15mId);
+                    table.ForeignKey(
+                        name: "FK_Candle_15m_Cryptocurrency_CryptocurrencyId",
+                        column: x => x.CryptocurrencyId,
+                        principalSchema: "dbo",
+                        principalTable: "Cryptocurrency",
+                        principalColumn: "CryptocurrencyId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -608,6 +943,44 @@ namespace InfrastructureLayer.Migrations
                         principalSchema: "dbo",
                         principalTable: "Cryptocurrency",
                         principalColumn: "CryptocurrencyId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Candle_1w",
+                schema: "dbo",
+                columns: table => new
+                {
+                    Candle_1wId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CryptocurrencyId = table.Column<int>(type: "int", nullable: false),
+                    OpenTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CloseTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Open = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    High = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    Low = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    Close = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    Volume = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
+                    NumberOfTrades = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Candle_1w", x => x.Candle_1wId);
+                    table.ForeignKey(
+                        name: "FK_Candle_1w_Cryptocurrency_CryptocurrencyId",
+                        column: x => x.CryptocurrencyId,
+                        principalSchema: "dbo",
+                        principalTable: "Cryptocurrency",
+                        principalColumn: "CryptocurrencyId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -757,6 +1130,46 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "NewsInstrument",
+                schema: "dbo",
+                columns: table => new
+                {
+                    NewsInstrumentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NewsPostId = table.Column<int>(type: "int", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Slug = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Url = table.Column<string>(type: "nvarchar(1024)", maxLength: 1024, nullable: true),
+                    MarketCapUsd = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    PriceInUsd = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    PriceInBtc = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    PriceInEth = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    PriceInEur = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    MarketRank = table.Column<int>(type: "int", nullable: true),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NewsInstrument", x => x.NewsInstrumentId);
+                    table.ForeignKey(
+                        name: "FK_NewsInstrument_NewsPost_NewsPostId",
+                        column: x => x.NewsPostId,
+                        principalSchema: "dbo",
+                        principalTable: "NewsPost",
+                        principalColumn: "NewsPostId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PlanFeature",
                 schema: "dbo",
                 columns: table => new
@@ -835,6 +1248,84 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "IdeaComment",
+                schema: "dbo",
+                columns: table => new
+                {
+                    IdeaCommentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdeaId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdeaComment", x => x.IdeaCommentId);
+                    table.ForeignKey(
+                        name: "FK_IdeaComment_Idea_IdeaId",
+                        column: x => x.IdeaId,
+                        principalSchema: "dbo",
+                        principalTable: "Idea",
+                        principalColumn: "IdeaId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_IdeaComment_UserAccount_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "dbo",
+                        principalTable: "UserAccount",
+                        principalColumn: "UserAccountId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IdeaRating",
+                schema: "dbo",
+                columns: table => new
+                {
+                    IdeaRatingId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdeaId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdeaRating", x => x.IdeaRatingId);
+                    table.ForeignKey(
+                        name: "FK_IdeaRating_Idea_IdeaId",
+                        column: x => x.IdeaId,
+                        principalSchema: "dbo",
+                        principalTable: "Idea",
+                        principalColumn: "IdeaId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_IdeaRating_UserAccount_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "dbo",
+                        principalTable: "UserAccount",
+                        principalColumn: "UserAccountId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Notification",
                 schema: "dbo",
                 columns: table => new
@@ -879,11 +1370,13 @@ namespace InfrastructureLayer.Migrations
                     OrganizationName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     LegalName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
+                    DescriptionDetails = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FoundedYear = table.Column<int>(type: "int", nullable: true),
                     RegistrationNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Country = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     City = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Address = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ContactEmailPublic = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     ContactPhonePublic = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     LogoUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
@@ -949,6 +1442,44 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserFollow",
+                schema: "dbo",
+                columns: table => new
+                {
+                    UserFollowId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FollowerUserId = table.Column<int>(type: "int", nullable: false),
+                    FolloweeUserId = table.Column<int>(type: "int", nullable: false),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserFollow", x => x.UserFollowId);
+                    table.ForeignKey(
+                        name: "FK_UserFollow_UserAccount_FolloweeUserId",
+                        column: x => x.FolloweeUserId,
+                        principalSchema: "dbo",
+                        principalTable: "UserAccount",
+                        principalColumn: "UserAccountId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UserFollow_UserAccount_FollowerUserId",
+                        column: x => x.FollowerUserId,
+                        principalSchema: "dbo",
+                        principalTable: "UserAccount",
+                        principalColumn: "UserAccountId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserPlan",
                 schema: "dbo",
                 columns: table => new
@@ -1003,6 +1534,7 @@ namespace InfrastructureLayer.Migrations
                     Address = table.Column<string>(type: "nvarchar(400)", maxLength: 400, nullable: true),
                     Company = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AboutMe = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     CreatedByUserId = table.Column<int>(type: "int", nullable: true),
                     ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
@@ -1215,6 +1747,38 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OrganizationEmail",
+                schema: "dbo",
+                columns: table => new
+                {
+                    OrganizationEmailId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrganizationProfileId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrganizationEmail", x => x.OrganizationEmailId);
+                    table.ForeignKey(
+                        name: "FK_OrganizationEmail_OrganizationProfile_OrganizationProfileId",
+                        column: x => x.OrganizationProfileId,
+                        principalSchema: "dbo",
+                        principalTable: "OrganizationProfile",
+                        principalColumn: "OrganizationProfileId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OrganizationExchange",
                 schema: "dbo",
                 columns: table => new
@@ -1307,6 +1871,38 @@ namespace InfrastructureLayer.Migrations
                     table.PrimaryKey("PK_OrganizationLicense", x => x.OrganizationLicenseId);
                     table.ForeignKey(
                         name: "FK_OrganizationLicense_OrganizationProfile_OrganizationProfileId",
+                        column: x => x.OrganizationProfileId,
+                        principalSchema: "dbo",
+                        principalTable: "OrganizationProfile",
+                        principalColumn: "OrganizationProfileId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrganizationPhone",
+                schema: "dbo",
+                columns: table => new
+                {
+                    OrganizationPhoneId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrganizationProfileId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrganizationPhone", x => x.OrganizationPhoneId);
+                    table.ForeignKey(
+                        name: "FK_OrganizationPhone_OrganizationProfile_OrganizationProfileId",
                         column: x => x.OrganizationProfileId,
                         principalSchema: "dbo",
                         principalTable: "OrganizationProfile",
@@ -1416,6 +2012,26 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_BitcoinActiveAddress_Time",
+                schema: "dbo",
+                table: "BitcoinActiveAddress",
+                column: "Time",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Candle_15m_CryptocurrencyId_OpenTime",
+                schema: "dbo",
+                table: "Candle_15m",
+                columns: new[] { "CryptocurrencyId", "OpenTime" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Candle_15m_OpenTime",
+                schema: "dbo",
+                table: "Candle_15m",
+                column: "OpenTime");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Candle_1d_CryptocurrencyId_OpenTime",
                 schema: "dbo",
                 table: "Candle_1d",
@@ -1473,6 +2089,19 @@ namespace InfrastructureLayer.Migrations
                 column: "OpenTime");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Candle_1w_CryptocurrencyId_OpenTime",
+                schema: "dbo",
+                table: "Candle_1w",
+                columns: new[] { "CryptocurrencyId", "OpenTime" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Candle_1w_OpenTime",
+                schema: "dbo",
+                table: "Candle_1w",
+                column: "OpenTime");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Candle_4h_CryptocurrencyId_OpenTime",
                 schema: "dbo",
                 table: "Candle_4h",
@@ -1524,6 +2153,13 @@ namespace InfrastructureLayer.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Channel_UniqueCode",
+                schema: "dbo",
+                table: "Channel",
+                column: "UniqueCode",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ChannelMembership_ChannelId_UserId",
                 schema: "dbo",
                 table: "ChannelMembership",
@@ -1535,6 +2171,12 @@ namespace InfrastructureLayer.Migrations
                 schema: "dbo",
                 table: "ChannelPost",
                 column: "ChannelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChannelPostComment_PostId",
+                schema: "dbo",
+                table: "ChannelPostComment",
+                column: "PostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChannelPostReaction_PostId",
@@ -1621,6 +2263,35 @@ namespace InfrastructureLayer.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_DuneDailyTxCountSnapshot_Time",
+                schema: "dbo",
+                table: "DuneDailyTxCountSnapshot",
+                column: "Time",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DuneEtfIssuerFlowSnapshot_Time_EtfTicker",
+                schema: "dbo",
+                table: "DuneEtfIssuerFlowSnapshot",
+                columns: new[] { "Time", "EtfTicker" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DuneGasPriceSnapshot_Time",
+                schema: "dbo",
+                table: "DuneGasPriceSnapshot",
+                column: "Time",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DuneMetricsSnapshot_ExecutionId",
+                schema: "dbo",
+                table: "DuneMetricsSnapshot",
+                column: "ExecutionId",
+                unique: true,
+                filter: "[ExecutionId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Idea_IsPublic",
                 schema: "dbo",
                 table: "Idea",
@@ -1631,6 +2302,31 @@ namespace InfrastructureLayer.Migrations
                 schema: "dbo",
                 table: "Idea",
                 columns: new[] { "Symbol", "Timeframe" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IdeaComment_IdeaId",
+                schema: "dbo",
+                table: "IdeaComment",
+                column: "IdeaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IdeaComment_UserId",
+                schema: "dbo",
+                table: "IdeaComment",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IdeaRating_IdeaId_UserId",
+                schema: "dbo",
+                table: "IdeaRating",
+                columns: new[] { "IdeaId", "UserId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IdeaRating_UserId",
+                schema: "dbo",
+                table: "IdeaRating",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Lesson_CourseId_Order",
@@ -1652,6 +2348,19 @@ namespace InfrastructureLayer.Migrations
                 columns: new[] { "LessonId", "MediaFileTypeValue" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_NewsInstrument_NewsPostId",
+                schema: "dbo",
+                table: "NewsInstrument",
+                column: "NewsPostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NewsPost_ExternalId",
+                schema: "dbo",
+                table: "NewsPost",
+                column: "ExternalId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Notification_UserAccountId",
                 schema: "dbo",
                 table: "Notification",
@@ -1661,6 +2370,12 @@ namespace InfrastructureLayer.Migrations
                 name: "IX_OrganizationActivity_OrganizationProfileId",
                 schema: "dbo",
                 table: "OrganizationActivity",
+                column: "OrganizationProfileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrganizationEmail_OrganizationProfileId",
+                schema: "dbo",
+                table: "OrganizationEmail",
                 column: "OrganizationProfileId");
 
             migrationBuilder.CreateIndex(
@@ -1679,6 +2394,12 @@ namespace InfrastructureLayer.Migrations
                 name: "IX_OrganizationLicense_OrganizationProfileId",
                 schema: "dbo",
                 table: "OrganizationLicense",
+                column: "OrganizationProfileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrganizationPhone_OrganizationProfileId",
+                schema: "dbo",
+                table: "OrganizationPhone",
                 column: "OrganizationProfileId");
 
             migrationBuilder.CreateIndex(
@@ -1737,6 +2458,24 @@ namespace InfrastructureLayer.Migrations
                 columns: new[] { "Symbol", "BuyDate" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_PortfolioSale_CryptocurrencyId",
+                schema: "dbo",
+                table: "PortfolioSale",
+                column: "CryptocurrencyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PortfolioSale_Symbol",
+                schema: "dbo",
+                table: "PortfolioSale",
+                column: "Symbol");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PortfolioSale_Symbol_SellDate",
+                schema: "dbo",
+                table: "PortfolioSale",
+                columns: new[] { "Symbol", "SellDate" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RefreshToken_UserAccountId",
                 schema: "dbo",
                 table: "RefreshToken",
@@ -1767,10 +2506,35 @@ namespace InfrastructureLayer.Migrations
                 columns: new[] { "SignalId", "IsTrigger" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Transaction_ReferenceId",
+                schema: "dbo",
+                table: "Transaction",
+                column: "ReferenceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transaction_UserId",
+                schema: "dbo",
+                table: "Transaction",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserAccount_InvitedByUserId",
                 schema: "dbo",
                 table: "UserAccount",
                 column: "InvitedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserFollow_FolloweeUserId",
+                schema: "dbo",
+                table: "UserFollow",
+                column: "FolloweeUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserFollow_FollowerUserId_FolloweeUserId",
+                schema: "dbo",
+                table: "UserFollow",
+                columns: new[] { "FollowerUserId", "FolloweeUserId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserPlan_PlanId",
@@ -1826,6 +2590,14 @@ namespace InfrastructureLayer.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "BitcoinActiveAddress",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "Candle_15m",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
                 name: "Candle_1d",
                 schema: "dbo");
 
@@ -1835,6 +2607,10 @@ namespace InfrastructureLayer.Migrations
 
             migrationBuilder.DropTable(
                 name: "Candle_1m",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "Candle_1w",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
@@ -1862,6 +2638,10 @@ namespace InfrastructureLayer.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
+                name: "ChannelPostComment",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
                 name: "ChannelPostReaction",
                 schema: "dbo");
 
@@ -1886,11 +2666,35 @@ namespace InfrastructureLayer.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Idea",
+                name: "DuneDailyTxCountSnapshot",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "DuneEtfIssuerFlowSnapshot",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "DuneGasPriceSnapshot",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "DuneMetricsSnapshot",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "IdeaComment",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "IdeaRating",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
                 name: "MediaFile",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "NewsInstrument",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
@@ -1899,6 +2703,10 @@ namespace InfrastructureLayer.Migrations
 
             migrationBuilder.DropTable(
                 name: "OrganizationActivity",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "OrganizationEmail",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
@@ -1911,6 +2719,10 @@ namespace InfrastructureLayer.Migrations
 
             migrationBuilder.DropTable(
                 name: "OrganizationLicense",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "OrganizationPhone",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
@@ -1930,11 +2742,23 @@ namespace InfrastructureLayer.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
+                name: "PortfolioSale",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
                 name: "RefreshToken",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
                 name: "SignalCandle",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "Transaction",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "UserFollow",
                 schema: "dbo");
 
             migrationBuilder.DropTable(
@@ -1958,7 +2782,15 @@ namespace InfrastructureLayer.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
+                name: "Idea",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
                 name: "Lesson",
+                schema: "dbo");
+
+            migrationBuilder.DropTable(
+                name: "NewsPost",
                 schema: "dbo");
 
             migrationBuilder.DropTable(

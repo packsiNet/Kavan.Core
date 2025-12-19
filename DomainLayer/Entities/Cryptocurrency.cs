@@ -4,6 +4,10 @@ namespace DomainLayer.Entities;
 
 public class Cryptocurrency : BaseEntityModel, IAuditableEntity
 {
+    public string Category { get; set; } = string.Empty;
+
+    public string Name { get; set; } = string.Empty;
+
     public string Symbol { get; set; } = string.Empty;
 
     public string BaseAsset { get; set; } = string.Empty;
