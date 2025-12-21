@@ -18,9 +18,13 @@ public class Cryptocurrency : BaseEntityModel, IAuditableEntity
 
     public ICollection<Candle_5m> Candles_5m { get; set; } = [];
 
+    public ICollection<Candle_15m> Candles_15m { get; set; } = [];
+
     public ICollection<Candle_1h> Candles_1h { get; set; } = [];
 
     public ICollection<Candle_4h> Candles_4h { get; set; } = [];
 
     public ICollection<Candle_1d> Candles_1d { get; set; } = [];
+
+    public ICollection<Candle_1w> Candles_1w { get; set; } = [];
 }

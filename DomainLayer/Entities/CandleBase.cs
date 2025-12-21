@@ -22,5 +22,9 @@ public class CandleBase : BaseEntityModel, IAuditableEntity
 
     public int NumberOfTrades { get; set; }
 
+    public bool IsFinal { get; set; }
+
+    public DateTime LastUpdatedUtc { get; set; }
+
     public Cryptocurrency Cryptocurrency { get; set; } = null!;
 }

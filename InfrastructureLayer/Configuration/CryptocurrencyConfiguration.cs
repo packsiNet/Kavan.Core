@@ -1,4 +1,5 @@
-﻿using DomainLayer.Entities;
+﻿﻿using DomainLayer.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InfrastructureLayer.Configuration;
@@ -8,9 +9,10 @@ public class CryptocurrencyConfiguration : BaseEntityConfiguration<Cryptocurrenc
     public override void Configure(EntityTypeBuilder<Cryptocurrency> builder)
     {
         base.Configure(builder);
+        builder.Property(x => x.Id).HasColumnName("CryptocurrencyId");
 
-        builder.Property(x => x.Category)
-            .HasMaxLength(100)
+        builder.Property(x => x.Name)
+            .HasMaxLength(20)
             .IsRequired();
 
         builder.Property(x => x.Name)

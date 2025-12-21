@@ -16,11 +16,6 @@ public abstract class CandleBaseConfiguration<T> : BaseEntityConfiguration<T> wh
         builder.Property(x => x.Close).HasPrecision(18, 8);
         builder.Property(x => x.Volume).HasPrecision(18, 8);
 
-        builder.HasOne(x => x.Cryptocurrency)
-       .WithMany()
-       .HasForeignKey(x => x.CryptocurrencyId)
-       .OnDelete(DeleteBehavior.Cascade);
-
         builder.HasIndex(x => new { x.CryptocurrencyId, x.OpenTime })
                .IsUnique();
 

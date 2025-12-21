@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -11,8 +11,10 @@ namespace InfrastructureLayer.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            /*
             migrationBuilder.EnsureSchema(
                 name: "dbo");
+
 
             migrationBuilder.CreateTable(
                 name: "BitcoinActiveAddress",
@@ -2584,6 +2586,7 @@ namespace InfrastructureLayer.Migrations
                 table: "WatchlistItem",
                 columns: new[] { "WatchlistId", "Symbol" },
                 unique: true);
+            */
         }
 
         /// <inheritdoc />

@@ -45,9 +45,9 @@ public static class DependencyInjection
                 "https://kavan-core.packsi.net"
             };
 
-    public static IServiceCollection Register(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection Register(this IServiceCollection services, IConfiguration configuration, bool isWorker = false)
     {
-        services.RegisterService(configuration);
+        services.RegisterService(configuration, isWorker);
 
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
@@ -57,9 +57,9 @@ public static class DependencyInjection
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserContextService, UserContextService>();
-        services.AddScoped<InfrastructureLayer.BusinessLogic.Services.External.DuneTxCountSyncService>();
-        services.AddScoped<InfrastructureLayer.BusinessLogic.Services.External.DuneUserCountSyncService>();
-        services.AddScoped<InfrastructureLayer.BusinessLogic.Services.External.DuneEtfIssuerFlowSyncService>();
+        services.AddScoped<BusinessLogic.Services.External.DuneTxCountSyncService>();
+        services.AddScoped<BusinessLogic.Services.External.DuneUserCountSyncService>();
+        services.AddScoped<BusinessLogic.Services.External.DuneEtfIssuerFlowSyncService>();
 
         // Register BackgroundService(s)
         // Disable legacy 1m REST fetcher
@@ -68,12 +68,12 @@ public static class DependencyInjection
         services.AddHostedService<BinanceKlineWebSocketHostedService>();
         services.AddHostedService<SignalsBackgroundService>();
         services.AddHostedService<SignalsRetentionBackgroundService>();
-        services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.News.NewsSyncBackgroundService>();
-        services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneSyncBackgroundService>();
-        services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneTxCountBackgroundService>();
-        services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneGasPriceBackgroundService>();
-        services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneUserCountBackgroundService>();
-        services.AddHostedService<InfrastructureLayer.BusinessLogic.Services.External.DuneEtfIssuerFlowBackgroundService>();
+        services.AddHostedService<BusinessLogic.Services.News.NewsSyncBackgroundService>();
+        services.AddHostedService<BusinessLogic.Services.External.DuneSyncBackgroundService>();
+        services.AddHostedService<BusinessLogic.Services.External.DuneTxCountBackgroundService>();
+        services.AddHostedService<BusinessLogic.Services.External.DuneGasPriceBackgroundService>();
+        services.AddHostedService<BusinessLogic.Services.External.DuneUserCountBackgroundService>();
+        services.AddHostedService<BusinessLogic.Services.External.DuneEtfIssuerFlowBackgroundService>();
 
         services.AddHttpContextAccessor();
         services.MediatRDependency();
@@ -122,8 +122,8 @@ public static class DependencyInjection
         return services;
     }
 
-        private static void RegisterService(this IServiceCollection services, IConfiguration configuration)
-        {
+        private static void RegisterService(this IServiceCollection services, IConfiguration configuration, bool isWorker)
+    {
         services.ConfigurationDependency();
         services.Configure<InfrastructureLayer.Configuration.SignalRetentionOptions>(configuration.GetSection("SignalRetention"));
         services.Configure<InfrastructureLayer.Configuration.CryptoPanicOptions>(configuration.GetSection("CryptoPanic"));
@@ -139,9 +139,12 @@ public static class DependencyInjection
                            ?? string.Empty;
             }
         });
-            services.AddMemoryCache();
+        services.AddMemoryCache();
+        if (!isWorker)
+        {
             services.SwaggerConfiguration(configuration);
-            services.JwtAuthorizeConfiguration(configuration);
+        }
+        services.JwtAuthorizeConfiguration(configuration);
             services.SeriLogConfiguration(configuration);
             services.AddAutoMapper(typeof(UserAccountProfile).GetTypeInfo().Assembly);
 
