@@ -64,8 +64,9 @@ public static class DependencyInjection
         // Register BackgroundService(s)
         // Disable legacy 1m REST fetcher
         // services.AddHostedService<CandleFetcherBackgroundService>();
-        // Enable Binance WebSocket kline service (1m,5m,1h,4h,1d)
-        services.AddHostedService<BinanceKlineWebSocketHostedService>();
+        // Enable Binance 1m Kline Ingestion Service (Worker)
+        services.AddHostedService<Binance1mKlineIngestionService>();
+        // services.AddHostedService<BinanceKlineWebSocketHostedService>();
         services.AddHostedService<SignalsBackgroundService>();
         services.AddHostedService<SignalsRetentionBackgroundService>();
         services.AddHostedService<BusinessLogic.Services.News.NewsSyncBackgroundService>();

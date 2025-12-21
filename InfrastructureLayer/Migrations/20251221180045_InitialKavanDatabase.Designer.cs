@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251221170737_UpdateWorkerSchema")]
-    partial class UpdateWorkerSchema
+    [Migration("20251221180045_InitialKavanDatabase")]
+    partial class InitialKavanDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

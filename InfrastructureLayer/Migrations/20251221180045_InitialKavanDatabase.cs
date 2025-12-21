@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -6,15 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InfrastructureLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialFirstDb : Migration
+    public partial class InitialKavanDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            /*
             migrationBuilder.EnsureSchema(
                 name: "dbo");
-
 
             migrationBuilder.CreateTable(
                 name: "BitcoinActiveAddress",
@@ -315,7 +313,7 @@ namespace InfrastructureLayer.Migrations
                 {
                     CryptocurrencyId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Symbol = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     BaseAsset = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -798,7 +796,9 @@ namespace InfrastructureLayer.Migrations
                     Low = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Close = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Volume = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
-                    NumberOfTrades = table.Column<int>(type: "int", nullable: false)
+                    NumberOfTrades = table.Column<int>(type: "int", nullable: false),
+                    IsFinal = table.Column<bool>(type: "bit", nullable: false),
+                    LastUpdatedUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -821,7 +821,6 @@ namespace InfrastructureLayer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     CreatedByUserId = table.Column<int>(type: "int", nullable: true),
-                    CryptocurrencyId1 = table.Column<int>(type: "int", nullable: true),
                     ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
@@ -837,7 +836,9 @@ namespace InfrastructureLayer.Migrations
                     Low = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Close = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Volume = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
-                    NumberOfTrades = table.Column<int>(type: "int", nullable: false)
+                    NumberOfTrades = table.Column<int>(type: "int", nullable: false),
+                    IsFinal = table.Column<bool>(type: "bit", nullable: false),
+                    LastUpdatedUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -849,12 +850,6 @@ namespace InfrastructureLayer.Migrations
                         principalTable: "Cryptocurrency",
                         principalColumn: "CryptocurrencyId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Candle_1d_Cryptocurrency_CryptocurrencyId1",
-                        column: x => x.CryptocurrencyId1,
-                        principalSchema: "dbo",
-                        principalTable: "Cryptocurrency",
-                        principalColumn: "CryptocurrencyId");
                 });
 
             migrationBuilder.CreateTable(
@@ -866,7 +861,6 @@ namespace InfrastructureLayer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     CreatedByUserId = table.Column<int>(type: "int", nullable: true),
-                    CryptocurrencyId1 = table.Column<int>(type: "int", nullable: true),
                     ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
@@ -882,7 +876,9 @@ namespace InfrastructureLayer.Migrations
                     Low = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Close = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Volume = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
-                    NumberOfTrades = table.Column<int>(type: "int", nullable: false)
+                    NumberOfTrades = table.Column<int>(type: "int", nullable: false),
+                    IsFinal = table.Column<bool>(type: "bit", nullable: false),
+                    LastUpdatedUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -894,12 +890,6 @@ namespace InfrastructureLayer.Migrations
                         principalTable: "Cryptocurrency",
                         principalColumn: "CryptocurrencyId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Candle_1h_Cryptocurrency_CryptocurrencyId1",
-                        column: x => x.CryptocurrencyId1,
-                        principalSchema: "dbo",
-                        principalTable: "Cryptocurrency",
-                        principalColumn: "CryptocurrencyId");
                 });
 
             migrationBuilder.CreateTable(
@@ -911,7 +901,6 @@ namespace InfrastructureLayer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     CreatedByUserId = table.Column<int>(type: "int", nullable: true),
-                    CryptocurrencyId1 = table.Column<int>(type: "int", nullable: true),
                     ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
@@ -927,7 +916,9 @@ namespace InfrastructureLayer.Migrations
                     Low = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Close = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Volume = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
-                    NumberOfTrades = table.Column<int>(type: "int", nullable: false)
+                    NumberOfTrades = table.Column<int>(type: "int", nullable: false),
+                    IsFinal = table.Column<bool>(type: "bit", nullable: false),
+                    LastUpdatedUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -939,12 +930,6 @@ namespace InfrastructureLayer.Migrations
                         principalTable: "Cryptocurrency",
                         principalColumn: "CryptocurrencyId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Candle_1m_Cryptocurrency_CryptocurrencyId1",
-                        column: x => x.CryptocurrencyId1,
-                        principalSchema: "dbo",
-                        principalTable: "Cryptocurrency",
-                        principalColumn: "CryptocurrencyId");
                 });
 
             migrationBuilder.CreateTable(
@@ -971,7 +956,9 @@ namespace InfrastructureLayer.Migrations
                     Low = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Close = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Volume = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
-                    NumberOfTrades = table.Column<int>(type: "int", nullable: false)
+                    NumberOfTrades = table.Column<int>(type: "int", nullable: false),
+                    IsFinal = table.Column<bool>(type: "bit", nullable: false),
+                    LastUpdatedUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -994,7 +981,6 @@ namespace InfrastructureLayer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     CreatedByUserId = table.Column<int>(type: "int", nullable: true),
-                    CryptocurrencyId1 = table.Column<int>(type: "int", nullable: true),
                     ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
@@ -1010,7 +996,9 @@ namespace InfrastructureLayer.Migrations
                     Low = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Close = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Volume = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
-                    NumberOfTrades = table.Column<int>(type: "int", nullable: false)
+                    NumberOfTrades = table.Column<int>(type: "int", nullable: false),
+                    IsFinal = table.Column<bool>(type: "bit", nullable: false),
+                    LastUpdatedUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1022,12 +1010,6 @@ namespace InfrastructureLayer.Migrations
                         principalTable: "Cryptocurrency",
                         principalColumn: "CryptocurrencyId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Candle_4h_Cryptocurrency_CryptocurrencyId1",
-                        column: x => x.CryptocurrencyId1,
-                        principalSchema: "dbo",
-                        principalTable: "Cryptocurrency",
-                        principalColumn: "CryptocurrencyId");
                 });
 
             migrationBuilder.CreateTable(
@@ -1039,7 +1021,6 @@ namespace InfrastructureLayer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     CreatedByUserId = table.Column<int>(type: "int", nullable: true),
-                    CryptocurrencyId1 = table.Column<int>(type: "int", nullable: true),
                     ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
@@ -1055,7 +1036,9 @@ namespace InfrastructureLayer.Migrations
                     Low = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Close = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
                     Volume = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 8, nullable: false),
-                    NumberOfTrades = table.Column<int>(type: "int", nullable: false)
+                    NumberOfTrades = table.Column<int>(type: "int", nullable: false),
+                    IsFinal = table.Column<bool>(type: "bit", nullable: false),
+                    LastUpdatedUtc = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1067,12 +1050,6 @@ namespace InfrastructureLayer.Migrations
                         principalTable: "Cryptocurrency",
                         principalColumn: "CryptocurrencyId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Candle_5m_Cryptocurrency_CryptocurrencyId1",
-                        column: x => x.CryptocurrencyId1,
-                        principalSchema: "dbo",
-                        principalTable: "Cryptocurrency",
-                        principalColumn: "CryptocurrencyId");
                 });
 
             migrationBuilder.CreateTable(
@@ -2041,12 +2018,6 @@ namespace InfrastructureLayer.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Candle_1d_CryptocurrencyId1",
-                schema: "dbo",
-                table: "Candle_1d",
-                column: "CryptocurrencyId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Candle_1d_OpenTime",
                 schema: "dbo",
                 table: "Candle_1d",
@@ -2060,12 +2031,6 @@ namespace InfrastructureLayer.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Candle_1h_CryptocurrencyId1",
-                schema: "dbo",
-                table: "Candle_1h",
-                column: "CryptocurrencyId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Candle_1h_OpenTime",
                 schema: "dbo",
                 table: "Candle_1h",
@@ -2077,12 +2042,6 @@ namespace InfrastructureLayer.Migrations
                 table: "Candle_1m",
                 columns: new[] { "CryptocurrencyId", "OpenTime" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Candle_1m_CryptocurrencyId1",
-                schema: "dbo",
-                table: "Candle_1m",
-                column: "CryptocurrencyId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Candle_1m_OpenTime",
@@ -2111,12 +2070,6 @@ namespace InfrastructureLayer.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Candle_4h_CryptocurrencyId1",
-                schema: "dbo",
-                table: "Candle_4h",
-                column: "CryptocurrencyId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Candle_4h_OpenTime",
                 schema: "dbo",
                 table: "Candle_4h",
@@ -2128,12 +2081,6 @@ namespace InfrastructureLayer.Migrations
                 table: "Candle_5m",
                 columns: new[] { "CryptocurrencyId", "OpenTime" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Candle_5m_CryptocurrencyId1",
-                schema: "dbo",
-                table: "Candle_5m",
-                column: "CryptocurrencyId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Candle_5m_OpenTime",
@@ -2586,7 +2533,6 @@ namespace InfrastructureLayer.Migrations
                 table: "WatchlistItem",
                 columns: new[] { "WatchlistId", "Symbol" },
                 unique: true);
-            */
         }
 
         /// <inheritdoc />
