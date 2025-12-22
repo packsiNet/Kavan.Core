@@ -12,6 +12,6 @@ namespace Kavan.Api.Controllers;
 public class CustomApiController(IMediator mediator) : ControllerBase
 {
     [HttpGet("GetCandleHistory")]
-    public async Task<IActionResult> GetCandleHistoryAsync([FromQuery] DateTime startDateUtc)
-        => await ResultHelper.GetResultAsync(mediator, new GetCandleHistoryCommand(startDateUtc));
+    public async Task<IActionResult> GetCandleHistoryAsync([FromQuery] DateTime startDateUtc, [FromQuery] DateTime? EndDateUtc)
+        => await ResultHelper.GetResultAsync(mediator, new GetCandleHistoryCommand(startDateUtc, EndDateUtc));
 }

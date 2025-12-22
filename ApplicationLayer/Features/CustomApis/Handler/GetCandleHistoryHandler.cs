@@ -9,7 +9,7 @@ public class GetCandleHistoryHandler(ICustomApisService _service) : IRequestHand
 {
     public async Task<HandlerResult> Handle(GetCandleHistoryCommand request, CancellationToken cancellationToken)
     {
-        var result = await _service.IngestAsync(request.StartDateUtc);
+        var result = await _service.IngestAsync(request.StartDateUtc, request.EndDateUtc);
         return result.ToHandlerResult();
     }
 }

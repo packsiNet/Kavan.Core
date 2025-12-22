@@ -14,13 +14,13 @@ public class CustomApisService(IUnitOfWork _unitOfWork,
     IRepository<Cryptocurrency> _cryptocurrencyRepo,
     IRepository<Candle_1m> _candle_1mRepo) : ICustomApisService
 {
-    public async Task<Result> IngestAsync(DateTime StartDateUtc)
+    public async Task<Result> IngestAsync(DateTime StartDateUtc, DateTime? EndDateUtc)
     {
         var cryptos = await _cryptocurrencyRepo.Query().ToListAsync();
 
         foreach (var crypto in cryptos)
         {
-            var endUtc = DateTime.UtcNow;
+            var endUtc = EndDateUtc ?? DateTime.UtcNow;
 
             while (StartDateUtc < endUtc)
             {
@@ -46,10 +46,7 @@ public class CustomApisService(IUnitOfWork _unitOfWork,
         return Result.Success();
     }
 
-    public async Task<List<Candle_1m>> GetAsync(int cid,
-            string symbol,
-            DateTime startUtc,
-            DateTime endUtc)
+    public async Task<List<Candle_1m>> GetAsync(int cid, string symbol, DateTime startUtc, DateTime endUtc)
     {
         var url =
             $"https://api.binance.com/api/v3/klines" +
@@ -62,7 +59,7 @@ public class CustomApisService(IUnitOfWork _unitOfWork,
         var json = await _http.GetStringAsync(url);
         var raw = JsonSerializer.Deserialize<List<List<JsonElement>>>(json);
 
-        return raw.Select(x => new Candle_1m
+        return [.. raw.Select(x => new Candle_1m
         {
             CryptocurrencyId = cid,
             OpenTime = FromMs(x[0].GetInt64()),
@@ -72,7 +69,7 @@ public class CustomApisService(IUnitOfWork _unitOfWork,
             Close = decimal.Parse(x[4].GetString()!),
             Volume = decimal.Parse(x[5].GetString()!),
             CloseTime = FromMs(x[6].GetInt64()),
-        }).ToList();
+        })];
     }
 
     private static long ToMs(DateTime dt)

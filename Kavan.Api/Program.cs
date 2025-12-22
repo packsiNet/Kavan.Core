@@ -54,9 +54,6 @@ using (var scope = app.Services.CreateScope())
         var db = services.GetRequiredService<ApplicationDbContext>();
         db.Database.Migrate();
 
-        var seedService = services.GetRequiredService<ICandleSeedService>();
-        seedService.SeedSymbolAsync().GetAwaiter().GetResult();
-
         var roleSeed = services.GetRequiredService<IRoleSeedService>();
         roleSeed.SeedRolesAsync().GetAwaiter().GetResult();
 

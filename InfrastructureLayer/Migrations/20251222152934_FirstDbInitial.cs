@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InfrastructureLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialKavanDatabase : Migration
+    public partial class FirstDbInitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -82,13 +82,13 @@ namespace InfrastructureLayer.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ChannelId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsMuted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     CreatedByUserId = table.Column<int>(type: "int", nullable: true),
                     ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
                     ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)

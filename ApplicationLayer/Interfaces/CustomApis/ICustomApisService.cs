@@ -4,5 +4,5 @@ namespace ApplicationLayer.Interfaces.CustomApis;
 
 public interface ICustomApisService
 {
-    Task<Result> IngestAsync(DateTime StartDateUtc);
+    Task<Result> IngestAsync(DateTime StartDateUtc, DateTime? EndDateUtc);
 }
