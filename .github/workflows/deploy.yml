@@ -7,9 +7,12 @@ on:
 
 env:
   APP_URL: ${{ secrets.APP_URL }}
-  PROJECT_PATH: Kavan.Api/Kavan.Api.csproj
-  PUBLISH_DIR: api-app
-  DEPLOY_PATH: /var/www
+  API_PROJECT_PATH: Kavan.Api/Kavan.Api.csproj
+  WORKER_PROJECT_PATH: Kavan.Worker/Kavan.Worker.csproj
+  API_PUBLISH_DIR: api-app
+  WORKER_PUBLISH_DIR: worker-app
+  API_DEPLOY_PATH: /var/www
+  WORKER_DEPLOY_PATH: /var/www
 
 jobs:
   build_test_publish_deploy:
@@ -31,17 +34,20 @@ jobs:
       - name: Test
         run: dotnet test Tests/Kavan.Tests/Kavan.Tests.csproj --configuration Release --no-build
 
-      - name: Publish
-        run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --output ${{ env.PUBLISH_DIR }}
+      - name: Publish API
+        run: dotnet publish ${{ env.API_PROJECT_PATH }} --configuration Release --output ${{ env.API_PUBLISH_DIR }}
 
-      # حذف wwwroot از پکیج (اختیاری)
-      - name: Strip wwwroot from publish package
+      - name: Publish Worker
+        run: dotnet publish ${{ env.WORKER_PROJECT_PATH }} --configuration Release --output ${{ env.WORKER_PUBLISH_DIR }}
+
+      # حذف wwwroot از پکیج API (اختیاری)
+      - name: Strip wwwroot from API publish package
         run: |
-          if [ -d "${{ env.PUBLISH_DIR }}/wwwroot" ]; then
-            rm -rf "${{ env.PUBLISH_DIR }}/wwwroot"
+          if [ -d "${{ env.API_PUBLISH_DIR }}/wwwroot" ]; then
+            rm -rf "${{ env.API_PUBLISH_DIR }}/wwwroot"
           fi
 
-      - name: Prepare remote directory
+      - name: Prepare remote directories
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -49,8 +55,11 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            # ایجاد مسیر پروژه در سرور (بدون حذف)
-            mkdir -p ${{ env.DEPLOY_PATH }}
+            # ایجاد مسیر پروژه API در سرور
+            mkdir -p ${{ env.API_DEPLOY_PATH }}
+            
+            # ایجاد مسیر پروژه Worker در سرور
+            mkdir -p ${{ env.WORKER_DEPLOY_PATH }}
 
             # ایجاد مسیرهای permanent uploads
             mkdir -p /var/www/kavan-uploads/ideas
@@ -58,20 +67,31 @@ jobs:
 
             chmod -R 755 /var/www/kavan-uploads
 
-            echo "APP_URL=${APP_URL}" > ${{ env.DEPLOY_PATH }}/deploy.env
+            echo "APP_URL=${APP_URL}" > ${{ env.API_DEPLOY_PATH }}/deploy.env
 
-      - name: Deploy files
+      - name: Deploy API files
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
-          source: ${{ env.PUBLISH_DIR }}/*
-          target: ${{ env.DEPLOY_PATH }}
+          source: ${{ env.API_PUBLISH_DIR }}/*
+          target: ${{ env.API_DEPLOY_PATH }}
           overwrite: true
 
-      - name: Configure Persistent Uploads
+      - name: Deploy Worker files
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          source: ${{ env.WORKER_PUBLISH_DIR }}/*
+          target: ${{ env.WORKER_DEPLOY_PATH }}
+          overwrite: true
+
+      - name: Configure Persistent Uploads (API)
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -79,18 +99,18 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
-            mkdir -p ${{ env.DEPLOY_PATH }}/wwwroot
+            mkdir -p ${{ env.API_DEPLOY_PATH }}/wwwroot
 
             # اگر uploads وجود دارد و symlink نبود → به persistent منتقل کن
-            if [ -d "${{ env.DEPLOY_PATH }}/wwwroot/uploads" ] && [ ! -L "${{ env.DEPLOY_PATH }}/wwwroot/uploads" ]; then
-                cp -rn ${{ env.DEPLOY_PATH }}/wwwroot/uploads/* /var/www/kavan-uploads/ || true
-                rm -rf ${{ env.DEPLOY_PATH }}/wwwroot/uploads
+            if [ -d "${{ env.API_DEPLOY_PATH }}/wwwroot/uploads" ] && [ ! -L "${{ env.API_DEPLOY_PATH }}/wwwroot/uploads" ]; then
+                cp -rn ${{ env.API_DEPLOY_PATH }}/wwwroot/uploads/* /var/www/kavan-uploads/ || true
+                rm -rf ${{ env.API_DEPLOY_PATH }}/wwwroot/uploads
             fi
 
             # ساخت Symlink امن
-            ln -sfn /var/www/kavan-uploads ${{ env.DEPLOY_PATH }}/wwwroot/uploads
+            ln -sfn /var/www/kavan-uploads ${{ env.API_DEPLOY_PATH }}/wwwroot/uploads
 
-      - name: Reload and Restart Service
+      - name: Reload and Restart Services
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -100,3 +120,5 @@ jobs:
           script: |
             sudo systemctl daemon-reload
             sudo systemctl restart api-packsi
+            # فرض بر این است که سرویس ورکر با نام kavan-worker ساخته شده است
+            sudo systemctl restart kavan-worker
