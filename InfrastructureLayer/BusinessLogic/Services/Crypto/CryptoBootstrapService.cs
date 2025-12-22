@@ -17,8 +17,8 @@ public class CryptoBootstrapService(
     private readonly IUnitOfWork _uow = unitOfWork;
     private readonly ILogger<CryptoBootstrapService> _logger = logger;
 
-    private readonly IReadOnlyList<CryptoSeedItem> _defaults = new List<CryptoSeedItem>
-    {
+    private readonly IReadOnlyList<CryptoSeedItem> _defaults =
+    [
         new("BTC", "Bitcoin", "Layer1"),
         new("ETH", "Ethereum", "Layer1"),
         new("BNB", "BNB", "Layer1"),
@@ -29,7 +29,7 @@ public class CryptoBootstrapService(
         new("TRX", "TRON", "Layer1"),
         new("MATIC", "Polygon", "Layer2"),
         new("DOT", "Polkadot", "Layer1")
-    };
+    ];
 
     public async Task EnsureSeededAsync(CancellationToken cancellationToken = default)
     {
