@@ -1,11 +1,13 @@
 using ApplicationLayer.Common.Behaviors;
 using ApplicationLayer.Features.Validations;
 using ApplicationLayer.Interfaces;
+using ApplicationLayer.Interfaces.Services;
 using ApplicationLayer.Mapping.UserAccounts;
 using AspNetCoreRateLimit;
 using DomainLayer.Common.Attributes;
 using FluentValidation;
 using InfrastructureLayer.BusinessLogic.Services.Binance;
+using InfrastructureLayer.BusinessLogic.Services.Realtime;
 using InfrastructureLayer.BusinessLogic.Services.Signals;
 using InfrastructureLayer.Context;
 using InfrastructureLayer.Extensions;
@@ -20,6 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
+using StackExchange.Redis;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
@@ -57,6 +60,15 @@ public static class DependencyInjection
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserContextService, UserContextService>();
+
+        // Realtime / Redis
+        services.AddSingleton<IConnectionMultiplexer>(sp => 
+        {
+            var config = ConfigurationOptions.Parse(configuration.GetConnectionString("Redis") ?? "localhost:6379");
+            config.AbortOnConnectFail = false;
+            return ConnectionMultiplexer.Connect(config);
+        });
+        services.AddSingleton<ICandleBroadcaster, RedisCandleBroadcaster>();
 
         // Register BackgroundService(s)
         if (isWorker)

@@ -17,6 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 // Add SignalR
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<ApplicationLayer.Interfaces.Services.IKlineStreamBroadcaster, Kavan.Api.Services.SignalR.SignalRKlineBroadcaster>();
+builder.Services.AddHostedService<Kavan.Api.Services.Realtime.CandleRedisConsumer>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -87,5 +88,6 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<Kavan.Api.Hubs.MarketDataHub>("/hubs/marketdata");
 app.MapHub<Kavan.Api.Hubs.MarketDataHub>("/api/marketdataHub");
+app.MapHub<Kavan.Api.Hubs.CandleHub>("/hubs/candles");
 
 app.Run();

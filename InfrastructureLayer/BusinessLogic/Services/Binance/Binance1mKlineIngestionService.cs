@@ -1,3 +1,4 @@
+using ApplicationLayer.Dto.Candle;
 using ApplicationLayer.Interfaces;
 using ApplicationLayer.Interfaces.Services;
 using DomainLayer.Entities;
@@ -181,19 +182,16 @@ public class Binance1mKlineIngestionService : BackgroundService
         var strategy = dbContext.Database.CreateExecutionStrategy();
         await strategy.ExecuteAsync(async () =>
         {
-            using var transaction = await dbContext.Database.BeginTransactionAsync(ct);
-            try
+            // Do not use explicit transaction with ExecuteSqlRawAsync inside strategy if it conflicts.
+            // But MERGE needs to be atomic per row. 
+            // Actually, we can just run them without explicit transaction if individual upserts.
+            // Or use a simpler approach. 
+            
+            // Note: "The connection is closed" or "TaskCanceledException" often means timeout or connection drop.
+            
+            foreach (var k in klines)
             {
-                foreach (var k in klines)
-                {
-                    await ExecuteUpsertAsync(dbContext, cryptoId, k, isFinal: true, ct);
-                }
-                await transaction.CommitAsync(ct);
-            }
-            catch
-            {
-                await transaction.RollbackAsync(ct);
-                throw;
+                await ExecuteUpsertAsync(dbContext, cryptoId, k, isFinal: true, ct);
             }
         });
         
@@ -299,6 +297,31 @@ public class Binance1mKlineIngestionService : BackgroundService
             using var scope = _scopeFactory.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             await ExecuteUpsertAsync(dbContext, cryptoId, klineDto, isFinal, ct);
+
+            // Broadcast
+            try 
+            {
+                // Use a try-catch block to prevent broadcasting errors from affecting ingestion
+                var broadcaster = scope.ServiceProvider.GetRequiredService<ICandleBroadcaster>();
+                var candleDto = new CandleDto(
+                    klineDto.OpenTime,
+                    klineDto.CloseTime,
+                    klineDto.OpenPrice,
+                    klineDto.HighPrice,
+                    klineDto.LowPrice,
+                    klineDto.ClosePrice,
+                    klineDto.Volume,
+                    isFinal
+                );
+                // Do not await if we want to be super fast, but broadcaster is async.
+                // The broadcaster implementation is now FireAndForget for Redis, so awaiting it is fine (it returns quickly).
+                await broadcaster.BroadcastCandleAsync(symbol, "1m", candleDto, ct);
+            }
+            catch (Exception ex)
+            {
+                // Just log warning, don't stop
+                _logger.LogWarning("Failed to broadcast candle for {Symbol}: {Message}", symbol, ex.Message);
+            }
         }
         catch (Exception ex)
         {
