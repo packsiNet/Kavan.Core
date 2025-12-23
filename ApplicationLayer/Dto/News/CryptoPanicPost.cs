@@ -74,6 +74,6 @@ public class VotesDto
 
 public class ContentDto
 {
-    public string? Original { get; set; }
-    public string? Clean { get; set; }
+    public string Original { get; set; }
+    public string Clean { get; set; }
 }

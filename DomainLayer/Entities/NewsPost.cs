@@ -56,9 +56,9 @@ public class NewsPost : BaseEntityModel, IAuditableEntity
 
     public string Author { get; set; } = string.Empty;
 
-    public string? ContentOriginal { get; set; }
+    public string ContentOriginal { get; set; }
 
-    public string? ContentClean { get; set; }
+    public string ContentClean { get; set; }
 
     public ICollection<NewsInstrument> Instruments { get; set; } = [];
 }

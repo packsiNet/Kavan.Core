@@ -22,7 +22,7 @@ public class NewsPostDto
     public int? PanicScore { get; set; }
     public int? PanicScore1h { get; set; }
     public string Author { get; set; } = string.Empty;
-    public string? ContentClean { get; set; }
+    public string ContentClean { get; set; }
     public NewsInstrumentDto[] Instruments { get; set; } = Array.Empty<NewsInstrumentDto>();
 }
 

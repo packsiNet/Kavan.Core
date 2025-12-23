@@ -123,5 +123,13 @@ public class Error
         return new Error(code, message, RequestStatus.ExpiredToken);
     }
 
+    /// <summary>
+    /// ایجاد خطای عدم دسترسی
+    /// </summary>
+    public static Error AccessDenied(string message = "عدم دسترسی", string code = "ACCESS_DENIED")
+    {
+        return new Error(code, message, RequestStatus.IncorrectUser);
+    }
+
     #endregion Methods
 }

@@ -18,7 +18,7 @@ public class RedisCandleBroadcaster : ICandleBroadcaster
         _logger = logger;
     }
 
-    public async Task BroadcastCandleAsync(string symbol, string timeframe, CandleDto candle, CancellationToken ct = default)
+    public Task BroadcastCandleAsync(string symbol, string timeframe, CandleDto candle, CancellationToken ct = default)
     {
         try
         {
@@ -34,5 +34,6 @@ public class RedisCandleBroadcaster : ICandleBroadcaster
             _logger.LogError(ex, "Failed to broadcast candle via Redis for {Symbol}", symbol);
             // We don't throw to avoid disrupting the ingestion flow
         }
+        return Task.CompletedTask;
     }
 }

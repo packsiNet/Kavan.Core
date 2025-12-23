@@ -1,4 +1,4 @@
-﻿#region Usings
+#region Usings
 
 using DomainLayer;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +25,8 @@ namespace InfrastructureLayer.Convention
         {
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
+                if (entityType.IsOwned()) continue;
+
                 //var schema = entityType.ClrType.Namespace?.Split('.').ToList().LastOrDefault();
                 var schema = "dbo";
                 var properties = entityType.GetProperties().ToList();

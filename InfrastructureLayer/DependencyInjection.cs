@@ -89,6 +89,7 @@ public static class DependencyInjection
             services.AddHostedService<BusinessLogic.Services.External.DuneGasPriceBackgroundService>();
             services.AddHostedService<BusinessLogic.Services.External.DuneUserCountBackgroundService>();
             services.AddHostedService<BusinessLogic.Services.External.DuneEtfIssuerFlowBackgroundService>();
+            services.AddHostedService<BusinessLogic.Services.Trading.MarketMonitoringService>();
         }
 
         services.AddHttpContextAccessor();

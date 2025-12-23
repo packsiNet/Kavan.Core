@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251222152934_FirstDbInitial")]
+    [Migration("20251223101424_FirstDbInitial")]
     partial class FirstDbInitial
     {
         /// <inheritdoc />
@@ -1820,6 +1820,69 @@ namespace InfrastructureLayer.Migrations
                         .HasFilter("[ExecutionId] IS NOT NULL");
 
                     b.ToTable("DuneMetricsSnapshot", "dbo");
+                });
+
+            modelBuilder.Entity("DomainLayer.Entities.FinancialPeriod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("FinancialPeriodId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasColumnType("char(15)");
+
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndDateUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedByIp")
+                        .HasColumnType("char(15)");
+
+                    b.Property<int?>("ModifiedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PeriodType")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<DateTime>("StartDateUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsClosed");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FinancialPeriod", "dbo");
                 });
 
             modelBuilder.Entity("DomainLayer.Entities.Idea", b =>
@@ -3655,6 +3718,130 @@ namespace InfrastructureLayer.Migrations
                     b.ToTable("SignalCandle", "dbo");
                 });
 
+            modelBuilder.Entity("DomainLayer.Entities.Trade", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("TradeId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ClosedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasColumnType("char(15)");
+
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("EntryPrice")
+                        .HasColumnType("decimal(28,10)");
+
+                    b.Property<int>("FinancialPeriodId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Leverage")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModifiedByIp")
+                        .HasColumnType("char(15)");
+
+                    b.Property<int?>("ModifiedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("OpenedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(28,10)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("Side")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("StopLoss")
+                        .HasColumnType("decimal(28,10)");
+
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FinancialPeriodId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("Symbol");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Trade", "dbo");
+                });
+
+            modelBuilder.Entity("DomainLayer.Entities.TradeTp", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("TradeTpId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsHit")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(28,10)");
+
+                    b.Property<int>("TradeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TradeId");
+
+                    b.ToTable("TradeTp", "dbo");
+                });
+
             modelBuilder.Entity("DomainLayer.Entities.Transaction", b =>
                 {
                     b.Property<int>("Id")
@@ -4536,6 +4723,81 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("Signal");
                 });
 
+            modelBuilder.Entity("DomainLayer.Entities.Trade", b =>
+                {
+                    b.HasOne("DomainLayer.Entities.FinancialPeriod", "FinancialPeriod")
+                        .WithMany()
+                        .HasForeignKey("FinancialPeriodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("DomainLayer.Entities.TradeEmotion", "Emotion", b1 =>
+                        {
+                            b1.Property<int>("TradeId")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("ConfidenceLevel")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("EmotionBeforeEntry")
+                                .HasMaxLength(500)
+                                .HasColumnType("nvarchar(500)");
+
+                            b1.Property<bool>("PlanCompliance")
+                                .HasColumnType("bit");
+
+                            b1.HasKey("TradeId");
+
+                            b1.ToTable("Trade", "dbo");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TradeId");
+                        });
+
+                    b.OwnsOne("DomainLayer.Entities.TradeResult", "Result", b1 =>
+                        {
+                            b1.Property<int>("TradeId")
+                                .HasColumnType("int");
+
+                            b1.Property<decimal?>("ExitPrice")
+                                .HasColumnType("decimal(28,10)");
+
+                            b1.Property<int?>("ExitReason")
+                                .HasColumnType("int");
+
+                            b1.Property<TimeSpan?>("HoldingTime")
+                                .HasColumnType("time");
+
+                            b1.Property<decimal?>("PnLPercent")
+                                .HasColumnType("decimal(18,2)");
+
+                            b1.Property<decimal?>("RMultiple")
+                                .HasColumnType("decimal(18,2)");
+
+                            b1.HasKey("TradeId");
+
+                            b1.ToTable("Trade", "dbo");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TradeId");
+                        });
+
+                    b.Navigation("Emotion");
+
+                    b.Navigation("FinancialPeriod");
+
+                    b.Navigation("Result");
+                });
+
+            modelBuilder.Entity("DomainLayer.Entities.TradeTp", b =>
+                {
+                    b.HasOne("DomainLayer.Entities.Trade", null)
+                        .WithMany("TakeProfits")
+                        .HasForeignKey("TradeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DomainLayer.Entities.UserAccount", b =>
                 {
                     b.HasOne("DomainLayer.Entities.UserAccount", "InvitedByUser")
@@ -4684,6 +4946,11 @@ namespace InfrastructureLayer.Migrations
             modelBuilder.Entity("DomainLayer.Entities.Signal", b =>
                 {
                     b.Navigation("Candles");
+                });
+
+            modelBuilder.Entity("DomainLayer.Entities.Trade", b =>
+                {
+                    b.Navigation("TakeProfits");
                 });
 
             modelBuilder.Entity("DomainLayer.Entities.UserAccount", b =>

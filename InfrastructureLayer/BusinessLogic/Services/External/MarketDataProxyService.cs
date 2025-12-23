@@ -42,6 +42,36 @@ public class MarketDataProxyService : IMarketDataProxyService
         return body;
     }
 
+    public async Task<decimal> GetCurrentPriceAsync(string symbol)
+    {
+        // Fetch 1m kline for latest price from Binance
+        // Format: [ [OpenTime, Open, High, Low, Close, Volume, ...], ... ]
+        // We take the Close price of the latest candle.
+        
+        var json = await GetBinanceKlines(symbol, "1m");
+        // Simple parsing or use Newtonsoft/System.Text.Json
+        // Ideally use a proper library but here we just need the price.
+        
+        // Assuming the response is a JSON array of arrays.
+        // We can parse it as JsonElement
+        
+        using var doc = System.Text.Json.JsonDocument.Parse(json);
+        var root = doc.RootElement;
+        var count = root.GetArrayLength();
+        if (count == 0) throw new Exception("No market data available.");
+        
+        var latest = root[count - 1]; // Last candle
+        // Index 4 is Close Price
+        var closePriceStr = latest[4].GetString();
+        
+        if (decimal.TryParse(closePriceStr, out var price))
+        {
+            return price;
+        }
+        
+        throw new Exception("Failed to parse price from market data.");
+    }
+
     private static async Task<HttpResponseMessage> SendAsyncWithRetry(HttpClient client, HttpRequestMessage request, int maxAttempts = 3)
     {
         Exception last = null;

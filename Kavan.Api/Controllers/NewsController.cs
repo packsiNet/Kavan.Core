@@ -17,15 +17,15 @@ public class NewsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetAsync(
         [FromQuery] string[] currencies,
         [FromQuery] string[] regions,
-        [FromQuery] string? kind,
-        [FromQuery] string? search,
+        [FromQuery] string kind,
+        [FromQuery] string search,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20)
     {
         var model = new GetNewsRequestDto
         {
-            Currencies = currencies ?? Array.Empty<string>(),
-            Regions = regions ?? Array.Empty<string>(),
+            Currencies = currencies ?? [],
+            Regions = regions ?? [],
             Kind = kind,
             Search = search,
             Pagination = new PaginationDto { Page = page, PageSize = pageSize }
@@ -35,7 +35,7 @@ public class NewsController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("sync")]
-    public async Task<IActionResult> SyncAsync([FromBody] CryptoPanicQuery? query)
+    public async Task<IActionResult> SyncAsync([FromBody] CryptoPanicQuery query)
     {
         var q = query ?? new CryptoPanicQuery { Public = true };
         return await ResultHelper.GetResultAsync(mediator, new SyncNewsCommand(q));
