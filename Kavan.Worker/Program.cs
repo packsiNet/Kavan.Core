@@ -18,6 +18,7 @@ builder.Services.AddSingleton<IWebHostEnvironment, WorkerHostEnvironment>();
 builder.Services.Register(builder.Configuration, isWorker: true);
 
 builder.Services.AddHostedService<Worker>();
+builder.Services.AddHostedService<CandleAggregationWorker>();
 
 var host = builder.Build();
 

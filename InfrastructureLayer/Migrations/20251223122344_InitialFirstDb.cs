@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InfrastructureLayer.Migrations
 {
     /// <inheritdoc />
-    public partial class FirstDbInitial : Migration
+    public partial class InitialFirstDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -797,6 +797,34 @@ namespace InfrastructureLayer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WatchlistItem", x => x.WatchlistItemId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AggregationState",
+                schema: "dbo",
+                columns: table => new
+                {
+                    AggregationStateId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CryptocurrencyId = table.Column<int>(type: "int", nullable: false),
+                    Timeframe = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    LastProcessedOpenTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastUpdatedUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AggregationState", x => x.AggregationStateId);
+                    table.ForeignKey(
+                        name: "FK_AggregationState_Cryptocurrency_CryptocurrencyId",
+                        column: x => x.CryptocurrencyId,
+                        principalSchema: "dbo",
+                        principalTable: "Cryptocurrency",
+                        principalColumn: "CryptocurrencyId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -2093,6 +2121,13 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AggregationState_CryptocurrencyId_Timeframe",
+                schema: "dbo",
+                table: "AggregationState",
+                columns: new[] { "CryptocurrencyId", "Timeframe" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BitcoinActiveAddress_Time",
                 schema: "dbo",
                 table: "BitcoinActiveAddress",
@@ -2682,6 +2717,10 @@ namespace InfrastructureLayer.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AggregationState",
+                schema: "dbo");
+
             migrationBuilder.DropTable(
                 name: "BitcoinActiveAddress",
                 schema: "dbo");

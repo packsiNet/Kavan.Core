@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLayer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251223101424_FirstDbInitial")]
-    partial class FirstDbInitial
+    [Migration("20251223122344_InitialFirstDb")]
+    partial class InitialFirstDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,49 @@ namespace InfrastructureLayer.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("DomainLayer.Entities.AggregationState", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("AggregationStateId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CryptocurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastProcessedOpenTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastUpdatedUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Timeframe")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CryptocurrencyId", "Timeframe")
+                        .IsUnique();
+
+                    b.ToTable("AggregationState", "dbo");
+                });
 
             modelBuilder.Entity("DomainLayer.Entities.BitcoinActiveAddress", b =>
                 {
@@ -4382,6 +4425,17 @@ namespace InfrastructureLayer.Migrations
                         .IsUnique();
 
                     b.ToTable("WatchlistItem", "dbo");
+                });
+
+            modelBuilder.Entity("DomainLayer.Entities.AggregationState", b =>
+                {
+                    b.HasOne("DomainLayer.Entities.Cryptocurrency", "Cryptocurrency")
+                        .WithMany()
+                        .HasForeignKey("CryptocurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cryptocurrency");
                 });
 
             modelBuilder.Entity("DomainLayer.Entities.Candle_15m", b =>
