@@ -3,12 +3,14 @@ using ApplicationLayer.Common.Extensions;
 using ApplicationLayer.Features.Candles.Query;
 using ApplicationLayer.Features.Cryptocurrencies.Query;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kavan.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 [ApiExplorerSettings(GroupName = nameof(ApiDefinitions.Trader))]
 public class CandlesController(IMediator mediator) : ControllerBase
 {
