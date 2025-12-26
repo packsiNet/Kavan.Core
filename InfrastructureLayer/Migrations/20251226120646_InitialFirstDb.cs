@@ -460,33 +460,6 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FinancialPeriod",
-                schema: "dbo",
-                columns: table => new
-                {
-                    FinancialPeriodId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    StartDateUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDateUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PeriodType = table.Column<int>(type: "int", nullable: false),
-                    IsClosed = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
-                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
-                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
-                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
-                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FinancialPeriod", x => x.FinancialPeriodId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Idea",
                 schema: "dbo",
                 columns: table => new
@@ -1164,54 +1137,6 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Trade",
-                schema: "dbo",
-                columns: table => new
-                {
-                    TradeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Symbol = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Side = table.Column<int>(type: "int", nullable: false),
-                    EntryPrice = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
-                    StopLoss = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
-                    Quantity = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
-                    Leverage = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    OpenedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ClosedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    FinancialPeriodId = table.Column<int>(type: "int", nullable: false),
-                    Emotion_ConfidenceLevel = table.Column<int>(type: "int", nullable: true),
-                    Emotion_EmotionBeforeEntry = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Emotion_PlanCompliance = table.Column<bool>(type: "bit", nullable: true),
-                    Result_ExitPrice = table.Column<decimal>(type: "decimal(28,10)", nullable: true),
-                    Result_ExitReason = table.Column<int>(type: "int", nullable: true),
-                    Result_RMultiple = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Result_PnLPercent = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Result_HoldingTime = table.Column<TimeSpan>(type: "time", nullable: true),
-                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
-                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
-                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
-                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
-                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Trade", x => x.TradeId);
-                    table.ForeignKey(
-                        name: "FK_Trade_FinancialPeriod_FinancialPeriodId",
-                        column: x => x.FinancialPeriodId,
-                        principalSchema: "dbo",
-                        principalTable: "FinancialPeriod",
-                        principalColumn: "FinancialPeriodId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "NewsInstrument",
                 schema: "dbo",
                 columns: table => new
@@ -1327,6 +1252,40 @@ namespace InfrastructureLayer.Migrations
                         principalTable: "UserAccount",
                         principalColumn: "UserAccountId",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FinancialPeriod",
+                schema: "dbo",
+                columns: table => new
+                {
+                    FinancialPeriodId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserAccountId = table.Column<int>(type: "int", nullable: false),
+                    StartDateUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDateUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PeriodType = table.Column<int>(type: "int", nullable: false),
+                    IsClosed = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FinancialPeriod", x => x.FinancialPeriodId);
+                    table.ForeignKey(
+                        name: "FK_FinancialPeriod_UserAccount_UserAccountId",
+                        column: x => x.UserAccountId,
+                        principalSchema: "dbo",
+                        principalTable: "UserAccount",
+                        principalColumn: "UserAccountId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1718,33 +1677,6 @@ namespace InfrastructureLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TradeTp",
-                schema: "dbo",
-                columns: table => new
-                {
-                    TradeTpId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TradeId = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
-                    IsHit = table.Column<bool>(type: "bit", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TradeTp", x => x.TradeTpId);
-                    table.ForeignKey(
-                        name: "FK_TradeTp_Trade_TradeId",
-                        column: x => x.TradeId,
-                        principalSchema: "dbo",
-                        principalTable: "Trade",
-                        principalColumn: "TradeId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CourseEnrollment",
                 schema: "dbo",
                 columns: table => new
@@ -1821,6 +1753,73 @@ namespace InfrastructureLayer.Migrations
                         principalTable: "Course",
                         principalColumn: "CourseId",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Trade",
+                schema: "dbo",
+                columns: table => new
+                {
+                    TradeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserAccountId = table.Column<int>(type: "int", nullable: false),
+                    UserAccountId1 = table.Column<int>(type: "int", nullable: true),
+                    Symbol = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Side = table.Column<int>(type: "int", nullable: false),
+                    EntryPrice = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    StopLoss = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(28,10)", nullable: false),
+                    Leverage = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    OpenedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ClosedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    FinancialPeriodId = table.Column<int>(type: "int", nullable: false),
+                    FinancialPeriodId1 = table.Column<int>(type: "int", nullable: true),
+                    Emotion_ConfidenceLevel = table.Column<int>(type: "int", nullable: true),
+                    Emotion_EmotionBeforeEntry = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Emotion_PlanCompliance = table.Column<bool>(type: "bit", nullable: true),
+                    Result_ExitPrice = table.Column<decimal>(type: "decimal(28,10)", nullable: true),
+                    Result_ExitReason = table.Column<int>(type: "int", nullable: true),
+                    Result_RMultiple = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Result_PnLPercent = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Result_HoldingTime = table.Column<TimeSpan>(type: "time", nullable: true),
+                    CreatedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: true),
+                    ModifiedByIp = table.Column<string>(type: "char(15)", nullable: true),
+                    ModifiedByUserId = table.Column<int>(type: "int", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Trade", x => x.TradeId);
+                    table.ForeignKey(
+                        name: "FK_Trade_FinancialPeriod_FinancialPeriodId",
+                        column: x => x.FinancialPeriodId,
+                        principalSchema: "dbo",
+                        principalTable: "FinancialPeriod",
+                        principalColumn: "FinancialPeriodId");
+                    table.ForeignKey(
+                        name: "FK_Trade_FinancialPeriod_FinancialPeriodId1",
+                        column: x => x.FinancialPeriodId1,
+                        principalSchema: "dbo",
+                        principalTable: "FinancialPeriod",
+                        principalColumn: "FinancialPeriodId");
+                    table.ForeignKey(
+                        name: "FK_Trade_UserAccount_UserAccountId",
+                        column: x => x.UserAccountId,
+                        principalSchema: "dbo",
+                        principalTable: "UserAccount",
+                        principalColumn: "UserAccountId");
+                    table.ForeignKey(
+                        name: "FK_Trade_UserAccount_UserAccountId1",
+                        column: x => x.UserAccountId1,
+                        principalSchema: "dbo",
+                        principalTable: "UserAccount",
+                        principalColumn: "UserAccountId");
                 });
 
             migrationBuilder.CreateTable(
@@ -2120,6 +2119,33 @@ namespace InfrastructureLayer.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "TradeTp",
+                schema: "dbo",
+                columns: table => new
+                {
+                    TradeTpId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TradeId = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsHit = table.Column<bool>(type: "bit", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TradeTp", x => x.TradeTpId);
+                    table.ForeignKey(
+                        name: "FK_TradeTp_Trade_TradeId",
+                        column: x => x.TradeId,
+                        principalSchema: "dbo",
+                        principalTable: "Trade",
+                        principalColumn: "TradeId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AggregationState_CryptocurrencyId_Timeframe",
                 schema: "dbo",
@@ -2384,10 +2410,10 @@ namespace InfrastructureLayer.Migrations
                 column: "IsClosed");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FinancialPeriod_UserId",
+                name: "IX_FinancialPeriod_UserAccountId",
                 schema: "dbo",
                 table: "FinancialPeriod",
-                column: "UserId");
+                column: "UserAccountId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Idea_IsPublic",
@@ -2610,6 +2636,12 @@ namespace InfrastructureLayer.Migrations
                 column: "FinancialPeriodId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Trade_FinancialPeriodId1",
+                schema: "dbo",
+                table: "Trade",
+                column: "FinancialPeriodId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Trade_Status",
                 schema: "dbo",
                 table: "Trade",
@@ -2622,10 +2654,16 @@ namespace InfrastructureLayer.Migrations
                 column: "Symbol");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Trade_UserId",
+                name: "IX_Trade_UserAccountId",
                 schema: "dbo",
                 table: "Trade",
-                column: "UserId");
+                column: "UserAccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Trade_UserAccountId1",
+                schema: "dbo",
+                table: "Trade",
+                column: "UserAccountId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TradeTp_TradeId",

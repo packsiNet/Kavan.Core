@@ -10,7 +10,7 @@ public class FinancialPeriodConfiguration : IEntityTypeConfiguration<FinancialPe
     {
         builder.Ignore(x => x.PeriodTypeEnum);
 
-        builder.HasIndex(x => x.UserId);
+        builder.HasIndex(x => x.UserAccountId);
         builder.HasIndex(x => x.IsClosed);
 
         builder.Property(x => x.StartDateUtc).IsRequired();

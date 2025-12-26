@@ -1913,14 +1913,14 @@ namespace InfrastructureLayer.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserAccountId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("IsClosed");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserAccountId");
 
                     b.ToTable("FinancialPeriod", "dbo");
                 });
@@ -3785,6 +3785,9 @@ namespace InfrastructureLayer.Migrations
                     b.Property<int>("FinancialPeriodId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("FinancialPeriodId1")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -3829,18 +3832,25 @@ namespace InfrastructureLayer.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserAccountId1")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FinancialPeriodId");
 
+                    b.HasIndex("FinancialPeriodId1");
+
                     b.HasIndex("Status");
 
                     b.HasIndex("Symbol");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserAccountId");
+
+                    b.HasIndex("UserAccountId1");
 
                     b.ToTable("Trade", "dbo");
                 });
@@ -3867,7 +3877,7 @@ namespace InfrastructureLayer.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(28,10)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("TradeId")
                         .HasColumnType("int");
@@ -4549,6 +4559,17 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("UserAccount");
                 });
 
+            modelBuilder.Entity("DomainLayer.Entities.FinancialPeriod", b =>
+                {
+                    b.HasOne("DomainLayer.Entities.UserAccount", "UserAccount")
+                        .WithMany()
+                        .HasForeignKey("UserAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserAccount");
+                });
+
             modelBuilder.Entity("DomainLayer.Entities.IdeaComment", b =>
                 {
                     b.HasOne("DomainLayer.Entities.Idea", "Idea")
@@ -4776,11 +4797,25 @@ namespace InfrastructureLayer.Migrations
 
             modelBuilder.Entity("DomainLayer.Entities.Trade", b =>
                 {
-                    b.HasOne("DomainLayer.Entities.FinancialPeriod", "FinancialPeriod")
+                    b.HasOne("DomainLayer.Entities.FinancialPeriod", null)
                         .WithMany()
                         .HasForeignKey("FinancialPeriodId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("DomainLayer.Entities.FinancialPeriod", "FinancialPeriod")
+                        .WithMany()
+                        .HasForeignKey("FinancialPeriodId1");
+
+                    b.HasOne("DomainLayer.Entities.UserAccount", null)
+                        .WithMany()
+                        .HasForeignKey("UserAccountId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("DomainLayer.Entities.UserAccount", "UserAccount")
+                        .WithMany()
+                        .HasForeignKey("UserAccountId1");
 
                     b.OwnsOne("DomainLayer.Entities.TradeEmotion", "Emotion", b1 =>
                         {
@@ -4838,6 +4873,8 @@ namespace InfrastructureLayer.Migrations
                     b.Navigation("FinancialPeriod");
 
                     b.Navigation("Result");
+
+                    b.Navigation("UserAccount");
                 });
 
             modelBuilder.Entity("DomainLayer.Entities.TradeTp", b =>

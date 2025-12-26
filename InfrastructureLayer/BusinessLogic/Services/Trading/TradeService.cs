@@ -27,15 +27,15 @@ public class TradeService(
 
         // 1. Validate Active Financial Period
         var activePeriod = await _periodRepository.Query()
-            .FirstOrDefaultAsync(x => x.UserId == userId && !x.IsClosed);
+            .FirstOrDefaultAsync(x => x.UserAccountId == userId && !x.IsClosed);
 
         if (activePeriod == null)
-            return Result<TradeDto>.Failure(Error.Validation("No active financial period found. Please create one first."));
+            return Result<TradeDto>.Failure(Error.Validation("Active financial period not found"));
 
         // 2. Create Trade Entity
         var entity = new Trade
         {
-            UserId = userId.Value,
+            UserAccountId = userId.Value,
             FinancialPeriodId = activePeriod.Id,
             Symbol = dto.Symbol.ToUpper(),
             Side = dto.Side,
@@ -72,7 +72,7 @@ public class TradeService(
 
         var trades = await _tradeRepository.Query()
             .Include(x => x.TakeProfits)
-            .Where(x => x.FinancialPeriodId == periodId && x.UserId == userId)
+            .Where(x => x.FinancialPeriodId == periodId && x.UserAccountId == userId)
             .OrderByDescending(x => x.OpenedAtUtc)
             .ToListAsync();
 
@@ -89,7 +89,7 @@ public class TradeService(
             .FirstOrDefaultAsync(x => x.Id == tradeId);
 
         if (trade == null) return Result<TradeDto>.Failure(Error.NotFound("Trade not found"));
-        if (userId != null && trade.UserId != userId) return Result<TradeDto>.Failure(Error.AccessDenied());
+        if (userId != null && trade.UserAccountId != userId) return Result<TradeDto>.Failure(Error.AccessDenied());
 
         // 2. Get Market Price
         decimal currentPrice;
@@ -152,7 +152,7 @@ public class TradeService(
              .FirstOrDefaultAsync(x => x.Id == dto.TradeId);
 
         if (trade == null) return Result<TradeDto>.Failure(Error.NotFound("Trade not found"));
-        if (userId != null && trade.UserId != userId) return Result<TradeDto>.Failure(Error.AccessDenied());
+        if (userId != null && trade.UserAccountId != userId) return Result<TradeDto>.Failure(Error.AccessDenied());
 
         // Update Emotion/Notes directly
         if (dto.ConfidenceLevel.HasValue) trade.Emotion.ConfidenceLevel = dto.ConfidenceLevel.Value;
@@ -198,7 +198,7 @@ public class TradeService(
             .FirstOrDefaultAsync(x => x.Id == tradeId);
 
         if (trade == null) return Result<bool>.Failure(Error.NotFound("Trade not found"));
-        if (userId != null && trade.UserId != userId) return Result<bool>.Failure(Error.AccessDenied());
+        if (userId != null && trade.UserAccountId != userId) return Result<bool>.Failure(Error.AccessDenied());
 
         try
         {
@@ -242,7 +242,7 @@ public class TradeService(
         return new TradeDto
         {
             Id = entity.Id,
-            UserId = entity.UserId,
+            UserId = entity.UserAccountId,
             Symbol = entity.Symbol,
             Side = entity.Side,
             SideName = TradeSide.FromValue(entity.Side).Name,

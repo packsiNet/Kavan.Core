@@ -22,14 +22,14 @@ public class FinancialPeriodService(
         if (userId == null) return Result<FinancialPeriodDto>.Failure(Error.Authentication("User not authenticated"));
 
         var hasActive = await _repository.Query()
-            .AnyAsync(x => x.UserId == userId && !x.IsClosed);
+            .AnyAsync(x => x.UserAccountId == userId && !x.IsClosed);
 
         if (hasActive)
             return Result<FinancialPeriodDto>.Failure(Error.Duplicate("Active financial period already exists"));
 
         var entity = new FinancialPeriod
         {
-            UserId = userId.Value,
+            UserAccountId = userId.Value,
             StartDateUtc = dto.StartDateUtc,
             EndDateUtc = dto.EndDateUtc,
             PeriodType = dto.PeriodType,
@@ -48,7 +48,7 @@ public class FinancialPeriodService(
         if (userId == null) return Result<FinancialPeriodDto>.Failure(Error.Authentication("User not authenticated"));
 
         var entity = await _repository.Query()
-            .FirstOrDefaultAsync(x => x.UserId == userId && !x.IsClosed);
+            .FirstOrDefaultAsync(x => x.UserAccountId == userId && !x.IsClosed);
 
         if (entity == null)
             return Result<FinancialPeriodDto>.Failure(Error.NotFound("No active financial period found"));
@@ -65,7 +65,7 @@ public class FinancialPeriodService(
         if (entity == null)
             return Result<FinancialPeriodDto>.Failure(Error.NotFound("Financial period not found"));
 
-        if (entity.UserId != userId)
+        if (entity.UserAccountId != userId)
             return Result<FinancialPeriodDto>.Failure(Error.AccessDenied("Not authorized to access this period"));
 
         if (entity.IsClosed)
@@ -83,7 +83,7 @@ public class FinancialPeriodService(
         return new FinancialPeriodDto
         {
             Id = entity.Id,
-            UserId = entity.UserId,
+            UserId = entity.UserAccountId,
             StartDateUtc = entity.StartDateUtc,
             EndDateUtc = entity.EndDateUtc,
             PeriodType = entity.PeriodType,

@@ -6,7 +6,9 @@ namespace DomainLayer.Entities;
 
 public class FinancialPeriod : BaseEntityModel, IAuditableEntity
 {
-    public int UserId { get; set; }
+    public int UserAccountId { get; set; }
+    public UserAccount UserAccount { get; set; }
+
     public DateTime StartDateUtc { get; set; }
     public DateTime EndDateUtc { get; set; }
     public int PeriodType { get; set; } // FinancialPeriodType

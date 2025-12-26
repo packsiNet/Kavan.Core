@@ -21,7 +21,7 @@ public class TradingAnalyticsService(
         if (userId == null) return Result<PeriodSummaryDto>.Failure(Error.Authentication("User not authenticated"));
 
         var trades = await _tradeRepository.Query()
-            .Where(x => x.FinancialPeriodId == periodId && x.UserId == userId && x.Status == TradeStatus.Closed)
+            .Where(x => x.FinancialPeriodId == periodId && x.UserAccountId == userId && x.Status == TradeStatus.Closed)
             .ToListAsync();
 
         if (!trades.Any())
@@ -93,7 +93,7 @@ public class TradingAnalyticsService(
         if (userId == null) return Result<PeriodBehaviorDto>.Failure(Error.Authentication("User not authenticated"));
 
         var trades = await _tradeRepository.Query()
-            .Where(x => x.FinancialPeriodId == periodId && x.UserId == userId && x.Status == TradeStatus.Closed)
+            .Where(x => x.FinancialPeriodId == periodId && x.UserAccountId == userId && x.Status == TradeStatus.Closed)
             .ToListAsync();
 
         var behavior = new PeriodBehaviorDto
@@ -123,7 +123,7 @@ public class TradingAnalyticsService(
         if (userId == null) return Result<PeriodInsightsDto>.Failure(Error.Authentication("User not authenticated"));
 
         var trades = await _tradeRepository.Query()
-            .Where(x => x.FinancialPeriodId == periodId && x.UserId == userId && x.Status == TradeStatus.Closed)
+            .Where(x => x.FinancialPeriodId == periodId && x.UserAccountId == userId && x.Status == TradeStatus.Closed)
             .ToListAsync();
 
         var insights = new List<InsightItemDto>();

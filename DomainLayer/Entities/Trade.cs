@@ -6,7 +6,9 @@ namespace DomainLayer.Entities;
 
 public class Trade : BaseEntityModel, IAuditableEntity
 {
-    public int UserId { get; set; }
+    public int UserAccountId { get; set; }
+    public UserAccount UserAccount { get; set; }
+
     public string Symbol { get; set; } = string.Empty;
     public int Side { get; set; } // TradeSide
     public decimal EntryPrice { get; set; }
