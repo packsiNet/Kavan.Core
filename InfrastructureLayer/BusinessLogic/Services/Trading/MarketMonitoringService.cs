@@ -89,7 +89,10 @@ public class MarketMonitoringService(
             if (candle == null) continue;
 
             // Ensure we check candles after trade creation (User Requirement)
-            if (candle.OpenTime < trade.CreatedAt) continue;
+            // Fix: Check if candle FINISHED before trade creation. 
+            // If candle.CloseTime (e.g. 10:00:59) < CreatedAt (10:00:30), then the candle is fully in the past.
+            // We only skip if candle ends before creation.
+            if (candle.CloseTime <= trade.CreatedAt) continue;
 
             // 4. Check SL/TP
             // Need to check if price hit SL or TP based on High/Low

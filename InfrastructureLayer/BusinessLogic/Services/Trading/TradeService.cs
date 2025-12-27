@@ -227,14 +227,64 @@ public class TradeService(
 
     public async Task CheckOpenTradesAsync()
     {
-        // This method will be called by Background Service
-        // It needs to iterate over open trades and check against current market data
-        // For now, we leave it as a placeholder or implement basic fetching
-        // Actual logic should probably be in the Background Service or a dedicated Domain Service 
-        // that takes Market Data as input.
-        
-        // This is better handled by the "MarketMonitoringService" mentioned in the prompt.
-        await Task.CompletedTask;
+        var openTrades = await _tradeRepository.Query()
+            .Include(x => x.TakeProfits)
+            .Where(x => x.Status == TradeStatus.Open || x.Status == TradeStatus.PartiallyClosed)
+            .ToListAsync();
+
+        foreach (var trade in openTrades)
+        {
+            try
+            {
+                var currentPrice = await _marketDataService.GetCurrentPriceAsync(trade.Symbol);
+                var side = trade.SideEnum;
+
+                // 1. Check Stop Loss
+                bool slHit = side == TradeSide.Long
+                    ? currentPrice <= trade.StopLoss
+                    : currentPrice >= trade.StopLoss;
+
+                if (slHit)
+                {
+                    trade.CloseByMarket(trade.StopLoss, ExitReason.StopLoss);
+                }
+                else
+                {
+                    // 2. Check Take Profits
+                    var unhitTps = trade.TakeProfits.Where(x => !x.IsHit).ToList();
+                    bool anyNewHit = false;
+
+                    foreach (var tp in unhitTps)
+                    {
+                        bool tpHit = side == TradeSide.Long
+                           ? currentPrice >= tp.Price
+                           : currentPrice <= tp.Price;
+
+                        if (tpHit)
+                        {
+                            tp.IsHit = true;
+                            anyNewHit = true;
+                        }
+                    }
+
+                    // Check if all TPs are hit OR the furthest TP is hit
+                    // Logic: If all registered TPs are hit, close the trade.
+                    if (trade.TakeProfits.Any() && trade.TakeProfits.All(x => x.IsHit))
+                    {
+                        trade.CloseByMarket(currentPrice, ExitReason.TakeProfit);
+                    }
+                }
+
+                await _tradeRepository.UpdateAsync(trade);
+            }
+            catch (Exception)
+            {
+                // Continue checking other trades even if one fails (e.g. market data error)
+                continue;
+            }
+        }
+
+        await _uow.SaveChangesAsync();
     }
 
     private static TradeDto MapToDto(Trade entity)
