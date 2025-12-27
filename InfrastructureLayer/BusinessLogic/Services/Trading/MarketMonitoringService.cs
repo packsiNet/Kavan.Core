@@ -88,6 +88,9 @@ public class MarketMonitoringService(
 
             if (candle == null) continue;
 
+            // Ensure we check candles after trade creation (User Requirement)
+            if (candle.OpenTime < trade.CreatedAt) continue;
+
             // 4. Check SL/TP
             // Need to check if price hit SL or TP based on High/Low
             
