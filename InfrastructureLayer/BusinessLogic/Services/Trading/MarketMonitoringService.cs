@@ -86,13 +86,20 @@ public class MarketMonitoringService(
                 .OrderByDescending(x => x.OpenTime)
                 .FirstOrDefaultAsync(stoppingToken);
 
-            if (candle == null) continue;
+            if (candle == null)
+            {
+                // _logger.LogWarning($"No candle found for {trade.Symbol}");
+                continue;
+            }
 
             // Ensure we check candles after trade creation (User Requirement)
             // Fix: Check if candle FINISHED before trade creation. 
-            // If candle.CloseTime (e.g. 10:00:59) < CreatedAt (10:00:30), then the candle is fully in the past.
-            // We only skip if candle ends before creation.
-            if (candle.CloseTime <= trade.CreatedAt) continue;
+            // If candle.CloseTime (e.g. 10:00:59) <= CreatedAt (10:00:30), then the candle is fully in the past.
+            if (candle.CloseTime <= trade.CreatedAt)
+            {
+                 // _logger.LogInformation($"Skipping past candle {candle.OpenTime} for trade {trade.Id} (Created: {trade.CreatedAt})");
+                 continue;
+            }
 
             // 4. Check SL/TP
             // Need to check if price hit SL or TP based on High/Low
