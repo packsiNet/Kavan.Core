@@ -79,5 +79,6 @@ public class TradeResultDto
     public string ExitReasonName { get; set; }
     public decimal? RMultiple { get; set; }
     public decimal? PnLPercent { get; set; }
+    public decimal? PnL { get; set; }
     public TimeSpan? HoldingTime { get; set; }
 }

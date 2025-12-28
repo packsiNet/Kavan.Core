@@ -357,13 +357,11 @@ public static class DependencyInjection
         services.AddMediatR(m =>
         {
             m.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            
             // Register handlers from ApplicationLayer assembly (CQRS Handlers, Commands, Queries)
-            var applicationAssembly = AppDomain.CurrentDomain.GetAssemblies()
-                .FirstOrDefault(a => a.GetName().Name == "ApplicationLayer");
-            if (applicationAssembly != null)
-            {
-                m.RegisterServicesFromAssembly(applicationAssembly);
-            }
+            // Use a marker type from ApplicationLayer to ensure assembly is loaded
+            m.RegisterServicesFromAssembly(typeof(ApplicationLayer.HandlerResult).Assembly);
+
             // Register handlers from Presentation Kavan.Api assembly for domain events
             var presentationAssembly = AppDomain.CurrentDomain.GetAssemblies()
                 .FirstOrDefault(a => a.GetName().Name == "Kavan.Api");

@@ -23,6 +23,10 @@ public class TradeController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetByPeriodAsync(int periodId)
         => await ResultHelper.GetResultAsync(mediator, new GetTradesByPeriodQuery(periodId));
 
+    [HttpGet("calendar")]
+    public async Task<IActionResult> GetCalendarAsync([FromQuery] int? periodId)
+        => await ResultHelper.GetResultAsync(mediator, new GetTradeCalendarQuery(periodId));
+
     [HttpPost("{id}/close")]
     public async Task<IActionResult> CloseAsync(int id)
         => await ResultHelper.GetResultAsync(mediator, new CloseTradeCommand(id));

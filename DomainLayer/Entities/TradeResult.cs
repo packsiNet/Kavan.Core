@@ -9,6 +9,7 @@ public class TradeResult
     public int? ExitReason { get; set; } // ExitReason Enum
     public decimal? RMultiple { get; set; }
     public decimal? PnLPercent { get; set; }
+    public decimal? PnL { get; set; }
     public TimeSpan? HoldingTime { get; set; }
 
     [NotMapped]

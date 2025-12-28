@@ -57,10 +57,9 @@ public class ValidationPipelineBehavior<TRequest, TResponse>
                 }
             }
         }
-        catch (Exception ex)
+        catch
         {
-            var m = ex.Message;
-            throw; // Re-throw to see the actual error
+            throw;
         }
 
         return await next();

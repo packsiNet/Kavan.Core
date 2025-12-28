@@ -287,6 +287,42 @@ public class TradeService(
         await _uow.SaveChangesAsync();
     }
 
+    public async Task<Result<List<TradeCalendarDto>>> GetTradeCalendarAsync(int? periodId)
+    {
+        var userId = _userContext.UserId;
+        if (userId == null) return Result<List<TradeCalendarDto>>.Failure(Error.Authentication("User not authenticated"));
+
+        var query = _tradeRepository.Query()
+            .Where(x => x.UserAccountId == userId && x.Status == TradeStatus.Closed.Value && x.ClosedAtUtc != null);
+
+        if (periodId.HasValue)
+        {
+            query = query.Where(x => x.FinancialPeriodId == periodId.Value);
+        }
+
+        var trades = await query.ToListAsync();
+
+        var grouped = trades
+            .GroupBy(x => x.ClosedAtUtc.Value.Date)
+            .Select(g => new TradeCalendarDto
+            {
+                Date = g.Key,
+                TradeCount = g.Count(),
+                TotalPnLPercent = g.Sum(x => x.Result.PnLPercent ?? 
+                    ((x.Result.ExitPrice.HasValue && x.EntryPrice != 0) 
+                        ? ((x.Result.ExitPrice.Value - x.EntryPrice) / x.EntryPrice) * 100 * x.Leverage * (x.Side == TradeSide.Long ? 1 : -1) 
+                        : 0)),
+                TotalPnLAmount = g.Sum(x => x.Result.PnL ?? 
+                    ((x.Result.ExitPrice.HasValue) 
+                        ? (x.Result.ExitPrice.Value - x.EntryPrice) * x.Quantity * (x.Side == TradeSide.Long ? 1 : -1) 
+                        : 0))
+            })
+            .OrderByDescending(x => x.Date)
+            .ToList();
+
+        return Result<List<TradeCalendarDto>>.Success(grouped);
+    }
+
     private static TradeDto MapToDto(Trade entity)
     {
         return new TradeDto
@@ -317,14 +353,21 @@ public class TradeService(
                 ExitReason = entity.Result.ExitReason,
                 ExitReasonName = entity.Result.ExitReason.HasValue ? ExitReason.FromValue(entity.Result.ExitReason.Value).Name : null,
                 RMultiple = entity.Result.RMultiple,
-                PnLPercent = entity.Result.PnLPercent,
+                PnLPercent = entity.Result.PnLPercent ?? 
+                             ((entity.Result.ExitPrice.HasValue && entity.EntryPrice != 0) 
+                                 ? ((entity.Result.ExitPrice.Value - entity.EntryPrice) / entity.EntryPrice) * 100 * entity.Leverage * (entity.Side == TradeSide.Long ? 1 : -1) 
+                                 : null),
+                PnL = entity.Result.PnL ?? 
+                      ((entity.Result.ExitPrice.HasValue) 
+                          ? (entity.Result.ExitPrice.Value - entity.EntryPrice) * entity.Quantity * (entity.Side == TradeSide.Long ? 1 : -1) 
+                          : null),
                 HoldingTime = entity.Result.HoldingTime
             },
-            TakeProfits = entity.TakeProfits.Select(tp => new TradeTpDto
+            TakeProfits = [.. entity.TakeProfits.Select(tp => new TradeTpDto
             {
                 Price = tp.Price,
                 IsHit = tp.IsHit
-            }).ToList()
+            })]
         };
     }
 }

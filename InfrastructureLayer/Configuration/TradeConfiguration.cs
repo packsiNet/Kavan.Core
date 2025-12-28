@@ -1,4 +1,4 @@
-﻿using DomainLayer.Entities;
+using DomainLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -65,6 +65,9 @@ public class TradeConfiguration : IEntityTypeConfiguration<Trade>
 
             r.Property(p => p.PnLPercent)
              .HasColumnType("decimal(18,2)");
+
+            r.Property(p => p.PnL)
+             .HasColumnType("decimal(28,10)");
 
             r.Property(p => p.HoldingTime);
         });

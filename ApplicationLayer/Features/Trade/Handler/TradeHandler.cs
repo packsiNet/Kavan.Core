@@ -11,6 +11,7 @@ namespace ApplicationLayer.Features.Trade.Handler;
 public class TradeHandler(ITradeService _service) : 
     IRequestHandler<CreateTradeCommand, HandlerResult>,
     IRequestHandler<GetTradesByPeriodQuery, HandlerResult>,
+    IRequestHandler<GetTradeCalendarQuery, HandlerResult>,
     IRequestHandler<CloseTradeCommand, HandlerResult>,
     IRequestHandler<UpdateTradeCommand, HandlerResult>,
     IRequestHandler<CancelTradeCommand, HandlerResult>
@@ -25,6 +26,12 @@ public class TradeHandler(ITradeService _service) :
     {
         var result = await _service.GetTradesByPeriodAsync(request.PeriodId);
         return result.ToHandlerResult<List<TradeDto>>();
+    }
+
+    public async Task<HandlerResult> Handle(GetTradeCalendarQuery request, CancellationToken cancellationToken)
+    {
+        var result = await _service.GetTradeCalendarAsync(request.PeriodId);
+        return result.ToHandlerResult<List<TradeCalendarDto>>();
     }
 
     public async Task<HandlerResult> Handle(CloseTradeCommand request, CancellationToken cancellationToken)

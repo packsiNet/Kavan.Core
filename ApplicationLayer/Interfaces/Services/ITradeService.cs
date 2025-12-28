@@ -12,5 +12,6 @@ public interface ITradeService
     Task<Result<TradeDto>> CloseTradeInternalAsync(int tradeId, decimal exitPrice, ExitReason reason); // For System/Service
     Task<Result<TradeDto>> UpdateTradeAsync(UpdateTradeDto dto);
     Task<Result<bool>> CancelTradeAsync(int tradeId, string reason);
+    Task<Result<List<TradeCalendarDto>>> GetTradeCalendarAsync(int? periodId);
     Task CheckOpenTradesAsync(); // For background job
 }

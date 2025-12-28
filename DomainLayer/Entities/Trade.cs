@@ -85,6 +85,7 @@ public class Trade : BaseEntityModel, IAuditableEntity
         // Calculate Metrics
         var sideMultiplier = SideEnum == TradeSide.Long ? 1 : -1;
         var pnlPercent = ((exitPrice - EntryPrice) / EntryPrice) * 100 * Leverage * sideMultiplier;
+        var pnlAmount = (exitPrice - EntryPrice) * Quantity * sideMultiplier;
 
         // R-Multiple: Risk = |Entry - SL|
         var risk = Math.Abs(EntryPrice - StopLoss);
@@ -96,6 +97,7 @@ public class Trade : BaseEntityModel, IAuditableEntity
             ExitPrice = exitPrice,
             ExitReason = reason.Value,
             PnLPercent = pnlPercent,
+            PnL = pnlAmount,
             RMultiple = rMultiple,
             HoldingTime = ClosedAtUtc - OpenedAtUtc
         };
